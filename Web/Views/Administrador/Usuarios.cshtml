@@ -1,0 +1,143 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model IEnumerable<PersonaItemModel>
+@{
+    ViewBag.Title = "Usuarios";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Usuarios</h2>
+
+<div class="grilladatos-opciones-izquierda">
+    @Html.ActionLink("Nueva persona natural", "NuevoUsuarioPersonaNatural", "Administrador", new { @class = "boton" })
+    @Html.ActionLink("Nueva persona jurídica", "NuevoUsuarioPersonaJuridica", "Administrador", new { @class = "boton" })
+    <a href="#" id="filtro" class="boton">Filtros</a>
+</div>
+
+<div id="divfiltros" class="formulario-busqueda">
+    @using (Html.BeginForm("Usuarios", "Administrador", FormMethod.Get, new { id = "FormFiltroUsuarios" }))
+    {
+        <fieldset>
+            <legend>Opciones de filtrado</legend>
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        Palabras claves
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBox("PalabrasClaves", ViewBag.PalabrasClaves as string, new { style = "width:536px" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        Perfiles de usuario
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.ListBox("PerfilesUsuarios", ViewBag.PerfilesUsuarios as MultiSelectList, new { @class = "chosen", data_placeholder = "Seleccione un perfil...", style = "width:542px" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        Tipos o categorías de usuarios
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.ListBox("TiposPersonas", ViewBag.TiposPersonas as MultiSelectList, new { @class = "chosen", data_placeholder = "Seleccione un tipo o categoría...", style = "width:542px;" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        Estados
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.ListBox("Estados", ViewBag.Estados as MultiSelectList, new { @class = "chosen", data_placeholder = "Seleccione un estado...", style = "width:542px;" })
+                    </div>
+                </div>
+            </div>
+
+        </fieldset>
+
+        <div class="formulario-botones">
+            <input type="submit" value="@Html.Raw(Constante.BotonBuscar)" name="Buscar" class="boton" />
+            @Html.ActionLink("Mostrar todos", "Usuarios", "Administrador", new object(), new { @class = "boton" })
+        </div>
+    }
+</div>
+
+<div class="grilladatos-tabla-usuarios">
+    @(Html.Kendo().Grid(Model)
+           .Name("GridUsuarios")
+           .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Nombre).Template(
+                                @<text> <strong>@Html.ActionLink(@item.Nombre, "Usuario", "Administrador", new { id = @item.UsuarioId.ToString() }, null)</strong>
+                                - @item.CorreoElectronico
+                                <br />
+                                @Html.Raw(string.Format("{0} ({1})", item.TipoCategoria, item.TipoPersona))
+                                <br />
+                                @if (!string.IsNullOrEmpty(item.TelefonoCelular))
+                                {
+                                    @item.TelefonoCelular
+                                    <text> - </text>
+                                }
+                                @if (!string.IsNullOrEmpty(item.TelefonoFijo))
+                                {
+                                    @item.TelefonoFijo
+                                }
+                                @Html.Raw(string.Format(" - {0} ({1})", item.Municipio, item.Departamento))
+                                </text>
+                                ).Title("Entidad museal");
+                            columns.Bound(o => o.Estado).Width(135);
+                        })
+           .Sortable()
+           .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} usuarios")
+                .Empty("No se encontraron usuarios")
+                .First("Ir a la primera página")
+                .Last("Ir a la última página")
+                .Next("Ir a la página siguiente")
+                .Previous("Ir a la página anterior")))
+    )
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        if ($('#PalabrasClaves').val() != '' || $('#PerfilesUsuarios').val() != null || $('#TiposPersonas').val() != null || $('#Estados').val() != null) {
+            $('#divfiltros').show();
+        } else {
+            $('#divfiltros').hide();
+        }
+
+        $("#filtro").click(function () {
+            $('#divfiltros').slideToggle();
+        });
+    });
+
+</script>

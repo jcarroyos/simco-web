@@ -1,0 +1,543 @@
+﻿@using System.Configuration
+@using Microsoft.Web.Helpers
+@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+
+@model InicioSesionModel
+@{
+    ReCaptcha.PublicKey = ConfigurationManager.AppSettings["ReCaptchaPublicKey"];
+    ViewBag.Title = "Registro entidades museales";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Postularme para ser Reconocido como una Entidad Museal</h1>
+<div class="formulario">
+
+    @using (Html.BeginForm("EntidadMuseal", "Registro", FormMethod.Post, new { id = "frmEntidadMuseal", enctype = "multipart/form-data" }))
+    {
+
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(model => model.PostulacionEntidadMuseal.Departamento)
+        @Html.HiddenFor(model => model.PostulacionEntidadMuseal.Municipio)
+        @Html.HiddenFor(model => model.PostulacionEntidadMuseal.EsInValidoTipoServicios, new { id = "hdTipoServicioValido" })
+
+
+        //Fieldset : Información Básica
+        <fieldset>
+            <legend class="texto-negrita">Información Básica</legend>
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PostulacionEntidadMuseal.Nombre)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PostulacionEntidadMuseal.Nombre)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PostulacionEntidadMuseal.Nombre)
+                    </div>
+                </div>
+            </div>
+            <br />
+        </fieldset>
+
+        //Fieldset : Departamento - Municipio
+        <fieldset>
+            <legend class="texto-negrita">Información de contacto</legend>
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PostulacionEntidadMuseal.Departamento)
+                </div>
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PostulacionEntidadMuseal.Municipio)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    @Html.DropDownListFor(model => model.PostulacionEntidadMuseal.CodigoDepartamento, new SelectList(Model.PostulacionEntidadMuseal.Departamentos, "Id", "Nombre", Model.PostulacionEntidadMuseal.CodigoDepartamento), "Seleccione un departamento...", new { data_placeholder = "Seleccione un departamento...", @class = "chosen" })
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PostulacionEntidadMuseal.CodigoDepartamento)
+                    </div>
+                </div>
+                <div class="box">
+                    @Html.DropDownListFor(model => model.PostulacionEntidadMuseal.CodigoMunicipio, Enumerable.Empty<SelectListItem>(), "Seleccione una ciudad o municipio...", new { data_placeholder = "Seleccione una ciudad o municipio...", @class = "chosen" })
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PostulacionEntidadMuseal.CodigoMunicipio)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em>  @Html.LabelFor(model => model.PostulacionEntidadMuseal.Direccion)
+                </div>
+                <div class="box">
+                    <em>*</em>  @Html.LabelFor(model => model.PostulacionEntidadMuseal.Telefono)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PostulacionEntidadMuseal.Direccion)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PostulacionEntidadMuseal.Direccion)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PostulacionEntidadMuseal.Telefono)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PostulacionEntidadMuseal.Telefono)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    @Html.LabelFor(model => model.PostulacionEntidadMuseal.CorreoElectronico)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.PostulacionEntidadMuseal.CorreoElectronico)
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.PostulacionEntidadMuseal.CorreoElectronico)
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    @Html.LabelFor(model => model.PostulacionEntidadMuseal.SinAnimoLucro)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    @Html.RadioButtonFor(model => model.PostulacionEntidadMuseal.SinAnimoLucro, true)
+                    @Html.Label("Si")
+                </div>
+                <div class="box">
+                    @Html.RadioButtonFor(model => model.PostulacionEntidadMuseal.SinAnimoLucro, false)
+                    @Html.Label("No")
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    @Html.LabelFor(model => model.PostulacionEntidadMuseal.EntidadPublica)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    @Html.RadioButtonFor(model => model.PostulacionEntidadMuseal.EntidadPublica, true, new { @onclick = "AbiertaAlPublico(true)" })
+                    @Html.Label("Si")
+                </div>
+                <div class="box">
+                    @Html.RadioButtonFor(model => model.PostulacionEntidadMuseal.EntidadPublica, false, new { @onclick = "AbiertaAlPublico(false)" })
+                    @Html.Label("No")
+                </div>
+            </div>
+
+            <br />
+            <div id="dvDescripcionEntidadPublica">
+                <div class="box-row">
+                    <div class="box">
+                        <em>*</em> @Html.LabelFor(model => model.PostulacionEntidadMuseal.EntidadPublicaComentario)
+                    </div>
+                </div>
+                <div class="box">
+                    @Html.TextAreaFor(model => model.PostulacionEntidadMuseal.EntidadPublicaComentario, new { @id = "txtDescriptionEP", @class = "textareaclass" })
+                </div>
+                <div class="formulario-validator" style="margin-left:10px">
+                    @Html.ValidationMessageFor(model => model.PostulacionEntidadMuseal.EntidadPublicaComentario)
+                </div>
+            </div>
+            <br />
+        </fieldset>
+
+        //Fieldset : Tipo de Servicio - Finalidad Servicios
+        <fieldset>
+            <div class="box-row">
+                <div class="box">
+                    @Html.LabelFor(model => model.PostulacionEntidadMuseal.TiposServicio)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        <table>
+                            @for (int idx = 0; idx < Model.PostulacionEntidadMuseal.TiposServicio.Count; idx++)
+                            {
+                                <tr>
+                                    <td>
+                                        <p>
+                                            @Html.HiddenFor(model => model.PostulacionEntidadMuseal.TiposServicio[idx].Id)
+                                            @Html.CheckBoxFor(model => model.PostulacionEntidadMuseal.TiposServicio[idx].Seleccionada)
+                                            @Html.DisplayFor(model => model.PostulacionEntidadMuseal.TiposServicio[idx].Nombre)
+                                            @Html.HiddenFor(model => model.PostulacionEntidadMuseal.TiposServicio[idx].Nombre)
+                                        </p>
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+
+                        <div id="dvTipoServicioError">
+                            @Html.LabelFor(model => model.PostulacionEntidadMuseal.TipoServiciosError, new { @class = "formulario-validator" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    Finalidad de los Servicios:
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        <p>@Html.CheckBoxFor(model => model.PostulacionEntidadMuseal.FinalidadMixto) @Html.LabelFor(model => model.PostulacionEntidadMuseal.FinalidadMixto)</p>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        <p>@Html.CheckBoxFor(model => model.PostulacionEntidadMuseal.FinalidadDiversion) @Html.LabelFor(model => model.PostulacionEntidadMuseal.FinalidadDiversion)</p>
+                    </div>
+                </div><div class="box">
+                    <div class="formulario-control">
+                        <p>@Html.CheckBoxFor(model => model.PostulacionEntidadMuseal.FinalidadEducacion) @Html.LabelFor(model => model.PostulacionEntidadMuseal.FinalidadEducacion)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dvFinalidadError">
+                @Html.LabelFor(model => model.PostulacionEntidadMuseal.FinalidadServiciosError, new { @class = "formulario-validator" })
+            </div>
+
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PostulacionEntidadMuseal.TiposEntidades)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    @Html.DropDownListFor(model => model.PostulacionEntidadMuseal.IdTipoEntidad, new SelectList(Model.PostulacionEntidadMuseal.TiposEntidades, "Id", "Nombre", Model.PostulacionEntidadMuseal.IdTipoEntidad), "Seleccione un tipo...", new { data_placeholder = "Seleccione un tipo...", @class = "chosen" })
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PostulacionEntidadMuseal.IdTipoEntidad)
+                    </div>
+                </div>
+            </div>
+            <br />
+        </fieldset>
+
+        //Fieldset : Persona de Contacto
+        <fieldset>
+            <legend class="texto-negrita">Persona de Contacto</legend>
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PostulacionEntidadMuseal.NombreContacto)
+                </div>
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PostulacionEntidadMuseal.CorreoElectronicoPersonaContacto)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PostulacionEntidadMuseal.NombreContacto)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PostulacionEntidadMuseal.NombreContacto)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PostulacionEntidadMuseal.CorreoElectronicoPersonaContacto)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PostulacionEntidadMuseal.CorreoElectronicoPersonaContacto)
+                    </div>
+                </div>
+            </div>
+
+        </fieldset>
+
+        //Fieldset : Representante Legal
+        <fieldset>
+            <br />
+            <legend class="texto-negrita">Información del Representante Legal de la Entidad Postulante</legend>
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PostulacionEntidadMuseal.NombreDelDirector)
+                </div>
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PostulacionEntidadMuseal.CedulaDelDirector)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PostulacionEntidadMuseal.NombreDelDirector)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PostulacionEntidadMuseal.NombreDelDirector)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PostulacionEntidadMuseal.CedulaDelDirector, new { @type = "number", @class = "inputclass" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PostulacionEntidadMuseal.CedulaDelDirector)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PostulacionEntidadMuseal.CorreoElectronicoDelDirector)
+                </div>
+                <div class="box">
+                    @Html.LabelFor(model => model.PostulacionEntidadMuseal.RazonSocialEntidad)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PostulacionEntidadMuseal.CorreoElectronicoDelDirector)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PostulacionEntidadMuseal.CorreoElectronicoDelDirector)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PostulacionEntidadMuseal.RazonSocialEntidad)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PostulacionEntidadMuseal.AnoDeCreacionDeEntidad)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PostulacionEntidadMuseal.AnoDeCreacionDeEntidad, new { @type = "number", @class = "inputclass" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PostulacionEntidadMuseal.AnoDeCreacionDeEntidad)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PostulacionEntidadMuseal.ResenaHistoricaEntidad)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="box">
+                        @Html.TextAreaFor(model => model.PostulacionEntidadMuseal.ResenaHistoricaEntidad, new { @id = "txtDescriptionEP", @class = "textareaclass" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PostulacionEntidadMuseal.ResenaHistoricaEntidad)
+                    </div>
+                </div>
+            </div>
+
+            <br />
+
+            <br />
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.Label(@Constante.Captcha)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        <div class="g-recaptcha" data-sitekey="@ConfigurationManager.AppSettings["ReCaptchaPublicKey"]"></div>
+                    </div>
+                </div>
+            </div>
+            <br />
+
+        </fieldset>
+
+        //Fieldset : Tratamiento de la información
+        <fieldset>
+            <legend class="texto-negrita">Tratamiento de la información: </legend>
+            <div class="formulario-control">
+                <textarea readonly>
+El Programa Fortalecimiento de Museos (P.F.M.), como responsable y/o como encargado del tratamiento de datos personales y de entidades museales registradas en este módulo, solicitará al final del registro de datos personales, su autorización para que de manera libre, previa, expresa, voluntaria y debidamente informada, permita, recolectar, recaudar, almacenar, usar, circular, suprimir, procesar, compilar, intercambiar, dar tratamiento, actualizar, compartir, transmitir y/o transferir a terceros, y disponer de los datos que han sido suministrados, (Conforme a la ley 1581 de 2012, Régimen General de Protección de Datos Personales), y que se han incorporado o se incorporen en distintos archivos, bases o bancos de datos, o en repositorios electrónicos de todo tipo con que cuenta nuestro Programa.
+
+De conformidad con el numeral 4 del artículo 10 del decreto 1377 de 2013, si transcurridos treinta (30) días hábiles contados a partir del ingreso de información en SIMCO, si el Programa Fortalecimiento de Museos (P.F.M.) no recibe una solicitud de supresión de sus datos personales, podrá seguir haciendo uso de ellos sin perjuicio que el titular la información pueda ejercer posteriormente éste y los demás derechos contemplados por la Ley.
+
+Esta información es y será utilizada en el desarrollo de los procesos administrativos y de gestión que se consideren pertinentes en el sector museal. En el evento en que se considere que el P.F.M. dio un uso contrario al autorizado y a las leyes aplicables, podrá contactarnos a través del correo electrónico: simco@museonacional.gov.co
+                </textarea>
+            </div>
+
+            <div class="formulario-control">
+                <p>@Html.CheckBoxFor(model => model.PostulacionEntidadMuseal.InformacionPublica) @Html.LabelFor(model => model.PostulacionEntidadMuseal.InformacionPublica)</p>
+            </div>
+
+        </fieldset>
+
+        <div class="centrarBotones">
+            @Html.ActionLink(Constante.BotonCancelar, "Index", "Registro", new object(), new { @class = "boton" })
+            <input type="submit" value="@Html.Raw(Constante.BotonRegistrarse)" name="Registrarse" class="boton" />
+        </div>
+    }
+
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        CargarListaMunicipios();
+
+        $('#PostulacionEntidadMuseal_CodigoDepartamento').change(function () {
+            CargarListaMunicipios();
+        });
+
+        $('#PostulacionEntidadMuseal_CodigoMunicipio').change(function () {
+            AsignarDeptoMpio();
+        });
+
+        VerificandoEntidadAbiertaAlPublico();
+        ValidandoFinalidadServicios();
+        ValidandoTipoServicios();
+    });
+
+    function CargarListaMunicipios() {
+        var selectedItem = $('#PostulacionEntidadMuseal_CodigoDepartamento').val();
+        var destination = $('#PostulacionEntidadMuseal_CodigoMunicipio');
+
+        if (selectedItem != null && selectedItem != '') {
+            $.getJSON('@Url.Action("Municipios")', { zonaPadreId: selectedItem }, function (municipio) {
+
+                destination.empty();
+                destination.append('<option value="">Seleccione una ciudad o municipio...</option>');
+
+                $.each(municipio, function (index, item) {
+                    if (item.Id == '@Model.PostulacionEntidadMuseal.CodigoMunicipio') {
+                        destination.append('<option value="' + item.Id + '" selected="selected">' + item.Nombre + '</option>');
+                        AsignarDeptoMpio();
+                    } else {
+                        destination.append('<option value="' + item.Id + '">' + item.Nombre + '</option>');
+                    }
+                    destination.trigger("chosen:updated");
+                });
+
+            });
+        }
+        else {
+            destination.empty();
+            destination.trigger("chosen:updated");
+        }
+    }
+
+    function AsignarDeptoMpio() {
+        var selectedTextDepto = $("#PostulacionEntidadMuseal_CodigoDepartamento option:selected").text();
+        var selectedTextMpio = $("#PostulacionEntidadMuseal_CodigoMunicipio option:selected").text();
+
+        $('#PostulacionEntidadMuseal_Departamento').val(selectedTextDepto);
+        $('#PostulacionEntidadMuseal_Municipio').val(selectedTextMpio);
+    }
+
+    //Mostrando TextArea para ingrear la descripción de porque no es una entidad abierta al publico
+    function VerificandoEntidadAbiertaAlPublico() {
+        var esEntidadAbierta = $('input[name = "PostulacionEntidadMuseal.EntidadPublica"]:checked', '#frmEntidadMuseal').val();
+        if (esEntidadAbierta == 'True') {
+            esEntidadAbierta = true;
+        }
+        else {
+            esEntidadAbierta = false;
+        }
+        AbiertaAlPublico(esEntidadAbierta);
+    }
+
+    function AbiertaAlPublico(esAbierta) {
+
+        var dvDescripcion = document.getElementById("dvDescripcionEntidadPublica");
+        if (esAbierta == true) {
+            //Validando si no hay un comentario escrito anteriormente
+            var txtDescriptionEP = $("#txtDescriptionEP").val();
+            if (txtDescriptionEP.length == 0) {
+                //Agregando string para poder tener la validacion del comentario obligatorio solo cuando
+                $("#txtDescriptionEP").val(".");
+            }
+            dvDescripcion.style.display = "none";
+        }
+        else {
+
+            //Validando si el texto del comentario anterior fue el automatico del sistema.
+            if ($("#txtDescriptionEP").val() == ".") {
+                $("#txtDescriptionEP").val("");
+            }
+            dvDescripcion.style.display = "block";
+        }
+    }
+
+    //Validando Tipos y Finalidades de Servicios
+    function ValidandoFinalidadServicios() {
+        var divFinalidad = document.getElementById("dvFinalidadError");
+        var validate = '@Model.PostulacionEntidadMuseal.FinalidadServiciosError';
+        if (validate == "False") {
+            divFinalidad.style.display = "none";
+        }
+        else {
+            divFinalidad.style.display = "block";
+        }
+    }
+
+    function ValidandoTipoServicios() {
+        var divTipo = document.getElementById("dvTipoServicioError");
+        var validate = '@Model.PostulacionEntidadMuseal.EsInValidoTipoServicios';
+        if (validate == "False") {
+            divTipo.style.display = "none";
+        }
+        else {
+            divTipo.style.display = "block";
+        }
+    }
+
+</script>
+
+<style>
+    .textareaclass {
+        margin-left: 0px;
+        height: 100px;
+        width: 195%;
+    }
+
+    #dvTipoServicioError {
+        color: #F20909;
+    }
+
+    .inputclass {
+        width: 97%;
+        height: 25px;
+    }
+</style>

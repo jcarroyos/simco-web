@@ -1,0 +1,190 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model PreguntaModel
+
+@using (Html.BeginForm("Preguntas", "Administrador", FormMethod.Post, new { id = "FormPregunta" }))
+{
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.EncuestaId)
+
+        <p>Los campos marcados con asterisco (*) son obligatorios</p>
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.Enunciado)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextAreaFor(model => model.Enunciado, new { style = "width:580px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Enunciado)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.TipoDePregunta)
+                </div>
+            </div>
+            <div class="box">
+                <br />
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.DropDownListFor(model => model.TipoDePregunta, new SelectList(Model.TiposDePreguntas, "Valor", "Etiqueta", Model.TipoDePregunta), new { @class = "chosen", style = "width:250px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.TipoDePregunta)
+                </div>
+            </div>
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.CheckBoxFor(model => model.EsObligatoria)
+                    @Html.LabelFor(model => model.EsObligatoria)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Orden)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.Orden, new { style = "width:30px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Orden)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Leyenda)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.Leyenda, new { style = "width:550px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Leyenda)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Ayuda)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.Ayuda, new { style = "width:550px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Ayuda)
+                </div>
+            </div>
+        </div>
+        <br />
+
+    </fieldset>
+
+    <div class="formulario-botones">
+        @if (Model.Modificable)
+        {
+            if (Model.Edicion && Model.Id > 0)
+            {
+                @Html.ActionLink(Constante.BotonEliminarPregunta, "EliminarPregunta", "Administrador", new { encuestaId = Model.EncuestaId, preguntaId = Model.Id }, new { @class = "boton", id = "btnEliminarPregunta" })
+            }
+            <input type="submit" value="@Html.Raw(Constante.BotonGuardarCambios)" name="GuardarCambios" class="boton" />
+        }
+    </div>
+}
+
+<script type="text/javascript">
+    $(".chosen").chosen();
+
+    ValidarTipoRespuestaConValor();
+
+    $("#btnEliminarPregunta").click(function () {
+        return EliminarPregunta();
+    });
+
+    $("#TipoDePregunta").change(function () {
+        ValidarTipoRespuestaConValor();
+    });
+
+    function ValidarTipoRespuestaConValor() {
+        if ($('#TipoDePregunta').val() == "RespuestaConValor") {
+            $('#divobligatoria').hide();
+            $('input[id=EsObligatoria]').attr('checked', false);
+        } else {
+            $('#divobligatoria').show();
+        }
+    }
+
+    $('#PreguntaSeleccionadaId').change(function () {
+        var selectedItem = $('#PreguntaSeleccionadaId').val();
+
+        if (selectedItem != null && selectedItem != '') {
+            cargarPregunta(selectedItem);
+        } else {
+            $('#t').empty();
+        }
+    });
+
+    function EliminarPregunta() {
+        var varconfirm = confirm('¿Está seguro de que desea eliminar esta pregunta?');
+        var varpreguntaId = $('#PreguntaSeleccionadaId').val();
+        var varencuestaId = $('#EncuestaId').val();
+
+        if (varconfirm && varpreguntaId != null && varpreguntaId != '') {
+
+            $.ajax({
+                url: '@Url.Action("EliminarPregunta", "Administrador")',
+                type: 'POST',
+                dataType: 'html',
+                data: { encuestaId: varencuestaId, preguntaId: varpreguntaId },
+                success: function (data) {
+                    if (data) {
+                        $('#t').html(data);
+                        $.validator.unobtrusive.parse("#t");
+                    }
+                }
+            });
+
+        }
+    }
+
+</script>

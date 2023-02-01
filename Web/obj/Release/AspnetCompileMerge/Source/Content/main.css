@@ -1,0 +1,154 @@
+﻿body {
+    margin: 0 auto;
+    max-width: 1200px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #585959;
+    margin-bottom: 20px;
+    clear: both;
+    font-size: 14px;
+}
+
+header {
+    max-width: 920px;
+    background-color: #fff;
+    margin: auto;
+    margin-top: 0px;
+}
+
+fieldset {
+    border: none;
+}
+
+footer {
+    height: auto;
+    max-width: 920px;
+    color: black;
+    text-align: left;
+    margin-top: auto;
+}
+
+select {
+    width: 267px;
+    height: 30px;
+}
+
+p {
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: left;
+}
+
+h3 {
+    padding-left: 10px;
+    /*color: #3973ac;*/
+    clear: both;
+}
+
+label {
+    margin: 10px 0px 7px 0px;
+    color: #595959;
+}
+
+a.menu:link, a.menu:visited, a.menu:active {
+    font-size: 13px;
+    text-decoration: none;
+    color: #595959;
+    font-weight: 500;
+    cursor: pointer !important;
+}
+
+a.menu:hover {
+    color: #3F3F3F;
+}
+
+a:link {
+    cursor: pointer !important;
+}
+
+ul.menu {
+    border: 0px;
+    margin: 10px 0px 10px 10px;
+    padding: 0px;
+    list-style: none;
+    display: block;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+.nav {
+    padding-top: 10px;
+    height: auto;
+    margin: 0 auto;
+    overflow: hidden;
+    text-align: left;
+    width: 920px;
+}
+
+    .nav > li {
+        float: left;
+    }
+
+    .nav li a {
+        color: #595959;
+        text-decoration: none;
+        padding: 18px;
+        display: block;
+    }
+
+        .nav li a:hover {
+            background-color: rgba(0,0,0,0.2);
+        }
+
+    .nav li ul {
+        display: none;
+        position: absolute;
+        min-width: 157px;
+        font-size: 13px;
+    }
+
+    .nav li:hover > ul {
+        display: block;
+    }
+
+    .nav li ul li {
+        color: black;
+        position: relative;
+        margin-left: -40px;
+        background-color: #808285; /* rgba(0,0,0,0.5); */
+        display: block;
+    }
+
+        .nav li ul li a {
+            color: black;
+        }
+
+        .nav li ul li ul {
+            right: -1400px;
+            top: 0px;
+        }
+
+
+/************/
+
+section {
+    height: auto;
+    margin: 0 auto;
+    max-width: 920px;
+    background-color: #FFF;
+}
+
+select {
+    height: 25px;
+    border: 1px solid #C7C8CA;
+    color: #595959;
+}
+
+a {
+    color: #585959;
+    /*font-weight: bold;*/
+    text-decoration: none;
+    cursor: auto;
+    font-size: 13px;
+}

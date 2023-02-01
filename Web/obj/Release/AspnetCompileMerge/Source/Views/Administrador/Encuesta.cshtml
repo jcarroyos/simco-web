@@ -1,0 +1,186 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model EncuestaRegistroModel
+
+@{
+    ViewBag.Title = "Encuesta";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+@if (Model.Edicion)
+{
+    <h2>Actualización de una encuesta</h2>
+}
+else
+{
+    <h2>Registro de una nueva encuesta</h2>
+}
+
+@using (Html.BeginForm("Encuesta", "Administrador", FormMethod.Post, new { id = "FormEncuesta" }))
+{
+
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Encuesta.Id)
+    @Html.HiddenFor(model => model.Encuesta.CreadorUsuarioId)
+    @Html.HiddenFor(model => model.Encuesta.RegistroClasificacionOrden)
+
+    <fieldset>
+
+        <p>Los campos marcados con asterisco (*) son obligatorios</p>
+
+        <legend>Información de una encuesta</legend>
+
+        <div class="box-row">
+            <div class="box">
+                <em>*</em> @Html.LabelFor(model => model.Encuesta.Nombre)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.Encuesta.Nombre, new { style = "width:550px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Encuesta.Nombre)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Encuesta.Descripcion)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextAreaFor(model => model.Encuesta.Descripcion, new { style = "width:550px; height: 200px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Encuesta.Descripcion)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.Encuesta.FechaInicio)
+                </div>
+            </div>
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Encuesta.FechaFinalizacion)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                @Html.EditorFor(model => model.Encuesta.FechaInicio)
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Encuesta.FechaInicio)
+                </div>
+            </div>
+            <div class="box">
+                @Html.EditorFor(model => model.Encuesta.FechaFinalizacion)
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Encuesta.FechaFinalizacion)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Encuesta.PerfilesSeleccionados)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.ListBoxFor(model => model.Encuesta.PerfilesSeleccionados, new MultiSelectList(Model.Perfiles, "Valor", "Etiqueta", Model.Encuesta.PerfilesSeleccionados), new { @class = "chosen", data_placeholder = "Seleccione un perfil de usuario...", style = "width:564px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Encuesta.PerfilesSeleccionados)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Encuesta.GruposSeleccionadosSeleccionados)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.ListBoxFor(model => model.Encuesta.GruposSeleccionadosSeleccionados, new MultiSelectList(Model.GruposDeUsuarios, "Id", "Nombre", Model.Encuesta.GruposSeleccionadosSeleccionados), new { @class = "chosen", data_placeholder = "Seleccione un grupo de usuarios...", style = "width:564px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Encuesta.GruposSeleccionadosSeleccionados)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Encuesta.Estado)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.DropDownListFor(model => model.Encuesta.Estado, new SelectList(Model.Estados, "Valor", "Etiqueta", Model.Encuesta.Estado), new { @class = "chosen", style = "width:264px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Encuesta.Estado)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Encuesta.EsRegistroClasificacion)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.CheckBoxFor(model => model.Encuesta.EsRegistroClasificacion)
+                </div>
+            </div>
+        </div>
+        <br />
+
+    </fieldset>
+
+
+    if (Model.EsEliminable)
+    {
+        <div class="formulario-botones">
+            @Html.ActionLink(Constante.BotonEliminarEncuesta, "EliminarEncuesta", "Administrador", new { encuestaId = Model.Encuesta.Id }, new { @class = "boton", id = "btnEliminarEncuesta" })
+        </div>
+    }
+
+    <div class="formulario-botones">
+        @Html.ActionLink(Constante.BotonRegresar, "Encuestas", "Administrador", new object(), new { @class = "boton" })
+        <input type="submit" value="@Html.Raw(Constante.BotonSiguiente)" name="GuardarCambios" class="boton" />
+    </div>
+}
+

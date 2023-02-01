@@ -1,0 +1,104 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.DomainModelLayer.Entidades
+@using Simco.CrossInfraestructureLayer
+
+@model InicioSesionModel
+@{
+    ViewBag.Title = "Inicio";
+}
+
+@section home {
+    <code>prueba commint desde local visualstudio 20191226</code>
+    <h3>DESCUBRE LOS MUSEOS DE COLOMBIA</h3>
+    <p>Nuestro país posee una gran diversidad de patrimonio material, inmaterial y natural. Conozca a través de esta herramienta el sector museal colombiano registrado ante el Programa Fortalecimiento de Museos del Ministerio de Cultura, para obtener  más información sobre estas instituciones.</p>
+
+    @using (Html.BeginForm("Buscar", "Home", FormMethod.Post, new { id = "FormEncuesta" }))
+    {
+        <div class="buscador">
+
+            <div class="formulario-control-busqueda">
+                @Html.DropDownListFor(model => model.Directorio.CodigoDepartamento, new SelectList(Model.Directorio.Departamentos, "Id", "Nombre", Model.Directorio.CodigoDepartamento), "Seleccione un departamento...", new { data_placeholder = "Seleccione un departamento...", @class = "chosen" })
+
+                @Html.DropDownListFor(model => model.Directorio.CodigoMunicipio, Enumerable.Empty<SelectListItem>(), "Seleccione una ciudad ...", new { data_placeholder = "Seleccione una ciudad ...", @class = "chosen" })
+
+                @Html.TextBoxFor(model => model.Directorio.PalabrasClaves, new { placeholder = "Palabras claves" })
+
+                <input type="submit" value="@Html.Raw(Constante.BotonBuscar)" name="Buscar" class="boton" style="width: 80px" />
+            
+            </div>
+
+        </div>
+
+            @(Html.Kendo().ListView<DirectorioMuseo>(Model.Directorio.Resultados)
+            .Name("listView")
+            .TagName("div")
+            .ClientTemplateId("template")
+            .DataSource(dataSource => dataSource
+                .PageSize(3)
+                .ServerOperation(false))
+            )
+    }
+
+    <script type="text/x-kendo-tmpl" id="template">
+        <div class="museo">
+            <img src="#:RutaFachada#" alt="#:Nombre#" />
+            <h3>#:Nombre#</h3>
+            <p>#:ResenaHistorica# ... </p>
+            <p><a href="@Url.Content("~/Home/Museo?personaJuridicaId=")#:PersonaJuridicaId#">Ver museo</a></p>
+        </div>
+    </script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            CargarListaMunicipios();
+
+            $('#Directorio_CodigoDepartamento').change(function () {
+                CargarListaMunicipios();
+            });
+
+            $('#Directorio_CodigoMunicipio').change(function () {
+                AsignarDeptoMpio();
+            });
+        });
+
+        function CargarListaMunicipios() {
+
+            var selectedItem = $('#Directorio_CodigoDepartamento').val();
+            var destination = $('#Directorio_CodigoMunicipio');
+
+            if (selectedItem != null && selectedItem != '') {
+                $.getJSON('@Url.Action("Municipios")', { zonaPadreId: selectedItem }, function (municipio) {
+
+                    destination.empty();
+                    destination.append('<option value="">Seleccione una ciudad ...</option>');
+
+                    $.each(municipio, function (index, item) {
+                        if (item.Id == '@Model.Directorio.CodigoMunicipio') {
+                            destination.append('<option value="' + item.Id + '" selected="selected">' + item.Nombre + '</option>');
+                            AsignarDeptoMpio();
+                        } else {
+                            destination.append('<option value="' + item.Id + '">' + item.Nombre + '</option>');
+                        }
+                        destination.trigger("chosen:updated");
+                    });
+                });
+            }
+            else {
+                destination.empty();
+                destination.trigger("chosen:updated");
+            }
+        }
+
+        function AsignarDeptoMpio() {
+
+            var selectedTextDepto = $("#Directorio_CodigoDepartamento option:selected").text();
+            var selectedTextMpio = $("#Directorio_CodigoMunicipio option:selected").text();
+
+            $('#Directorio_Departamento').val(selectedTextDepto);
+            $('#Directorio_Municipio').val(selectedTextMpio);
+        }
+
+    </script>
+
+}

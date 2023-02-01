@@ -1,0 +1,449 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+
+@model IEnumerable<ColeccionObjetoListaModel>
+
+@if (Model.Any())
+{
+    int contador = 1;
+
+    <div class="listar1">
+        @foreach (var item in Model)
+        {
+            if (contador % 6 == 1)
+            {
+        <div class="coleccioni1">
+            <br>
+            <img src="@Url.Content(@item.UrlThumbnail)" />
+            <br>
+        </div>
+
+        <div class="coleccionr1">
+            <h3>@item.Titulo</h3>
+            <h3><b>@item.Autor</b></h3>
+            <h3>@item.Ubicacion</h3>
+            <h3> @Html.Raw(@item.Url)</h3>
+            <h3>@Html.ActionLink("Ver detalle", "DetalleObjetoColeccion", "Colecciones", new { id = @item.Id }, new { target = "_blank" })</h3>
+            <br />
+        </div>
+            }
+
+            if (contador % 6 == 2)
+            {
+        <div class="coleccioni2">
+            <br>
+            <img src="@Url.Content(@item.UrlThumbnail)" />
+            <br>
+        </div>
+
+        <div class="coleccionr2">
+            <h3>@item.Titulo</h3>
+            <h3><b>@item.Autor</b></h3>
+            <h3>@item.Ubicacion</h3>
+            <h3> @Html.Raw(@item.Url)</h3>
+            <h3>@Html.ActionLink("Ver detalle", "DetalleObjetoColeccion", "Colecciones", new { id = @item.Id }, new { target = "_blank" })</h3>
+            <br />
+        </div>
+            }
+
+            if (contador % 6 == 3)
+            {
+        <div class="coleccioni3">
+            <br>
+            <img src="@Url.Content(@item.UrlThumbnail)" />
+            <br>
+        </div>
+
+        <div class="coleccionr3">
+            <h3>@item.Titulo</h3>
+            <h3><b>@item.Autor</b></h3>
+            <h3>@item.Ubicacion</h3>
+            <h3> @Html.Raw(@item.Url)</h3>
+            <h3>@Html.ActionLink("Ver detalle", "DetalleObjetoColeccion", "Colecciones", new { id = @item.Id }, new { target = "_blank" })</h3>
+            <br />
+        </div>
+            }
+
+            contador++;
+
+            if (contador % 6 == 4)
+            {
+                break;
+            }
+
+        }
+    </div>
+
+    contador = 1;
+
+    <div class="listar2">
+        @foreach (var item in Model)
+        {
+            if (contador % 6 == 4)
+            {
+        <div class="coleccioni4">
+            <br>
+            <img src="@Url.Content(@item.UrlThumbnail)" />
+            <br>
+        </div>
+
+        <div class="coleccionr4">
+            <h3>@item.Titulo</h3>
+            <h3><b>@item.Autor</b></h3>
+            <h3>@item.Ubicacion</h3>
+            <h3> @Html.Raw(@item.Url)</h3>
+            <h3>@Html.ActionLink("Ver detalle", "DetalleObjetoColeccion", "Colecciones", new { id = @item.Id }, new { target = "_blank" })</h3>
+            <br />
+        </div>
+            }
+
+            if (contador % 6 == 5)
+            {
+        <div class="coleccioni5">
+            <br>
+            <img src="@Url.Content(@item.UrlThumbnail)" />
+            <br>
+        </div>
+
+        <div class="coleccionr5">
+            <h3>@item.Titulo</h3>
+            <h3><b>@item.Autor</b></h3>
+            <h3>@item.Ubicacion</h3>
+            <h3> @Html.Raw(@item.Url)</h3>
+            <h3>@Html.ActionLink("Ver detalle", "DetalleObjetoColeccion", "Colecciones", new { id = @item.Id }, new { target = "_blank" })</h3>
+            <br />
+        </div>
+            }
+
+            if (contador % 6 == 0)
+            {
+        <div class="coleccioni6">
+            <br>
+            <img src="@Url.Content(@item.UrlThumbnail)" />
+            <br>
+        </div>
+
+        <div class="coleccionr6">
+            <h3>@item.Titulo</h3>
+            <h3><b>@item.Autor</b></h3>
+            <h3>@item.Ubicacion</h3>
+            <h3> @Html.Raw(@item.Url)</h3>
+            <h3>@Html.ActionLink("Ver detalle", "DetalleObjetoColeccion", "Colecciones", new { id = @item.Id }, new { target = "_blank" })</h3>
+            <br />
+        </div>
+            }
+
+            contador++;
+        }
+    </div>
+
+}
+
+<style scoped>
+    /*AMPLITUD DE CONTENEDOR*/
+    .listar1 {
+        width: 850px;
+        height: 600px;
+    }
+
+    .listar2 {
+        width: 850px;
+        height: 700px;
+    }
+
+    /*IMAGEN*/
+    .coleccioni1 {
+        display: inline-block;
+        float: left;
+        position: relative;
+        width: 266px;
+        height: auto;
+        margin: auto;
+        margin-bottom: auto;
+    }
+
+        .coleccioni1 img {
+            display: block;
+            width: auto;
+            height: auto;
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 225px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+    .coleccioni2 {
+        display: inline-block;
+        float: left;
+        position: absolute;
+        width: 266px;
+        height: auto;
+        margin: auto;
+        margin-bottom: auto;
+    }
+
+        .coleccioni2 img {
+            display: block;
+            width: auto;
+            height: auto;
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 225px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+    .coleccioni3 {
+        display: inline-block;
+        float: left;
+        position: absolute;
+        width: 266px;
+        height: auto;
+        margin: auto;
+        margin-bottom: auto;
+        margin-left: 268px;
+    }
+
+        .coleccioni3 img {
+            display: block;
+            width: auto;
+            height: auto;
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 225px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+    .coleccioni4 {
+        display: inline-block;
+        float: left;
+        position: relative;
+        width: 266px;
+        height: auto;
+        margin: auto;
+        margin-top: 0px;
+        margin-left: 0px;
+    }
+
+        .coleccioni4 img {
+            display: block;
+            width: auto;
+            height: auto;
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 70px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+    .coleccioni5 {
+        display: inline-block;
+        float: left;
+        position: absolute;
+        width: 266px;
+        height: auto;
+        margin: auto;
+        margin-top: 0px;
+        margin-left: 0px;
+    }
+
+        .coleccioni5 img {
+            display: block;
+            width: auto;
+            height: auto;
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 70px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+    .coleccioni6 {
+        display: inline-block;
+        float: left;
+        position: absolute;
+        width: 266px;
+        height: auto;
+        margin: auto;
+        margin-bottom: auto;
+        margin-left: 268px;
+        margin-top: 0px;
+    }
+
+        .coleccioni6 img {
+            display: block;
+            width: auto;
+            height: auto;
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 70px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+
+
+    /*TEXTO*/
+    .coleccionr1 {
+        float: left;
+        position: relative;
+        width: auto;
+        height: auto;
+        margin-bottom: auto;
+        clear: both;
+        display: inline-block;
+        margin-top: -68px;
+        margin-left: 21px;
+    }
+
+        .coleccionr1 h3 {
+            display: block;
+            position: relative;
+            margin: 0px;
+            padding: 0px;
+            max-width: 265px;
+            overflow: hidden;
+            line-height: 1.1em;
+            font-size: .9em;
+            font-weight: normal;
+            color: #999;
+            text-align: center;
+        }
+
+    .coleccionr2 {
+        float: left;
+        position: relative;
+        width: auto;
+        height: auto;
+        margin-bottom: auto;
+        clear: both;
+        display: inline-block;
+        margin-top: -68px;
+        margin-left: 267px;
+    }
+
+        .coleccionr2 h3 {
+            display: block;
+            position: relative;
+            margin: 0px;
+            padding: 0px;
+            max-width: 265px;
+            overflow: hidden;
+            line-height: 1.1em;
+            font-size: .9em;
+            font-weight: normal;
+            color: #999;
+            text-align: center;
+        }
+
+    .coleccionr3 {
+        float: left;
+        position: relative;
+        width: auto;
+        height: auto;
+        margin-bottom: auto;
+        clear: both;
+        display: inline-block;
+        margin-top: -82px;
+        margin-left: 565px;
+    }
+
+        .coleccionr3 h3 {
+            display: block;
+            position: relative;
+            margin: 0px;
+            padding: 0px;
+            max-width: 265px;
+            overflow: hidden;
+            line-height: 1.1em;
+            font-size: .9em;
+            font-weight: normal;
+            color: #999;
+            text-align: center;
+        }
+
+    .coleccionr4 {
+        float: left;
+        position: relative;
+        width: auto;
+        height: auto;
+        margin-bottom: auto;
+        clear: both;
+        display: inline-block;
+        margin-top: 150px;
+        margin-left: 0px;
+    }
+
+        .coleccionr4 h3 {
+            display: block;
+            position: relative;
+            margin: 0px;
+            padding: 0px;
+            max-width: 265px;
+            overflow: hidden;
+            line-height: 1.1em;
+            font-size: .9em;
+            font-weight: normal;
+            color: #999;
+            text-align: center;
+        }
+
+    .coleccionr5 {
+        float: left;
+        position: relative;
+        width: auto;
+        height: auto;
+        margin-bottom: auto;
+        clear: both;
+        display: inline-block;
+        margin-top: -68px;
+        margin-left: 278px;
+    }
+
+        .coleccionr5 h3 {
+            display: block;
+            position: relative;
+            margin: 0px;
+            padding: 0px;
+            max-width: 265px;
+            overflow: hidden;
+            line-height: 1.1em;
+            font-size: .9em;
+            font-weight: normal;
+            color: #999;
+            text-align: center;
+        }
+
+    .coleccionr6 {
+        float: left;
+        position: relative;
+        width: auto;
+        height: auto;
+        margin-bottom: auto;
+        clear: both;
+        display: inline-block;
+        margin-top: -80px;
+        margin-left: 558px;
+    }
+
+        .coleccionr6 h3 {
+            display: block;
+            position: relative;
+            margin: 0px;
+            padding: 0px;
+            max-width: 265px;
+            overflow: hidden;
+            line-height: 1.1em;
+            font-size: .9em;
+            font-weight: normal;
+            color: #999;
+            text-align: center;
+        }
+
+
+
+    .coleccionr div:nth-child(3n+0) {
+        background-color: blue;
+    }
+</style>

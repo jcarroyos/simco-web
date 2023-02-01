@@ -1,0 +1,260 @@
+﻿@using Simco.Infrastructure.Notification
+@using Simco.DomainModelLayer.ViewModels
+
+@model InicioSesionModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title - Sistema de Informaci&oacute;n de Museos Colombianos</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    @* Kendo *@
+    <link href="@Url.Content("~/Content/kendo/2015.2.902/kendo.common-bootstrap.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2015.2.902/kendo.mobile.all.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2015.2.902/kendo.dataviz.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2015.2.902/kendo.bootstrap.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2015.2.902/kendo.dataviz.bootstrap.min.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/kendo/2015.2.902/jquery.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2015.2.902/jszip.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2015.2.902/kendo.all.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2015.2.902/kendo.aspnetmvc.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2015.2.902/cultures/kendo.culture.es-CO.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo.modernizr.custom.js")"></script>
+
+    @* Bootstrap *@
+    <link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+    <script src="@Url.Content("~/Scripts/bootstrap.min.js")"></script>
+
+    @* chosen *@
+    <link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/chosen.jquery.min.js")"></script>
+
+    @* jHtmlArea *@
+    <link href="@Url.Content("~/Content/jHtmlArea/jHtmlArea.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/jHtmlArea-0.8.min.js")"></script>
+
+    @* Simco *@
+    <link href="@Url.Content("~/Content/main.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/simco.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/Simco.js")"></script>
+
+    @* Nuevo frontend *@
+    <link href="@Url.Content("~/Content/owl.carousel.min.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/simco_2020.less")" rel="stylesheet/less" type="text/css" />
+    <link href="@Url.Content("~/Scripts/owl.theme.default.css")" rel="stylesheet" />
+
+    <script src="@Url.Content("~/Scripts/owl.carousel.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/less.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/owl.carousel.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/frontend.js")" type="text/javascript"></script>
+
+
+    @* noty *@
+    <script src="@Url.Content("~/Scripts/noty/jquery.noty.js")"></script>
+    <script src="@Url.Content("~/Scripts/noty/packaged/jquery.noty.packaged.js")"></script>
+    <script src="@Url.Content("~/Scripts/noty/layouts/top.js")"></script>
+    <script src="@Url.Content("~/Scripts/noty/themes/relax.js")"></script>
+
+    @* highcharts *@
+    <script src="@Url.Content("~/Scripts/highcharts/highcharts.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/highcharts/highcharts-3d.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/highcharts/modules/exporting.js")" type="text/javascript"></script>
+
+    @* shorten *@
+    <script src="@Url.Content("~/Scripts/jquery.shorten.1.0.js")" type="text/javascript"></script>
+
+
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-35787551-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $(".chosen").chosen();
+        });
+    </script>
+
+    @RenderSection("scripts", required: false)
+
+</head>
+
+<body>
+    <header class="he_header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-sm-3 col-md-3 he_logo">
+                    <a href="https://www.gov.co">
+                        <img src="~/Images/logo_header.png" alt="logo">
+                    </a>
+                </div>
+                <div class="col-lg-9 col-sm-9 col-md-9 he_menu">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-5">
+                            <p class="screen-lg">
+                                El Estado no tiene porqué ser aburrido ¡conoce a gov.co!
+                            </p>
+                            <p class="screen-md">
+                                ¿Sabes que es GOV.CO?
+                            </p>
+                            <p class="screen-sm">
+                                ¿Sabes que es GOV.CO? Conócelo aquí
+                            </p>
+                        </div>
+                        <div class="col-lg-6 col-md-7">
+                            <ul class="nav">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="https://www.gov.co/tramites-y-servicios" target="_blank">
+                                        Trámites y servicios
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="https://www.gov.co/participacion" target="_blank">
+                                        Participación
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="https://www.gov.co/informacion" target="_blank">
+                                        Entidades
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div class="topmenu container">
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="logo">
+                    <a href="@Url.Action("Index", "Home")"><img src="@Url.Content("~/Images/logo_simco.svg")"></a>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <nav>
+                    <ul class="nav">
+                        <li>@Html.ActionLink("INICIO", "Index", "Home")</li>
+                        <li>@Html.ActionLink("SIMCO", "Simco", "Home")</li>
+                        <li>@Html.ActionLink("REGISTRO", "Index", "Registro")</li>
+
+                        <li>
+                            @Html.ActionLink("ASESORÍAS", "Index", "Solicitudes")
+                            <ul>
+                                <li>@Html.ActionLink("INGRESAR SOLICITUD", "Index", "Solicitudes")</li>
+                                <li>@Html.ActionLink("CONSULTAR SOLICITUD", "Solicitudes", "Solicitudes")</li>
+                            </ul>
+                        </li>
+
+                        @if (ViewBag.CargarPublicacionIndicador != null)
+                        {
+                            if (bool.Parse(ViewBag.CargarPublicacionIndicador.ToString()))
+                            {
+                                <li>@Html.ActionLink("INDICADORES", "Index", "PublicacionIndicadores")</li>
+                            }
+                        }
+                        @if (ViewBag.ActivarColeccionesColombianas != null)
+                        {
+                            if (bool.Parse(ViewBag.ActivarColeccionesColombianas.ToString()))
+                            {
+                                <li>@Html.ActionLink("COLECCIONES", "Index", "Colecciones", new { href = "javascript:AbrirColecciones();" })</li>
+                            }
+                        }
+
+                        <li>
+                            @Html.ActionLink("DIRECTORIOS", "Index", "Home")
+                            <ul>
+                                <li>@Html.ActionLink("AGENTES DEL SECTOR", "PersonaNatural", "Home")</li>
+                                <li>@Html.ActionLink("INSTITUCIONES ALIADAS", "EntidadesAliadas", "Home")</li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <hr />
+    </div>
+
+        
+            <div class="sectionHome">
+                @RenderSection("home", required: false)
+            </div>
+
+            <section id="renderBody">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-10">
+                            @RenderBody()
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="container logos mt-40">
+                <div class="row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-3">
+                        <img src="~/Images/logo-mincultura.png" />
+                    </div>
+                    <div class="col-md-3">
+                        <img src="~/Images/logo-museonacional.png" />
+                    </div>
+                    <div class="col-md-3">
+                        <img src="~/Images/logo-pfm.png" />
+                    </div>
+                </div>
+            </div>
+            <footer class="he_footer container">
+                    <div class="row">
+                        <div class="col-xl-2 col-lg-3 screen-lg">
+
+                        </div>
+                        <div class="col-xl-6 col-lg-5 split">
+
+                        </div>
+                        <div class="col-lg-4 no-split">
+                            <h4>PROGRAMA FORTALECIMIENTO DE MUSEOS</h4>
+                            <p>MUSEO NACIONAL DE COLOMBIA</p>
+                            MINISTERIO DE CULTURA<br/>
+                            CARRERA 7 No. 28 - 66<br />
+                            Teléfono: (57 + 1) 3816470 Ext. 2217 - 2214<br />
+                            Email: simco@museonacional.gov.co<br />
+                            BOGOTÁ D.C. - COLOMBIA<br />
+                            <div id="copyrightContainer" style="padding-top: 9px;">Copyright © 2020</div>
+                        </div>
+                    </div>
+            </footer>
+
+           
+
+        <div>
+            @Html.RenderMessages()
+        </div>
+
+
+</body>
+</html>
+
+<script>
+    function AbrirColecciones() {
+        window.open('@Url.Content("~/Colecciones/Index")', target = '_blank');
+    }
+</script>
+
+
+<script src='https://www.google.com/recaptcha/api.js' type="text/javascript"></script> 

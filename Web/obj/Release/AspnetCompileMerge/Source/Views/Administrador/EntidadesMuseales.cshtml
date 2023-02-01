@@ -1,0 +1,103 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model IEnumerable<PersonaItemModel>
+@{
+    ViewBag.Title = "EntidadesMuseales";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Entidades museales</h2>
+
+<div class="formulario-busqueda-entidad">
+
+    @using (Html.BeginForm("EntidadesMuseales", "Administrador", FormMethod.Get, new { id = "FormFiltroEntidadesMuseales" }))
+    {
+        <fieldset>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        Entidad a buscar:
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBox("PalabrasClaves", (string)ViewBag.PalabrasClaves, new { style = "width:360px;" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        Estados
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                        @Html.ListBox("Estados", ViewBag.Estados as MultiSelectList, new { @class = "chosen", data_placeholder = "Seleccione un estado...", style = "width:365px;" })
+                </div>
+            </div>
+
+        </fieldset>
+
+        <div class="formulario-botones">
+            <input type="submit" value="@Html.Raw(Constante.BotonBuscar)" name="Buscar" class="boton" />
+            @Html.ActionLink("Mostrar todos", "EntidadesMuseales", "Administrador", new object(), new { @class = "boton" })
+        </div>
+    }
+</div>
+
+<div class="grilladatos-tabla-entidades">
+    @(Html.Kendo().Grid(Model)
+        .Name("GridEntidades")
+        .Columns(columns =>
+                    {
+                        columns.Bound(o => o.Nombre).Template(
+                            @<text>
+                                <strong>@Html.ActionLink(@item.Nombre, "EntidadMuseal", "Administrador", new { personaJuridicaId = @item.PersonaId }, null)</strong> - @item.CorreoElectronico
+                                <br />
+                                @if (!string.IsNullOrEmpty(item.TelefonoCelular))
+                                {
+                                    @item.TelefonoCelular
+                                    <text> - </text>
+                                }
+                                @if (!string.IsNullOrEmpty(item.TelefonoFijo))
+                                {
+                                    @item.TelefonoFijo
+                                }
+                                @Html.Raw(string.Format(" - {0} ({1})", item.Municipio, item.Departamento))
+                            </text>
+                            ).Title("Entidad museal");
+                        columns.Bound(o => o.Estado).Width(135);
+                    })
+
+        .Sortable()
+        .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} entidades")
+                                .Empty("No se encontraron entidades")
+                                .First("Ir a la primera página")
+                                .Last("Ir a la última página")
+                                .Next("Ir a la página siguiente")
+                                .Previous("Ir a la página anterior")))
+    )
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        if ($('#PalabrasClaves').val() != '' || $('#Estados').val() != null) {
+            $('#divfiltros').show();
+        } else {
+            $('#divfiltros').hide();
+        }
+
+        $("#filtro").click(function () {
+            $('#divfiltros').slideToggle();
+        });
+    });
+
+</script>

@@ -1,0 +1,127 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model EntidadMusealRegistroModel
+@{
+    ViewBag.Title = "EntidadMuseal";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Registro de una entidad Museal</h2>
+<p>En este módulo las entidades museales del país se podrán registrar o actualizar la información de registro y clasificación, el procedimiento tendrá los siguientes pasos:</p>
+<p>Paso 1: Diligenciar o actualizar los datos de contacto de su entidad museal.</p>
+<p>Paso 2: Diligenciar o actualizar la encuesta de registro y clasificación para entidades museales.</p>
+<p><b>Nota:</b> Las entidades museales registradas podrán visualizar la información ingresada el año anterior, por tal razón le solicitamos verificar y actualizar los datos consignados, y responder las preguntas nuevas del cuestionario.</p>
+<p>
+    Paso 3: Para el caso de entidades que están iniciando el registro deben adjuntar en SIMCO o al correo <a href="mailto:simco@museonacional.gov.co">simco@museonacional.gov.co;</a> los siguientes documentos:
+    -  5 fotografías en calidad media, referenciadas así:(1 de fachada, 1 de espacio interior y 3 de obras destacadas)
+    -  Certificado de cámara de comercio y/o acta de creación;
+    -  Carta suscrita por el director o representante legal, que certifique la veracidad de la información consignada en la encuesta de registro.
+</p>
+<p>Una vez constatada la información ingresada en la encuesta de registro y clasificación, las entidades museales que inician el registro recibirán un certificado como entidad museal ante el Programa Fortalecimiento de Museos y gozar de los beneficios que otorga el registro. Las entidades que actualizan la información seguirán contando con las ventajas de hacer parte del Programa.</p>
+
+<p>
+    Los campos marcados con asterisco (*) son obligatorios
+</p>
+
+@using (Html.BeginForm("EntidadMuseal", "Administrador", FormMethod.Post, new { id = "FormEntidadMuseal", enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.Partial("_EntidadMuseal", Model)
+
+    <div class="formulario-botones">
+        @Html.ActionLink(Constante.BotonRegresar, "EntidadesMuseales", "Administrador", null, new { @class = "boton" })
+        <input type="submit" value="@Html.Raw(Constante.BotonGuardarCambios)" name="btnGuardarCambios" id="btnGuardarCambios" class="boton" />
+    </div>
+}
+
+
+<script type="text/javascript">
+    $('#divdependenciadependencias').hide();
+
+    validarEstado();
+    validarTipoConstitucion();
+    validarDependencia();
+    validarHorario();
+
+    $('#EntidadMuseal_Estado').change(function () {
+        validarEstado();
+    });
+
+    $('#EntidadMuseal_TipoConstitucion').change(function () {
+        validarTipoConstitucion();
+    });
+
+    $('#EntidadMuseal_Dependencia').change(function () {
+        validarDependencia();
+    });
+
+    $('#EntidadMuseal_Horario').change(function () {
+        validarHorario();
+    });
+
+    function validarEstado() {
+        if ($('#EntidadMuseal_Estado').val() == "CerradaTemporalmente" || $('#EntidadMuseal_Estado').val() == "CerradaTotalmente") {
+            $('#divestadorazon').show();
+        } else {
+            $('#divestadorazon').hide();
+        }
+        if ($('#EntidadMuseal_Estado').val() == "CerradaTemporalmente") {
+            $('#divestadofecha').show();
+        } else {
+            $('#divestadofecha').hide();
+        }
+    }
+
+    function validarTipoConstitucion() {
+        if ($('#EntidadMuseal_TipoConstitucion').val() == "Publica" || $('#EntidadMuseal_TipoConstitucion').val() == "Mixta") {
+            $('#divtipoconstitucioncaracter').show();
+        } else {
+            $('#divtipoconstitucioncaracter').hide();
+        }
+    }
+
+    function validarDependencia() {
+        if ($('#EntidadMuseal_Dependencia').val() == "DependeDePersonaJuridica") {
+            $('#divdependenciadependencias').show();
+        } else {
+            $('#divdependenciadependencias').hide();
+        }
+    }
+
+    function validarHorario() {
+        if ($('#EntidadMuseal_Horario').val() == "No") {
+            $('#divhorariorazon').show();
+        } else {
+            $('#divhorariorazon').hide();
+        }
+
+        if ($('#EntidadMuseal_Horario').val() == "Si") {
+            $('#divhorariodias').show();
+        } else {
+            $('#divhorariodias').hide();
+        }
+    }
+
+    function validarTextoBoton() {
+        if ($('#EntidadMuseal_Estado').val() == "CerradaTotalmente" || $('#EntidadMuseal_Dependencia').val() == "Ninguna" || $('#EntidadMuseal_Horario').val() == "No") {
+            $('#btnGuardarCambios').attr('value', 'Finalizar');
+        } else {
+            $('#btnGuardarCambios').attr('value', 'Siguiente');
+        }
+    }
+
+    $(function () {
+        $(".data_datepicker").datepicker({
+            showOn: "button",
+            buttonText: "Abrir calendario",
+            buttonImage: "@Url.Content("~/Content/images/calendar.gif")",
+            buttonImageOnly: true,
+            changeMonth: true,
+            changeYear: true,
+            yearRange: 'c-20:c+0'
+        },
+        $.datepicker.regional['es']);
+    });
+
+</script>

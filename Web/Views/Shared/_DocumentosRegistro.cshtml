@@ -1,0 +1,193 @@
+﻿@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model EntidadMusealModel
+
+<fieldset>
+    @Html.Hidden("EntidadMusealId", Model.Id)
+
+    @*@Html.HiddenFor(x => x.Id)*@
+
+    <p>Para finalizar con el registro y clasificación de su entidad museal ante el Programa Fortalecimiento de Museos del Ministerio de Cultura, le solicitamos enviar cargar o adjuntar los siguientes documentos:</p>
+    <br />
+    <p><b>Cargar fotografías (Imágenes en formatos: @ViewBag.ExtensionesImagen )</b></p>
+    <br />
+    <div class="box-row">
+        <div class="box">
+            <em>*</em> @Html.LabelFor(model => model.DocumentoFotoFachada)
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                <input type="file" accept = "image/*" id="EntidadMuseal_DocumentoFotoFachada" name="EntidadMuseal.DocumentoFotoFachada" style="width: 414px;" />
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.DocumentoFotoFachada)
+            </div>
+        </div>
+    </div>
+    <div class="formulario-clear">
+    </div>
+    @if (Model.DocumentoFotoFachadaId > 0)
+    {
+        <div>
+            @Html.ActionLink("Descargar Documento", "Index", "Documentos", new { id = Criptografia.EncriptarUrl(Model.DocumentoFotoFachadaId.ToString()) }, new { @class = "boton-descargar-documento" })
+        </div>
+    }
+    <br />
+
+    <div class="box-row">
+        <div class="box">
+            <em>*</em> @Html.LabelFor(model => model.DocumentoFotoInteraccion)
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+               <input type="file" accept="image/*" id="EntidadMuseal_DocumentoFotoInteraccion" name="EntidadMuseal.DocumentoFotoInteraccion" style="width: 414px;" />
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.DocumentoFotoInteraccion)
+            </div>
+        </div>
+    </div>
+    <div class="formulario-clear">
+    </div>
+    @if (Model.DocumentoFotoInteraccionId > 0)
+    {
+        <div>
+            @Html.ActionLink("Descargar Documento", "Index", "Documentos", new { id = Criptografia.EncriptarUrl(Model.DocumentoFotoInteraccionId.ToString()) }, new { @class = "boton-descargar-documento" })
+        </div>
+    }
+    <br />
+
+    <div class="box-row">
+        <div class="box">
+            <em>*</em> @Html.LabelFor(model => model.DocumentoFotoColeccion1)
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                <input type="file" accept = "image/*" id="EntidadMuseal_DocumentoFotoColeccion1" name="EntidadMuseal.DocumentoFotoColeccion1" style="width: 414px;" />
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.DocumentoFotoColeccion1)
+            </div>
+        </div>
+    </div>
+    <div class="formulario-clear">
+    </div>
+    @if (Model.DocumentoFotoColeccion1Id > 0)
+    {
+        <div>
+            @Html.ActionLink("Descargar Documento", "Index", "Documentos", new { id = Criptografia.EncriptarUrl(Model.DocumentoFotoColeccion1Id.ToString()) }, new { @class = "boton-descargar-documento" })
+        </div>
+    }
+    <br />
+
+    <div class="box-row">
+        <div class="box">
+            <em>*</em> @Html.LabelFor(model => model.DocumentoFotoColeccion2)
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                <input type="file" accept = "image/*" id="EntidadMuseal_DocumentoFotoColeccion2" name="EntidadMuseal.DocumentoFotoColeccion2" style="width: 414px;" />
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.DocumentoFotoColeccion2)
+            </div>
+        </div>
+    </div>
+    <div class="formulario-clear">
+    </div>
+    @if (Model.DocumentoFotoColeccion2Id > 0)
+    {
+        <div>
+            @Html.ActionLink("Descargar Documento", "Index", "Documentos", new { id = Criptografia.EncriptarUrl(Model.DocumentoFotoColeccion2Id.ToString()) }, new { @class = "boton-descargar-documento" })
+        </div>
+    }
+    <br />
+
+    <div class="box-row">
+        <div class="box">
+            <em>*</em> @Html.LabelFor(model => model.DocumentoFotoColeccion3)
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                <input type="file" accept = "image/*" id="EntidadMuseal_DocumentoFotoColeccion3" name="EntidadMuseal.DocumentoFotoColeccion3" style="width: 414px;" />
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.DocumentoFotoColeccion3)
+            </div>
+        </div>
+    </div>
+    <div class="formulario-clear">
+    </div>
+    @if (Model.DocumentoFotoColeccion3Id > 0)
+    {
+        <div>
+            @Html.ActionLink("Descargar Documento", "Index", "Documentos", new { id = Criptografia.EncriptarUrl(Model.DocumentoFotoColeccion3Id.ToString()) }, new { @class = "boton-descargar-documento" })
+        </div>
+    }
+    <br />
+
+    <p><b>Cargar documentos (En formatos: @ViewBag.ExtensionesDocumento )</b></p>
+    <br />
+    <div class="box-row">
+        <div class="box">
+            <em>*</em> @Html.LabelFor(model => model.DocumentoLegalExistencia)
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                <input type="file" id="EntidadMuseal_DocumentoLegalExistencia" name="EntidadMuseal.DocumentoLegalExistencia" style="width: 414px;" />
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.DocumentoLegalExistencia)
+            </div>
+        </div>
+    </div>
+    <div class="formulario-clear">
+    </div>
+    @if (Model.DocumentoLegalExistenciaId > 0)
+    {
+        <div>
+            @Html.ActionLink("Descargar Documento", "Index", "Documentos", new { id = Criptografia.EncriptarUrl(Model.DocumentoLegalExistenciaId.ToString()) }, new { @class = "boton-descargar-documento" })
+        </div>
+    }
+    <br />
+
+    <div class="box-row">
+        <div class="box">
+            <em>*</em> @Html.LabelFor(model => model.DocumentoPoliticaPlanColecciones)
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                <input type="file" id="EntidadMuseal_DocumentoPoliticaPlanColecciones" name="EntidadMuseal.DocumentoPoliticaPlanColecciones" style="width: 414px;" />
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.DocumentoPoliticaPlanColecciones)
+            </div>
+        </div>
+    </div>
+    <div class="formulario-clear">
+    </div>
+    @if (Model.DocumentoPoliticaPlanColeccionesId > 0)
+    {
+        <div>
+            @Html.ActionLink("Descargar Documento", "Index", "Documentos", new { id = Criptografia.EncriptarUrl(Model.DocumentoPoliticaPlanColeccionesId.ToString()) }, new { @class = "boton-descargar-documento" })
+        </div>
+    }
+    <br />
+    <p align="justify">Agradecemos su atención</p>
+</fieldset>

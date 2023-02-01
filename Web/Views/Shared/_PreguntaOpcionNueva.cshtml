@@ -1,0 +1,192 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model PreguntaOpcionModel
+@using (Html.BeginForm("Opciones", "Administrador", FormMethod.Post, new { id = "FormOpcion" }))
+{
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.PreguntaId)
+        @Html.HiddenFor(model => model.EncuestaId)
+        @Html.HiddenFor(model => model.EsPreguntaValor)
+
+        <p>Los campos marcados con asterisco (*) son obligatorios</p>
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.Etiqueta)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.Etiqueta, new { style = "width:550px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Etiqueta)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        @if (!Model.EsPreguntaValor)
+        {
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.CheckBoxFor(model => model.CampoAbiertoAsociado)
+                        @Html.LabelFor(model => model.CampoAbiertoAsociado)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div id="divEtiquetaCampoAbierto">
+
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-label">
+                            <em>*</em> @Html.LabelFor(model => model.EtiquetaCampoAbierto)
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="formulario-label">
+                            @Html.LabelFor(model => model.TipoDeDato)
+                        </div>
+                    </div>
+                </div>
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-control">
+                            @Html.TextBoxFor(model => model.EtiquetaCampoAbierto)
+                        </div>
+                        <div class="formulario-validator">
+                            @Html.ValidationMessageFor(model => model.EtiquetaCampoAbierto)
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box">
+                            <div class="formulario-control">
+                                @Html.DropDownListFor(model => model.TipoDeDato, new SelectList(Model.TiposDeDatos, "Valor", "Etiqueta", Model.TipoDeDato), new { @class = "chosen", style = "width:264px;" })
+                            </div>
+                            <div class="formulario-validator">
+                                @Html.ValidationMessageFor(model => model.TipoDeDato)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+            </div>
+        }
+        else
+        {
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.TipoDeDato)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.DropDownListFor(model => model.TipoDeDato, new SelectList(Model.TiposDeDatos, "Valor", "Etiqueta", Model.TipoDeDato), new { @class = "chosen", style = "width:264px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.TipoDeDato)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.CheckBoxFor(model => model.CampoAbiertoAsociado)
+                        @Html.LabelFor(model => model.CampoAbiertoAsociado)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div id="divEtiquetaCampoAbierto">
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-label">
+                            <em>*</em> @Html.LabelFor(model => model.EtiquetaCampoAbierto)
+                        </div>
+                    </div>
+                </div>
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-control">
+                            @Html.TextBoxFor(model => model.EtiquetaCampoAbierto)
+                        </div>
+                        <div class="formulario-validator">
+                            @Html.ValidationMessageFor(model => model.EtiquetaCampoAbierto)
+                        </div>
+                    </div>
+                </div>
+                <br />
+            </div>
+        }
+    </fieldset>
+
+    <div class="botones">
+        @if (Model.Modificable)
+        {
+            if (Model.Edicion && Model.Id > 0)
+            {
+                @Html.ActionLink(Constante.BotonEliminarOpcion, "EliminarOpcion", "Administrador", new { encuestaId = Model.EncuestaId, preguntaId = Model.PreguntaId, opcionId = Model.Id }, new { @class = "boton", id = "btnEliminarOpcion" })
+            }
+        }
+
+        <input type="submit" value="@Html.Raw(Constante.BotonGuardarCambios)" name="GuardarCambios" class="boton" />
+
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $(".chosen").chosen();
+
+        MostrarEtiquetaCampoAbierto();
+        MostrarValorNivel();
+
+        $('#CampoAbiertoAsociado').change(function () {
+            $('#EtiquetaCampoAbierto').val('');
+            MostrarEtiquetaCampoAbierto();
+        });
+
+        $('#NivelSeleccionadoId').change(function () {
+            MostrarValorNivel();
+        });
+
+        $("#btnEliminarOpcion").click(function () {
+            return confirm('¿Está seguro de que desea eliminar esta opción?');
+        });
+
+        function MostrarEtiquetaCampoAbierto() {
+            if ($('#CampoAbiertoAsociado').is(':checked')) {
+                $('#divEtiquetaCampoAbierto').show();
+                $('#EtiquetaCampoAbierto').empty();
+            } else {
+                $('#divEtiquetaCampoAbierto').hide();
+                $('#EtiquetaCampoAbierto').val('_');
+            }
+        }
+
+        function MostrarValorNivel() {
+            var nId = $('#NivelSeleccionadoId').val();
+            if (nId != null && nId != '') {
+                $('#divvalornivel').show();
+            } else {
+                $('#divvalornivel').hide();
+            }
+        }
+
+    });
+</script>

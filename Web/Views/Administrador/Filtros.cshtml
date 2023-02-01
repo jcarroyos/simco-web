@@ -1,0 +1,171 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model PreguntaFiltroRegistroModel
+
+@{
+    ViewBag.Title = "Filtros";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Filtros</h2>
+
+@using (Html.BeginForm("Filtros", "Administrador", FormMethod.Post, new { id = "FormFiltro" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.TokenEncuesta)
+
+    <fieldset>
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Preguntas)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.DropDownListFor(model => model.PreguntaSeleccionadaId, new SelectList(Model.Preguntas, "Id", "Enunciado", Model.PreguntaSeleccionadaId), "Seleccione una pregunta...", new { @class = "chosen", style = "width:556px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Preguntas)
+                </div>
+            </div>
+        </div>
+        <br />
+
+
+        <div id="divopciones">
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.Opciones)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.DropDownListFor(model => model.OpcionSeleccionadaId, Enumerable.Empty<SelectListItem>(), "Seleccione una opción...", new { @class = "chosen", style = "width:556px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.Preguntas)
+                    </div>
+                </div>
+            </div>
+            <br />
+        </div>
+
+        <div id="divfiltros">
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        Lista de preguntas que se ocultaran
+                    </div>
+                </div>
+            </div>
+            <div id="t"></div>
+            <br />
+
+        </div>
+
+    </fieldset>
+
+        <div id="divbotones">
+            <div class="formulario-botones">
+                <input type="submit" value="@Html.Raw(Constante.BotonGuardarCambios)" name="GuardarCambios" class="boton" />
+            </div>
+        </div>
+}
+
+<div class="formulario-botones">
+    @Html.ActionLink(Constante.BotonRegresar, "Opciones", "Administrador", new { id = Model.TokenEncuesta }, new { @class = "boton" })
+    @Html.ActionLink(Constante.BotonFinalizar, "Encuestas", "Administrador", null, new { @class = "boton" })
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        mostrarOpciones();
+
+        $('#PreguntaSeleccionadaId').change(function () {
+            mostrarOpciones();
+        });
+
+        $('#OpcionSeleccionadaId').change(function () {
+            var pId = $('#PreguntaSeleccionadaId').val();
+            var oId = $('#OpcionSeleccionadaId').val();
+            if (pId != null && pId != '' && oId != null && oId != '') {
+                cargarFiltros($('#TokenEncuesta').val(), pId, oId);
+                $('#divfiltros').show();
+                $('#divbotones').show();
+            } else {
+                $('#t').empty();
+                $('#divfiltros').hide();
+                $('#divbotones').hide();
+            }
+        });
+
+        function mostrarOpciones() {
+            var selectedItem = $('#PreguntaSeleccionadaId').val();
+
+            $('#t').empty();
+            $('#OpcionSeleccionadaId').empty();
+            $('#OpcionSeleccionadaId').append('<option value="">Seleccione una opción...</option>');
+            $('#OpcionSeleccionadaId').trigger("chosen:updated");
+            $('#divopciones').hide();
+            $('#divfiltros').hide();
+            $('#divbotones').hide();
+            if (selectedItem != null && selectedItem != '') {
+                cargarOpciones(selectedItem);
+                $('#divopciones').show();
+            }
+        }
+
+        function cargarOpciones(id) {
+            $.ajax({
+                url: '@Url.Action("ListaDeOpciones", "Administrador")',
+                type: 'POST',
+                dataType: 'json',
+                data: { preguntaId: id },
+                success: function (data) {
+                    $('#OpcionSeleccionadaId').empty();
+                    if (data) {
+                        $('#OpcionSeleccionadaId').append('<option value="">Seleccione una opción...</option>');
+                        $(data.items).each(function () {
+                            $('#OpcionSeleccionadaId').append('<option value="' + this.Valor + '">' + this.Etiqueta + '</option>');
+                        });
+                        $('#OpcionSeleccionadaId').trigger("chosen:updated");
+                    }
+                }
+            });
+        }
+
+        function cargarFiltros(eId, pId, oId) {
+            $.ajax({
+                url: '@Url.Action("ListaDeFiltros", "Administrador")',
+                type: 'POST',
+                dataType: 'json',
+                data: { tokenEncuesta: eId, preguntaId: pId, opcionId: oId },
+                success: function (data) {
+                    $('#t').empty();
+                    if (data) {
+                        $(data.items).each(function () {
+                            if (this.Seleccionado) {
+                                $('#t').append("<input type='checkbox' name='filtros' value='" + this.Valor + "' checked />" + this.Etiqueta + "<br />");
+                            } else {
+                                $('#t').append("<input type='checkbox' name='filtros' value='" + this.Valor + "' />" + this.Etiqueta + "<br />");
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    });
+
+</script>

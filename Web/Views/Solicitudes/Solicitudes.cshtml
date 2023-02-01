@@ -1,0 +1,78 @@
+﻿@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+@using Simco.Infrastructure.Notification
+
+@model InicioSesionModel
+@{
+    ViewBag.Title = "Consultar solicitud";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Consultar Solicitud</h1>
+<p> Ingrese su documento de identificación y/o correo electrónico, y consulte el estado actual de su solicitud.</p>
+
+<div class="formulario">
+
+    @using (Html.BeginForm("Solicitudes", "Solicitudes", FormMethod.Get, new { enctype = "multipart/form-data" }))
+    {
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+
+            <legend class="texto-negrita">Información del solicitante</legend>
+
+            <div class="box-row">
+                <div class="box">
+                    @Html.LabelFor(model => model.SolicitudRegistro.Solicitud.NumeroDocumento)
+                </div>
+                <div class="box">
+                    @Html.LabelFor(model => model.SolicitudRegistro.Solicitud.CorreoElectronico)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.SolicitudRegistro.Solicitud.NumeroDocumento)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.SolicitudRegistro.Solicitud.CorreoElectronico)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        <input type="submit" value="@Html.Raw(Constante.BotonBuscar)" name="Buscar" class="boton" />
+                    </div>
+                </div>
+            </div>
+
+        </fieldset>
+
+        if (Model.SolicitudPublicas != null && Model.SolicitudPublicas.Any())
+        {
+            <br />
+            <div class="grilladatos-interno">
+                @(Html.Kendo().Grid(Model.SolicitudPublicas)
+                .Name("GridSolicitudes")
+                .Columns(columns =>
+                {
+                    columns.Bound(o => o.SOL_SOLICITUD).Template(o => @Html.ActionLink(@HtmlHelperExtensions.Truncate(o.SOL_SOLICITUD, 60), "VistaSolicitud", "Solicitudes", new { id = Criptografia.EncriptarUrl(o.SOL_ID.ToString()) }, null)).Title("Solicitud").Width(450);
+                    columns.Bound(o => o.SOL_FECHAREGISTRO).Title("Fecha de registro").Width(220);
+                    columns.Bound(o => o.ESL_ESTADO).Title("Estado").Width(95);
+                    columns.Bound(o => o.SOL_NUMERORADICACION).Title("No. radicación").Width(80);
+                })
+                .Sortable()
+                .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} solicitudes")
+                                                        .Empty("No se encontraron solicitudes")
+                                                        .First("Ir a la primera página")
+                                                        .Last("Ir a la última página")
+                                                        .Next("Ir a la página siguiente")
+                                                        .Previous("Ir a la página anterior")))
+
+                )
+            </div>
+        }
+
+    }
+</div>

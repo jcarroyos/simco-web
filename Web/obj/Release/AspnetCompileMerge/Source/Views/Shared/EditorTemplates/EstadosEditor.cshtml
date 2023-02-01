@@ -1,0 +1,13 @@
+﻿@model object
+@using Simco.DomainModelLayer.ViewModels
+
+@(
+ Html.Kendo().DropDownListFor(m => m)
+    .BindTo((IEnumerable<TiposModel>)ViewData["EstadoEntidadesMuseales"])
+    .DataValueField("Id")
+    .DataTextField("Nombre")
+    .Events(e =>
+    {
+        e.Select("onSelect");
+    })
+)

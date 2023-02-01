@@ -1,0 +1,343 @@
+﻿@using System.Text
+@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model IEnumerable<PreguntaModel>
+@if (Model.Any())
+{
+    <fieldset>
+
+        <p>Las preguntas marcadas con asterisco (*) son obligatorias</p>
+
+        @{
+            StringBuilder totalPreguntasOcultas = new StringBuilder();
+        }
+
+        @foreach (PreguntaModel preguntaModel in Model)
+        {
+            StringBuilder preguntasOcultas = new StringBuilder();
+
+            foreach (FiltroModel filtro in preguntaModel.Filtros)
+            {
+                preguntasOcultas.Append(string.Format("{0}|", filtro.PreguntaDestinoId));
+                totalPreguntasOcultas.Append(string.Format("#divpreg_{0}, ", filtro.PreguntaDestinoId));
+            }
+
+            if (preguntasOcultas.Length > 0)
+            {
+                preguntasOcultas.Remove(preguntasOcultas.Length - 1, 1);
+            }
+
+            List<int> idsOpciones = preguntaModel.Opciones.Select(preguntaOpcionModel => preguntaOpcionModel.Id).ToList();
+
+            StringBuilder opcionesPregunta = new StringBuilder();
+
+            foreach (int id in idsOpciones)
+            {
+                opcionesPregunta.Append(string.Format("{0}|", id));
+            }
+
+            if (opcionesPregunta.Length > 0)
+            {
+                opcionesPregunta.Remove(opcionesPregunta.Length - 1, 1);
+            }
+
+            <div id="@Html.Raw(string.Format("divpreg_{0}", preguntaModel.Id))" tpreg="@Html.Raw(preguntasOcultas.ToString())" idsopc="@Html.Raw(opcionesPregunta.ToString())" @(preguntaModel.TipoDePregunta == TiposDePreguntas.RespuestaConValor.ToString() ? Html.Raw(string.Format(@"obligatoriotext = ""{0}""", preguntaModel.EsObligatoria)) : Html.Raw(string.Format(@"obligatoriochecked = ""{0}""", preguntaModel.EsObligatoria)))>
+
+                @if (!string.IsNullOrEmpty(preguntaModel.Leyenda))
+                {
+                    <h3 style="font-weight: bold">@Html.Raw(preguntaModel.Leyenda)</h3>
+                }
+
+                <div class="formulario-field-tab">
+                    <div class="formulario-label">
+                        @if ((bool)preguntaModel.EsObligatoria)
+                        {
+                            @Html.Raw("<em>*</em> ")
+                        }
+                        @Html.Raw(preguntaModel.Enunciado)
+                        @if (!string.IsNullOrEmpty(preguntaModel.Ayuda))
+                        {
+                            <span class="formulario-tooltip"> [<a href="#" title="@Html.Raw(preguntaModel.Ayuda)">Ayuda</a>] </span>
+                        }
+
+                    </div>
+
+                    <div class="formulario-control-tab">
+                        @if (preguntaModel.TipoDePregunta == TiposDePreguntas.RespuestaUnica.ToString() && preguntaModel.Opciones.Any())
+                        {
+                            foreach (OpcionModel preguntaOpcionModel in preguntaModel.Opciones)
+                            {
+                                List<int> temp = (from filtro in preguntaModel.Filtros where filtro.PreguntaOpcionId == preguntaOpcionModel.Id select filtro.PreguntaDestinoId).ToList();
+                                StringBuilder preguntasOcultasPorOpcion = new StringBuilder();
+
+                                if (temp.Count > 0)
+                                {
+                                    foreach (int i in temp)
+                                    {
+                                        preguntasOcultasPorOpcion.Append(string.Format("{0}|", i));
+                                    }
+
+                                    preguntasOcultasPorOpcion.Remove(preguntasOcultasPorOpcion.Length - 1, 1);
+                                }
+
+                                if (preguntaOpcionModel.CampoAbiertoAsociado)
+                                {
+                                    @Html.RadioButton(preguntaModel.Id.ToString(), preguntaOpcionModel.Id, preguntaOpcionModel.Seleccionada, new { @class = "rbencuesta", targetdiv = string.Format("divopcionrotro_{0}", preguntaOpcionModel.Id), targetclass = string.Format("class_{0}", preguntaModel.Id), parentdiv = string.Format("#divpreg_{0}", preguntaModel.Id), idopc = preguntaOpcionModel.Id, pregocultar = preguntasOcultasPorOpcion.ToString() })
+                                    <label>@(preguntaOpcionModel.Etiqueta)</label>
+                                    <br />
+
+                                    <div id="@Html.Raw(string.Format("divopcionrotro_{0}", preguntaOpcionModel.Id))" style="margin: 20px 20px; display: none;" class="@Html.Raw(string.Format("class_{0}", preguntaModel.Id))">
+
+                                        @if (!string.IsNullOrEmpty(preguntaOpcionModel.TipoDeDato))
+                                        {
+                                            if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.TextoCorto.ToString())
+                                            {
+                                                @Html.Label(string.Format("{0} ", preguntaOpcionModel.EtiquetaCampoAbierto))
+                                                @Html.TextBox(string.Format("{0}_{1}_Otro", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.ValorRespuesta)
+                                            }
+                                            if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.TextoCortoObligatorio.ToString())
+                                            {
+                                                <em>*</em>
+                                                @Html.Label(string.Format("{0} ", preguntaOpcionModel.EtiquetaCampoAbierto))
+                                                @Html.TextBox(string.Format("{0}_{1}_Otro", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.ValorRespuesta, new { data_val = "true", data_val_required = "Este campo es obligatorio." })
+                                                @Html.Raw(string.Format(@"<div class=""formulario-validator""><span class=""field-validation-valid"" data-valmsg-for=""{0}_{1}_Otro"" data-valmsg-replace=""true""></span></div>", preguntaModel.Id, preguntaOpcionModel.Id))
+                                            }
+                                            if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.TextoGrande.ToString())
+                                            {
+                                                @Html.Label(preguntaOpcionModel.EtiquetaCampoAbierto)
+                                                <br />
+                                                @Html.TextArea(string.Format("{0}_{1}_Otro", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.ValorRespuesta, new { style = "width:450px; height: 90px;" })
+                                            }
+                                            if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.TextoGrandeObligatorio.ToString())
+                                            {
+                                                <em>*</em>
+                                                @Html.Label(preguntaOpcionModel.EtiquetaCampoAbierto)
+                                                <br />
+                                                @Html.TextArea(string.Format("{0}_{1}_Otro", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.ValorRespuesta, new { style = "width:450px; height: 90px;", data_val = "true", data_val_required = "Este campo es obligatorio." })
+                                                @Html.Raw(string.Format(@"<div class=""formulario-validator""><span class=""field-validation-valid"" data-valmsg-for=""{0}_{1}_Otro"" data-valmsg-replace=""true""></span></div>", preguntaModel.Id, preguntaOpcionModel.Id))
+                                            }
+                                            if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.Numerico.ToString())
+                                            {
+                                                @Html.Label(string.Format("{0} ", preguntaOpcionModel.EtiquetaCampoAbierto))
+                                                @Html.TextBox(string.Format("{0}_{1}_Otro", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.ValorRespuesta, new { style = "width:50px;", data_val = "true", data_val_number = "El campo debe ser un número." })
+                                                @Html.Raw(string.Format(@"<div class=""formulario-validator""><span class=""field-validation-valid"" data-valmsg-for=""{0}_{1}_Otro"" data-valmsg-replace=""true""></span></div>", preguntaModel.Id, preguntaOpcionModel.Id))
+                                            }
+                                            if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.NumericoObligatorio.ToString())
+                                            {
+                                                <em>*</em>
+                                                @Html.Label(string.Format("{0} ", preguntaOpcionModel.EtiquetaCampoAbierto))
+                                                @Html.TextBox(string.Format("{0}_{1}_Otro", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.ValorRespuesta, new { style = "width:50px;", data_val = "true", data_val_number = "El campo debe ser un número.", data_val_required = "Este campo es obligatorio." })
+                                                @Html.Raw(string.Format(@"<div class=""formulario-validator""><span class=""field-validation-valid"" data-valmsg-for=""{0}_{1}_Otro"" data-valmsg-replace=""true""></span></div>", preguntaModel.Id, preguntaOpcionModel.Id))
+                                            }
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    @Html.RadioButton(preguntaModel.Id.ToString(), preguntaOpcionModel.Id, preguntaOpcionModel.Seleccionada, new { @class = "rbencuesta", targetclass = string.Format("class_{0}", preguntaModel.Id), parentdiv = string.Format("#divpreg_{0}", preguntaModel.Id), idopc = preguntaOpcionModel.Id, pregocultar = preguntasOcultasPorOpcion.ToString() })
+                                    <label>@(preguntaOpcionModel.Etiqueta)</label>
+                                    <br />
+                                }
+                            }
+                        }
+                        @if (preguntaModel.TipoDePregunta == TiposDePreguntas.RespuestaMultiple.ToString() && preguntaModel.Opciones.Any())
+                        {
+                            foreach (OpcionModel preguntaOpcionModel in preguntaModel.Opciones)
+                            {
+                                if (preguntaOpcionModel.CampoAbiertoAsociado)
+                                {
+                                    @Html.CheckBox(string.Format("{0}_{1}", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.Seleccionada, new { @class = "cbencuesta", target = string.Format("divopcioncotro_{0}", preguntaOpcionModel.Id), parentdiv = string.Format("#divpreg_{0}", preguntaModel.Id) })
+                                    <label>@(preguntaOpcionModel.Etiqueta)</label>
+                                    <br />
+
+                                    <div id="@Html.Raw(string.Format("divopcioncotro_{0}", preguntaOpcionModel.Id))" style="margin: 20px 20px; display: none;" class="@Html.Raw(string.Format("class_{0}", preguntaModel.Id))">
+
+                                        @if (!string.IsNullOrEmpty(preguntaOpcionModel.TipoDeDato))
+                                        {
+                                            if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.TextoCorto.ToString())
+                                            {
+                                                @Html.Label(string.Format("{0} ", preguntaOpcionModel.EtiquetaCampoAbierto))
+                                                @Html.TextBox(string.Format("{0}_{1}_Otro", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.ValorRespuesta)
+                                            }
+                                            if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.TextoCortoObligatorio.ToString())
+                                            {
+                                                <em>*</em>
+                                                @Html.Label(string.Format("{0} ", preguntaOpcionModel.EtiquetaCampoAbierto))
+                                                @Html.TextBox(string.Format("{0}_{1}_Otro", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.ValorRespuesta, new { data_val = "true", data_val_required = "Este campo es obligatorio." })
+                                                @Html.Raw(string.Format(@"<div class=""formulario-validator""><span class=""field-validation-valid"" data-valmsg-for=""{0}_{1}_Otro"" data-valmsg-replace=""true""></span></div>", preguntaModel.Id, preguntaOpcionModel.Id))
+                                            }
+                                            if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.TextoGrande.ToString())
+                                            {
+                                                @Html.Label(preguntaOpcionModel.EtiquetaCampoAbierto)
+                                                <br />
+                                                @Html.TextArea(string.Format("{0}_{1}_Otro", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.ValorRespuesta, new { style = "width:450px; height: 90px;" })
+                                            }
+                                            if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.TextoGrandeObligatorio.ToString())
+                                            {
+                                                <em>*</em>
+                                                @Html.Label(preguntaOpcionModel.EtiquetaCampoAbierto)
+                                                <br />
+                                                @Html.TextArea(string.Format("{0}_{1}_Otro", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.ValorRespuesta, new { style = "width:450px; height: 90px;", data_val = "true", data_val_required = "Este campo es obligatorio." })
+                                                @Html.Raw(string.Format(@"<div class=""formulario-validator""><span class=""field-validation-valid"" data-valmsg-for=""{0}_{1}_Otro"" data-valmsg-replace=""true""></span></div>", preguntaModel.Id, preguntaOpcionModel.Id))
+                                            }
+                                            if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.Numerico.ToString())
+                                            {
+                                                @Html.Label(string.Format("{0} ", preguntaOpcionModel.EtiquetaCampoAbierto))
+                                                @Html.TextBox(string.Format("{0}_{1}_Otro", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.ValorRespuesta, new { style = "width:50px;", data_val = "true", data_val_number = "El campo debe ser un número." })
+                                                @Html.Raw(string.Format(@"<div class=""formulario-validator""><span class=""field-validation-valid"" data-valmsg-for=""{0}_{1}_Otro"" data-valmsg-replace=""true""></span></div>", preguntaModel.Id, preguntaOpcionModel.Id))
+                                            }
+                                            if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.NumericoObligatorio.ToString())
+                                            {
+                                                <em>*</em>
+                                                @Html.Label(string.Format("{0} ", preguntaOpcionModel.EtiquetaCampoAbierto))
+                                                @Html.TextBox(string.Format("{0}_{1}_Otro", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.ValorRespuesta, new { style = "width:50px;", data_val = "true", data_val_number = "El campo debe ser un número.", data_val_required = "Este campo es obligatorio." })
+                                                @Html.Raw(string.Format(@"<div class=""formulario-validator""><span class=""field-validation-valid"" data-valmsg-for=""{0}_{1}_Otro"" data-valmsg-replace=""true""></span></div>", preguntaModel.Id, preguntaOpcionModel.Id))
+                                            }
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    @Html.CheckBox(string.Format("{0}_{1}", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.Seleccionada, new { @class = "cbencuesta", parentdiv = string.Format("#divpreg_{0}", preguntaModel.Id) })
+                                    <label>@(preguntaOpcionModel.Etiqueta)</label>
+                                    <br />
+                                }
+                            }
+                        }
+                        @if (preguntaModel.TipoDePregunta == TiposDePreguntas.RespuestaConValor.ToString() && preguntaModel.Opciones.Any())
+                        {
+                            foreach (OpcionModel preguntaOpcionModel in preguntaModel.Opciones)
+                            {
+                                if (preguntaOpcionModel.CampoAbiertoAsociado)
+                                {
+                                    <div style="margin-bottom: 5px;">
+                                        <label>@(preguntaOpcionModel.Etiqueta)</label>
+                                        <br />
+                                        <div style="margin-left: 15px;">
+                                            <div style="margin-bottom: 5px;">
+                                                @Html.Raw(preguntaOpcionModel.EtiquetaCampoAbierto) <br />
+                                                @Html.TextBox(string.Format("{0}_{1}_Valor", preguntaModel.Id, preguntaOpcionModel.Id))
+                                            </div>
+                                            <div style="margin-bottom: 5px;">
+
+                                                @if (!string.IsNullOrEmpty(preguntaOpcionModel.TipoDeDato))
+                                                {
+                                                    if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.TextoCorto.ToString())
+                                                    {
+                                                        @Html.Label("Valor")
+                                                        <br />
+                                                        @Html.TextBox(string.Format("{0}_{1}_Valor_Otro", preguntaModel.Id, preguntaOpcionModel.Id), null)
+                                                    }
+                                                    if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.TextoCortoObligatorio.ToString())
+                                                    {
+                                                        <em>*</em>
+                                                        @Html.Label("Valor")
+                                                        <br />
+                                                        @Html.TextBox(string.Format("{0}_{1}_Valor_Otro", preguntaModel.Id, preguntaOpcionModel.Id), null, new { data_val = "true", data_val_required = "Este campo es obligatorio." })
+                                                        @Html.Raw(string.Format(@"<div class=""formulario-validator""><span class=""field-validation-valid"" data-valmsg-for=""{0}_{1}_Valor_Otro"" data-valmsg-replace=""true""></span></div>", preguntaModel.Id, preguntaOpcionModel.Id))
+                                                    }
+                                                    if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.TextoGrande.ToString())
+                                                    {
+                                                        @Html.Label("Valor")
+                                                        <br />
+                                                        @Html.TextArea(string.Format("{0}_{1}_Valor_Otro", preguntaModel.Id, preguntaOpcionModel.Id), new { style = "width:450px; height: 90px;" })
+                                                    }
+                                                    if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.TextoGrandeObligatorio.ToString())
+                                                    {
+                                                        <em>*</em>
+                                                        @Html.Label("Valor")
+                                                        <br />
+                                                        @Html.TextArea(string.Format("{0}_{1}_Valor_Otro", preguntaModel.Id, preguntaOpcionModel.Id), new { style = "width:450px; height: 90px;", data_val = "true", data_val_required = "Este campo es obligatorio." })
+                                                        @Html.Raw(string.Format(@"<div class=""formulario-validator""><span class=""field-validation-valid"" data-valmsg-for=""{0}_{1}_Valor_Otro"" data-valmsg-replace=""true""></span></div>", preguntaModel.Id, preguntaOpcionModel.Id))
+                                                    }
+                                                    if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.Numerico.ToString())
+                                                    {
+                                                        @Html.Label("Valor")
+                                                        <br />
+                                                        @Html.TextBox(string.Format("{0}_{1}_Valor_Otro", preguntaModel.Id, preguntaOpcionModel.Id), null, new { style = "width:50px;", data_val = "true", data_val_number = "El campo debe ser un número." })
+                                                        @Html.Raw(string.Format(@"<div class=""formulario-validator""><span class=""field-validation-valid"" data-valmsg-for=""{0}_{1}_Valor_Otro"" data-valmsg-replace=""true""></span></div>", preguntaModel.Id, preguntaOpcionModel.Id))
+                                                    }
+                                                    if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.NumericoObligatorio.ToString())
+                                                    {
+                                                        <em>*</em>
+                                                        @Html.Label("Valor")
+                                                        <br />
+                                                        @Html.TextBox(string.Format("{0}_{1}_Valor_Otro", preguntaModel.Id, preguntaOpcionModel.Id), null, new { style = "width:50px;", data_val = "true", data_val_number = "El campo debe ser un número.", data_val_required = "Este campo es obligatorio." })
+                                                        @Html.Raw(string.Format(@"<div class=""formulario-validator""><span class=""field-validation-valid"" data-valmsg-for=""{0}_{1}_Valor_Otro"" data-valmsg-replace=""true""></span></div>", preguntaModel.Id, preguntaOpcionModel.Id))
+                                                    }
+                                                }
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div style="margin-bottom: 5px;">
+
+                                        @if (!string.IsNullOrEmpty(preguntaOpcionModel.TipoDeDato))
+                                        {
+                                            if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.TextoCorto.ToString())
+                                            {
+                                                <label>@(preguntaOpcionModel.Etiqueta)</label>
+                                                <br />
+                                                @Html.TextBox(string.Format("{0}_{1}_Valor", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.ValorRespuesta)
+                                            }
+                                            if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.TextoCortoObligatorio.ToString())
+                                            {
+                                                <em>*</em>
+                                                <label>@(preguntaOpcionModel.Etiqueta)</label>
+                                                <br />
+                                                @Html.TextBox(string.Format("{0}_{1}_Valor", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.ValorRespuesta, new { data_val = "true", data_val_required = "Este campo es obligatorio." })
+                                                @Html.Raw(string.Format(@"<div class=""formulario-validator""><span class=""field-validation-valid"" data-valmsg-for=""{0}_{1}_Valor"" data-valmsg-replace=""true""></span></div>", preguntaModel.Id, preguntaOpcionModel.Id))
+                                            }
+                                            if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.TextoGrande.ToString())
+                                            {
+                                                <label>@(preguntaOpcionModel.Etiqueta)</label>
+                                                <br />
+                                                @Html.TextArea(string.Format("{0}_{1}_Valor", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.ValorRespuesta, new { style = "width:450px; height: 90px;" })
+                                            }
+                                            if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.TextoGrandeObligatorio.ToString())
+                                            {
+                                                <em>*</em>
+                                                <label>@(preguntaOpcionModel.Etiqueta)</label>
+                                                <br />
+                                                @Html.TextArea(string.Format("{0}_{1}_Valor", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.ValorRespuesta, new { style = "width:450px; height: 90px;", data_val = "true", data_val_required = "Este campo es obligatorio." })
+                                                @Html.Raw(string.Format(@"<div class=""formulario-validator""><span class=""field-validation-valid"" data-valmsg-for=""{0}_{1}_Valor"" data-valmsg-replace=""true""></span></div>", preguntaModel.Id, preguntaOpcionModel.Id))
+                                            }
+                                            if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.Numerico.ToString())
+                                            {
+                                                <label>@(preguntaOpcionModel.Etiqueta)</label>
+                                                <br />
+                                                @Html.TextBox(string.Format("{0}_{1}_Valor", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.ValorRespuesta, new { style = "width:50px;", data_val = "true", data_val_number = "El campo debe ser un número." })
+                                                @Html.Raw(string.Format(@"<div class=""formulario-validator""><span class=""field-validation-valid"" data-valmsg-for=""{0}_{1}_Valor"" data-valmsg-replace=""true""></span></div>", preguntaModel.Id, preguntaOpcionModel.Id))
+                                            }
+                                            if (preguntaOpcionModel.TipoDeDato == TiposDeDatoOpcionesPreguntas.NumericoObligatorio.ToString())
+                                            {
+                                                <em>*</em>
+                                                <label>@(preguntaOpcionModel.Etiqueta)</label>
+                                                <br />
+                                                @Html.TextBox(string.Format("{0}_{1}_Valor", preguntaModel.Id, preguntaOpcionModel.Id), preguntaOpcionModel.ValorRespuesta, new { style = "width:50px;", data_val = "true", data_val_number = "El campo debe ser un número.", data_val_required = "Este campo es obligatorio." })
+                                                @Html.Raw(string.Format(@"<div class=""formulario-validator""><span class=""field-validation-valid"" data-valmsg-for=""{0}_{1}_Valor"" data-valmsg-replace=""true""></span></div>", preguntaModel.Id, preguntaOpcionModel.Id))
+                                            }
+                                        }
+
+                                    </div>
+                                }
+                            }
+                        }
+                    </div>
+
+                    <div id="@Html.Raw(string.Format("divpreg_{0}_mensaje", preguntaModel.Id))" class="formulario-validator">
+
+                    </div>
+                </div>
+
+            </div>
+
+        }
+
+        @Html.Raw(string.Format(@"<script type=""text/javascript"">$(document).ready(function() {{ $(""div[id^='divpreg_']"").each(function () {{ var tpreg = $(this).attr('tpreg'); if (tpreg) {{ var temppreg = tpreg.split(""|""); for (var j = 0; j < temppreg.length; j++) {{ var t = $(""#divpreg_"" + temppreg[j]).attr('band'); if (!t) {{ $(""#divpreg_"" + temppreg[j]).attr('band', ""|xx""); }} }} }} }});  $(""div[id^='divpreg_']"").each(function () {{ if ($(this).attr('band')) {{ $(this).hide(); }}  }});  }});</script>"))
+    </fieldset>
+            }

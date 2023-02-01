@@ -1,0 +1,142 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model ComiteDocumentoModel
+@{
+    ViewBag.Title = "Documentos del Comite";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<script>
+
+    function displayLoading(target) {
+        var element = $(target);
+        kendo.ui.progress(element, true);
+        setTimeout(function () {
+            kendo.ui.progress(element, false);
+        }, 3000);
+    }
+
+</script>
+
+
+<h2>Documentos del comité</h2>
+<div class="formulario">
+    @using (Html.BeginForm("Index", "ComiteDocumentos", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.Hidden("RegistrosModificados")
+        <fieldset style="@(ViewBag.EstadoComite == "Pendiente Documentación" ? "display:block" : "display:none")">
+            <legend><b>Información del Documento</b></legend>
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> <label>Descripción del Documento</label>
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.DOCUM_DESCRIPCION)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.DOCUM_DESCRIPCION)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> <label>Archivo</label>
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(m => m.ImageUpload, new { type = "file", accept = "image/jpeg,application/pdf" })
+                    </div>
+                </div>
+            </div>
+            <div class="formulario-botones">
+                <fieldset>
+                    <div class="formulario-botones">
+                        <input type="submit" value="Adicionar" name="btnAdicionar" class="boton" onclick="return validarTamaño()" />
+                    </div>
+                    <br />
+                </fieldset>
+            </div>
+        </fieldset>
+
+        <div>
+            @(Html.Kendo().Grid((IEnumerable<ComiteDocumentoModel>)ViewBag.ComiteDocumentos)
+                .Name("GridDocumentos")
+                .Columns(columns =>
+                {
+                    columns.Template(@<text><input id="@(@item.COMDOC_ID)" name="@(@item.COMDOC_ID)" type="checkbox" /></text>).Title("Seleccionar").Width(50);
+                    columns.Bound(per => per.DOCUM_DESCRIPCION).Title("Descripción");
+                    columns.Template(@<text>@Html.ActionLink(@item.DOC_NOMBRE, "IndexComitDocum", "Documentos", new { id = Criptografia.EncriptarUrl(item.COMDOC_ID.ToString()) }, new { @title = "Descargar archivo" })</text>).Title("Documentos").Width(250);
+                    columns.Template(@<text>@Html.ActionLink(Constante.BotonEliminar, "EliminarDocumentoComite", "ComiteDocumentos", new { comiteId = @item.COM_ID, ComiteDocumentoId = item.COMDOC_ID }, new { onclick = "return confirm('Está seguro de eliminar el documento?')", @class = "boton-eliminar" })</text>).Width(50);
+                    }).Sortable()
+                )
+        </div>
+        <div class="formulario-botones">
+            @Html.ActionLink(Constante.BotonCancelar, "Regresar", "ComiteDocumentos", new object(), new { @class = "boton" })
+            @if (ViewBag.EstadoComite == "Pendiente Documentación")
+            {
+                @Html.ActionLink(Constante.BotonFinalizar, "FinalizarIngresoDocumental", "ComiteDocumentos", new { @class = "boton", onclick = "return confirm('Está seguro de cerrar el comité?')" });
+            }
+        </div>
+    }
+</div>
+
+<script>
+
+    $(function () {
+        $("#ImageUpload").on('change', function (event) {
+            var file = event.target.files[0];
+            if (file.size >= 1024 * 1024) {
+                alert("Se aceptan archivos JPG o PDF de máximo 1 MB");
+                $("#form-id").get(0).reset(); //the tricky part is to "empty" the input file here I reset the form.
+                return;
+            }
+        });
+    });
+
+    function actualizarData() {
+        var updatedRecords[];
+
+        $('#GridDocumentos tr').each(function () {
+            var nodeList = $(this)[0].childNodes;
+            $.each(nodeList, function (index, node) {
+                if (node.firstChild != null && index == 0) {
+                    if (node.firstChild.data != undefined) {
+                        var documento = {
+                            documentoId: node.firstChild.data,
+                            Seleccionado: true
+                        };
+
+                        updatedRecords.push(documento);
+                    } // Fin If
+                } // Fin If
+            }); // Fin Each
+        });
+
+        $('#RegistrosModificados').val(JSON.stringify(updatedRecords).replace(/\/Date/g, "\\\/Date").replace(/\)\//g, "\)\\\/"));
+    }
+</script>
+
+<style>
+    input.k-textbox {
+        text-indent: .1em !important;
+    }
+
+    .k-textbox {
+        width: 100%;
+    }
+
+    .k-dropdown {
+        width: 100%;
+    }
+</style>

@@ -1,0 +1,18 @@
+﻿
+@{
+    ViewBag.Title = "Registro";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<p>Lo invitamos a registrarse como Persona Natural, Entidad museal o Institución aliada del sector museal, dentro del Sistema de Información de Museos Colombianos – SIMCO. Con lo cual se hará participe del directorio en línea y de otros beneficios.</p>
+
+<div class="centrarBotones">
+
+    @Html.ActionLink("Registro Persona Natural", "PersonaNatural", "Registro", new object(), new { @class = "boton" })
+    @Html.ActionLink("Registro Entidad Museal", "PersonaJuridica", "Registro", new object(), new { @class = "boton" })
+    @*@Html.ActionLink("Registro Institución Aliada", "InstitucionAliada", "Registro", new object(), new { @class = "boton" })*@
+    <br />
+    <br />
+    @Html.ActionLink("Postularme como Entidad Museal", "EntidadMuseal", "Registro", new object(), new { @class = "boton" })
+
+</div>

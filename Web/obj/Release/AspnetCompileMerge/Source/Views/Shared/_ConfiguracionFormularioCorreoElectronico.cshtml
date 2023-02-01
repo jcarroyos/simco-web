@@ -1,0 +1,43 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model ConfiguracionCorreoElectronicoModel
+
+@if (Model != null)
+{
+    using (Html.BeginForm("CorreosElectronicos", "Administrador", FormMethod.Post, new { id = "FormCorreoElectronico" }))
+    {
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+            
+            <p>Los campos marcados con asterisco (*) son obligatorios</p>
+                    
+            @Html.HiddenFor(model => model.CuerpoValorOriginal)
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> @Html.LabelFor(model => model.Cuerpo)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextAreaFor(model => model.Cuerpo, new { style = "width:550px; height: 155px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.Cuerpo)
+                    </div>
+                </div>
+            </div>
+            <br />
+        
+        </fieldset>
+
+        <div class="formulario-botones">
+            <input type="submit" value="@Html.Raw(Constante.BotonGuardarCambios)" name="GuardarCambios" class="boton" />
+        </div>
+    }
+}

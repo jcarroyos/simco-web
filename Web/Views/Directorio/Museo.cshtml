@@ -1,0 +1,164 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model InicioSesionModel
+@{
+    ViewBag.Title = "Museo";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+
+<h3>
+    DESCUBRE LOS MUSEOS DE COLOMBIA
+</h3>
+<p>
+    En el siguiente directorio encontrar&aacute; las entidades museales de Colombia que han realizado el proceso completo de registro y clasificaci&oacute;n ante el Ministerio de Cultura.
+</p>
+
+@using (Html.BeginForm("Buscar", "Directorio", FormMethod.Post, new { id = "FormEncuesta" }))
+{
+    <div class="buscador-interno">
+
+        <div class="formulario-control-busqueda">
+
+            @Html.DropDownListFor(model => model.Directorio.CodigoDepartamento, new SelectList(Model.Directorio.Departamentos, "Id", "Nombre", Model.Directorio.CodigoDepartamento), "Seleccione un departamento...", new { data_placeholder = "Seleccione un departamento...", @class = "chosen" })
+
+            @Html.DropDownListFor(model => model.Directorio.CodigoMunicipio, Enumerable.Empty<SelectListItem>(), "Seleccione una ciudad ...", new { data_placeholder = "Seleccione una ciudad ...", @class = "chosen" })
+
+            @Html.TextBoxFor(model => model.Directorio.PalabrasClaves, new { placeholder = "Palabras claves" })
+
+            <input type="submit" value="@Html.Raw(Constante.BotonBuscar)" name="Buscar" class="boton" style="width: 80px" />
+        
+        </div>
+
+    </div>
+
+    if (Model.Directorio.Museo != null)
+    {
+        <div class="box-row">
+            <div class="box">
+                <h3>@Model.Directorio.Museo.Nombre</h3>
+
+                @if (@Model.Directorio.Museo.NombreDirector != string.Empty)
+                {
+                    <p>Director: @Model.Directorio.Museo.NombreDirector</p>
+                }
+
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <p>@Model.Directorio.Museo.ResenaHistorica</p>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <p>Horario:</p>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                @if (Model.Directorio.Horario != null)
+                    {
+                        foreach (string horario in Model.Directorio.Horario)
+                        {
+                            if (horario != string.Empty)
+                            {
+                            <p>@horario</p>
+                        }
+                    }
+                }
+            </div>
+        </div>
+            <div class="box-row">
+                <div class="box">
+                    <p>Precio de entrada:</p>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <p>@Model.Directorio.Museo.Precio</p>
+                </div>
+            </div>
+
+            <div class="box-row">
+                <div class="box">
+                    <p>Teléfono de la entidad: @Model.Directorio.Museo.Telefono</p>
+                </div>
+                <div class="box">
+                    <p>Dirección: @Model.Directorio.Museo.Direccion</p>
+                </div>
+            </div>
+
+            <div class="box-row">
+                <div class="box">
+                    <p>Correo electrónico: @Model.Directorio.Museo.CorreoElectronico</p>
+                </div>
+                <div class="box">
+                    <p>Pagina Web: @Model.Directorio.Museo.PaginaWeb</p>
+                </div>
+            </div>
+
+            <div class="box-row">
+                <div class="box">
+                    <img src="@Url.Content(Model.Directorio.Museo.RutaFachada)" alt="Fachada" />
+                    <img src="@Url.Content(Model.Directorio.Museo.RutaInteracion)" alt="Interación" />
+                    <img src="@Url.Content(Model.Directorio.Museo.RutaColeccion1)" alt="Coleccion" />
+                    <img src="@Url.Content(Model.Directorio.Museo.RutaColeccion2)" alt="Coleccion" />
+                    <img src="@Url.Content(Model.Directorio.Museo.RutaColeccion3)" alt="Coleccion" />
+                </div>
+            </div>
+    }
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        CargarListaMunicipios();
+
+        $('#Directorio_CodigoDepartamento').change(function () {
+            CargarListaMunicipios();
+        });
+
+        $('#Directorio_CodigoMunicipio').change(function () {
+            AsignarDeptoMpio();
+        });
+    });
+
+    function CargarListaMunicipios() {
+
+        var selectedItem = $('#Directorio_CodigoDepartamento').val();
+        var destination = $('#Directorio_CodigoMunicipio');
+
+        if (selectedItem != null && selectedItem != '') {
+            $.getJSON('@Url.Action("Municipios")', { zonaPadreId: selectedItem }, function (municipio) {
+
+                destination.empty();
+                destination.append('<option value="">Seleccione una ciudad ...</option>');
+
+                $.each(municipio, function (index, item) {
+                    if (item.Id == '@Model.Directorio.CodigoMunicipio') {
+                        destination.append('<option value="' + item.Id + '" selected="selected">' + item.Nombre + '</option>');
+                        AsignarDeptoMpio();
+                    } else {
+                        destination.append('<option value="' + item.Id + '">' + item.Nombre + '</option>');
+                    }
+                    destination.trigger("chosen:updated");
+                });
+            });
+        }
+        else {
+            destination.empty();
+            destination.trigger("chosen:updated");
+        }
+    }
+
+    function AsignarDeptoMpio() {
+
+        var selectedTextDepto = $("#Directorio_CodigoDepartamento option:selected").text();
+        var selectedTextMpio = $("#Directorio_CodigoMunicipio option:selected").text();
+
+        $('#Directorio_Departamento').val(selectedTextDepto);
+        $('#Directorio_Municipio').val(selectedTextMpio);
+    }
+</script>

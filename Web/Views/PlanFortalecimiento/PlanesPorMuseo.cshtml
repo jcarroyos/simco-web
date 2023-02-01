@@ -1,0 +1,258 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model PlanActividadModel
+@{
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Diagnóstico técnico y Plan de fortalecimiento</h2>
+@using (Html.BeginForm("PlanesPorMuseo", "PlanFortalecimiento", FormMethod.Post))
+{
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CambiarNivel)
+    @Html.HiddenFor(model => model.RegistrosModificados)
+    @Html.HiddenFor(model => model.Plan.PejId)
+
+    if (Model.Plan.Id != 0)
+    {
+
+            <fieldset>
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-label">
+                            @Html.LabelFor(model => model.Plan.Plan)
+                        </div>
+                    </div>
+                </div>
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-control">
+                            @Html.TextBoxFor(model => model.Plan.Plan, new { @readonly = "readonly", style = "width:570px;" })
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-label">
+                            @Html.LabelFor(model => model.Plan.Anio)
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="formulario-label">
+                            @Html.LabelFor(model => model.Plan.Fecha)
+                        </div>
+                    </div>
+                </div>
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-control">
+                            @Html.TextBoxFor(model => model.Plan.Anio, new { @readonly = "readonly", style = "width:80px; " })
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="formulario-control">
+                            @Html.TextBoxFor(model => model.Plan.Fecha, new { @readonly = "readonly", style = "width:150px; " })
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+                <p>En el siguiente recuadro encontrará un diagnóstico técnico basado en la información que usted suministró en la Encuesta de registro y clasificación como entidad museal ante el Programa Fortalecimiento de Museos: </p>
+                <p>@Html.Raw(HttpUtility.HtmlDecode(Model.Plan.Diagnostico))</p>
+                <p> A continuación se sugiere una serie de actividades en las diferentes áreas museológicas, que le permitirá fortalecer la gestión de su entidad museal. Haciendo click en cada una de las categorías se desplegará un listado de actividades, en la medida que sean resultas, podrá usted señalarla como una tarea cumplida y avanzar en la siguiente labor hasta cumplir la totalidad de las mismas en cada categoría. Una vez finalizada las actividades, tendrá la opción de avanzar a un nuevo nivel que le permitirá fortalecer los estándares técnicos de su entidad. Nota: Si requiere una asesoría especializada sobre las actividades relacionadas, ingrésela con el nombre de su entidad museal en el siguiente enlace: <a href="http://simco.museoscolombianos.gov.co/SolicitudesPublicas">Solicitudes públicas</a> </p>
+
+            </fieldset>
+
+            <fieldset>
+                <div class="treeView-opciones">
+                    <div class="treeView-opciones-derecha">
+                        @Html.ActionLink(Constante.BotonCrearSolicitud, "NuevaSolicitud", "Solicitudes", new object(), new { @class = "boton" })
+                    </div>
+                    <div class="treeView-opciones-izquierda">
+                        <br />
+                        <legend>Actividades</legend>
+                    </div>
+                </div>
+
+                <div class="grilladatos-tabla-scroll">
+                    <div style="width: 2000px">
+                        @{ Html.Kendo().Grid((IEnumerable<PlanTemaModel>)Model.PlanTemas)
+                        .Name("GridActividades")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Categoria.Categoria).Width(150);
+                            columns.Bound(o => o.Tema.Id).Hidden(true);
+                            columns.Bound(o => o.Tema.Objetivo).Width(250);
+                            columns.Bound(o => o.Tema.Meta).Width(250);
+                            columns.Bound(o => o.Tema.Indicador).Width(150);
+                            columns.Bound(o => o.Tema.RecursoSugerido).Width(250);
+                            columns.Bound(o => o.Tema.MedioVerificacion).Width(150);
+                        })
+                        .Pageable()
+                        .RowAction(row =>
+                        {
+                            var requestKeys = Request.QueryString.Keys.Cast<string>();
+                            var expanded = requestKeys.Any(key => key.StartsWith("GridActividades" + row.DataItem.Id)
+                                || key.StartsWith("GridSeguimiento_" + row.DataItem.Id));
+                            row.DetailRow.Expanded = expanded;
+                        })
+                        .DetailTemplate(@<text>
+                            <div style="width: 700px">
+                                @{ Html.Kendo().Grid(item.PlanesActividades)
+                                    .Name("GridSeguimiento_" + item.Id)
+                                    .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Model(model => model.Field(o => o.Id))
+                                    .Model(model => model.Field(o => o.Actividad).Editable(true))
+                                    .Model(model => model.Field(o => o.Realizada).Editable(true))
+                                    .Model(model => model.Field(o => o.Descripcion).Editable(false))
+                                    .ServerOperation(false)
+                                    .PageSize(30)
+                                    )
+                                    .Columns(columns =>
+                                    {
+                                        columns.Bound(o => o.Id).Hidden(true);
+                                        columns.Bound(o => o.PlanesTemaId).Hidden(true);
+                                        columns.Bound(o => o.ActividadId).Hidden(true);
+                                        columns.Bound(o => o.Actividad).Width(660).Title("Actividades");
+                                        columns.Bound(o => o.Realizada).ClientTemplate("<input type='checkbox' #= Realizada ? checked='checked' :'' # />");
+                                        columns.Bound(o => o.Descripcion).Width(660).Title("Descripcion");
+                                    })
+                                    .Render();
+                                }
+                            </div>
+                        </text>)
+                        .Render();
+                        }
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <div class="formulario-botones">
+                    <input type="submit" value="@Html.Raw(Constante.BotonGuardarPlan)" name="GuardarPlan" class="boton" onclick="return ActualizarData();" />
+                    @Html.ActionLink("Descargar Plan", "GenerarPDFPlan", "PlanFortalecimiento", new { planId = Model.Plan.Id }, new { @class = "boton" })
+                    @Html.ActionLink(Constante.BotonCancelar, "PlanesPorMuseo", "PlanFortalecimiento", new object(), new { @class = "boton" })
+                </div>
+            </fieldset>
+
+    }
+    else
+    {
+
+        <fieldset>
+            <p>Por el momento, no tiene asignado ningún plan.</p>
+        </fieldset>
+
+    }
+
+    <style>
+        #k-detail-row {
+            display: grid;
+        }
+    </style>
+
+    <script type="text/javascript">
+
+        function ActualizarData() {
+            var seleccionados = 0;
+            var $rows;
+            var totalrows = 0;
+            var updatedRecords = [];
+            var id;
+            var planesTemaId;
+            var actividadId;
+            var objetoPlanesActividades = {};
+
+            $('div[id^=GridSeguimiento_]').each(function () {
+
+                //totalrows = totalrows + $rows.length;
+
+                $("#" + this.id + ' tr').each(function () {
+                    totalrows += 1;
+
+                    var nodeList = $(this)[0].childNodes;
+                    $.each(nodeList, function (index, node) {
+
+                        if (index == 4) {
+                            if (node.firstChild != null && node.firstChild.localName == "input") {
+
+                                id = nodeList[0].innerHTML;
+                                planesTemaId = nodeList[1].innerHTML;
+                                actividadId = nodeList[2].innerHTML;
+
+                                if (node.firstChild.checked) {
+                                    seleccionados += 1;
+
+                                    objetoPlanesActividades = {
+                                        Id: id,
+                                        PlanesTemaId: planesTemaId,
+                                        ActividadId: actividadId,
+                                        Realizada: true
+                                    };
+
+                                    if (typeof objetoPlanesActividades !== "undefined") {
+                                        updatedRecords.push(objetoPlanesActividades);
+                                    }
+                                }
+                                else {
+                                    if (id != "0") {
+                                        seleccionados -= 1;
+
+                                        objetoPlanesActividades = {
+                                            Id: id,
+                                            PlanesTemaId: planesTemaId,
+                                            ActividadId: actividadId,
+                                            Realizada: false
+                                        };
+
+                                        if (typeof objetoPlanesActividades !== "undefined") {
+                                            updatedRecords.push(objetoPlanesActividades);
+                                        }
+                                    }
+                                }
+                            }
+
+
+                        }  //Fin If
+
+                    }); // Fin Each
+                }); // Fin for
+            });  // Fin each
+
+            if (seleccionados == totalrows) {
+                if (confirm("Felicitaciones, ha cumplido a cabalidad con cada una de las actividades de esta categoría, desea avanzar a un nuevo nivel ?")) {
+                    $('#CambiarNivel').val(true);
+                }
+            }
+
+            $('#RegistrosModificados').val(JSON.stringify(updatedRecords).replace(/\/Date/g, "\\\/Date").replace(/\)\//g, "\)\\\/"));
+
+            return ActualizarPlan();
+        }
+
+        function ActualizarPlan() {
+            var registrosModificados = $('#RegistrosModificados').val();
+
+            if (registrosModificados != null) {
+                $.ajax({
+                    url: '@Url.Action("PlanesPorMuseo", "PlanFortalecimiento")',
+                    type: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    data: "{ registros: '" + registrosModificados + "' }"
+                }).done(function () {
+                    //alert("Los cambios realizados fueron guardados correctamente");
+                });
+
+                alert("Los cambios realizados fueron guardados correctamente");
+            }
+
+            return true;
+        }
+    </script>
+
+}

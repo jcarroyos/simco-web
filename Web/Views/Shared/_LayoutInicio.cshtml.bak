@@ -1,0 +1,192 @@
+﻿@using Simco.Infrastructure.Notification
+@using Simco.CrossInfraestructureLayer
+@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sistema de Información de Museos Colombianos (SIMCO)</title>
+    @* Kendo *@
+    <link href="@Url.Content("~/Content/kendo/2015.2.902/kendo.common-bootstrap.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2015.2.902/kendo.mobile.all.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2015.2.902/kendo.dataviz.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2015.2.902/kendo.bootstrap.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2015.2.902/kendo.dataviz.bootstrap.min.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/kendo/2015.2.902/jquery.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2015.2.902/jszip.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2015.2.902/kendo.all.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2015.2.902/kendo.aspnetmvc.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo.modernizr.custom.js")"></script>
+
+    @* validate.unobtrusive *@
+    <script src="@Url.Content("~/Scripts/jquery.validate.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")"></script>
+
+    @* chosen *@
+    <link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/chosen.jquery.min.js")"></script>
+
+    @* jHtmlArea *@
+    <link href="@Url.Content("~/Content/jHtmlArea/jHtmlArea.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/jHtmlArea-0.8.min.js")"></script>
+
+    @* Simco *@
+    <link href="@Url.Content("~/Content/main.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/simco.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/Simco.js")"></script>
+
+    @* noty *@
+    <script src="@Url.Content("~/Scripts/noty/jquery.noty.js")"></script>
+    <script src="@Url.Content("~/Scripts/noty/packaged/jquery.noty.packaged.js")"></script>
+    <script src="@Url.Content("~/Scripts/noty/layouts/top.js")"></script>
+    <script src="@Url.Content("~/Scripts/noty/themes/relax.js")"></script>
+
+    @* highcharts *@
+    <script src="@Url.Content("~/Scripts/highcharts/highcharts.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/highcharts/highcharts-3d.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/highcharts/modules/exporting.js")" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-35787551-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
+    </script>
+
+    @RenderSection("scripts", required: false)
+
+</head>
+<body>
+
+    <div class="cabecera">
+        <a href="@Url.Action("Index", "Inicio" )">
+            <img src="~/Images/titulosimco.png" alt="Sistema de Informacion de Museos Colombianos" />
+        </a>
+        <div class="formulario-login">
+            <div class="nombreusuario">@User.Identity.Name</div>
+            <div class="cerrarSesion">@Html.ActionLink(Constante.BotonCerrarSesion, "CerrarSesion", "Inicio", new object(), new { @class = "menu" })</div>
+        </div>
+    </div>
+
+    <div class="cuerpo-interno">
+        <div class="cuerpo-menu">
+            <div class="cuerpo-menu-interno">
+                @if (Session["PerfilFuncionalidades"] != null) {
+                foreach (var menu in ((IEnumerable<PerfilFuncionalidadesModel>)Session["PerfilFuncionalidades"]).Where(x=> x.Funcionalidades.ChkActivo==true))
+                {
+                    if (menu.Funcionalidades.PadreId == null )
+                    {
+                        if (!string.IsNullOrEmpty(menu.Funcionalidades.Url))
+                        {
+                            <a class="menu" href=@menu.Funcionalidades.Url style="font-weight: bold;">@menu.Funcionalidades.Nombre</a>
+                        }
+                        else
+                        {
+                            <strong>@menu.Funcionalidades.Nombre</strong>
+                        }
+
+                        if (menu.Funcionalidades.Nombre == "Grupos de usuarios")
+                        {
+                            if (ViewBag.GruposDeUsuarios != null && ViewBag.GruposDeUsuarios.Count > 0)
+                            {
+                                <ul class="menu">
+                                    @foreach (GrupoDeUsuariosModel item in ViewBag.GruposDeUsuarios)
+                                    {
+                                        <li>
+                                            @Html.ActionLink(item.Nombre, "Grupo", "Administrador", new { id = Criptografia.EncriptarUrl(item.Id.ToString()) }, new { @class = "menu" })
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        }
+
+
+                    }
+                    else
+                    {
+                        switch (menu.Funcionalidades.Nombre)
+                        {
+                            case "Actualizar datos":
+                                <ul class="menu">
+                                    <li>
+                                        @if (!string.IsNullOrEmpty(ViewBag.TipoAgente) && ViewBag.TipoAgente == TiposAgente.PersonaNatural.ToString())
+                                        {
+                                            @Html.ActionLink("Actualizar datos", "PersonaNatural", "ActualizarDatos", new object(), new { @class = "menu" })
+                                        }
+                                        else if (!string.IsNullOrEmpty(ViewBag.TipoAgente) && ViewBag.TipoAgente == TiposAgente.EntidadMuseal.ToString())
+                                        {
+                                            @Html.ActionLink("Actualizar datos", "PersonaJuridica", "ActualizarDatos", new object(), new { @class = "menu" })
+                                        }
+                                        else if (!string.IsNullOrEmpty(ViewBag.TipoAgente) && ViewBag.TipoAgente == TiposAgente.InstitucionAliada.ToString())
+                                        {
+                                            @Html.ActionLink("Actualizar datos", "InstitucionAliada", "ActualizarDatos", new object(), new { @class = "menu" })
+                                        }
+                                    </li>
+                                </ul>
+                                break;
+                            case "Plan asignado":
+                                if (ViewBag.TienePlan)
+                                {
+                                    <ul class="menu">
+                                        <li>
+                                            @Html.ActionLink("Plan asignado", "PlanesPorMuseo", "PlanFortalecimiento", new object(), new { @class = "menu" })
+                                        </li>
+                                    </ul>
+                                }
+                                break;
+                            default:
+                                <ul class="menu">
+                                    <li>
+                                        <a class="menu" href=@menu.Funcionalidades.Url>@menu.Funcionalidades.Nombre</a>
+                                    </li>
+                                </ul>
+                                break;
+                        }
+                    }
+
+                    if (menu.Funcionalidades.PadreId == null)
+                    {
+                        <div class="separador">
+                        </div>
+                        
+                    }
+                }
+            </div>
+        </div>
+
+        <section class="formulario-interno">
+            @RenderBody()
+        </section>
+
+        <div class="espacio-Gris"></div>
+        <div class="zlogos texto-a-la-derecha">
+            <img src="~/Images/logos.png">
+        </div>
+
+        <div class="zseparador"></div>
+        <div class="zFooter">
+            <p>
+                PROGRAMA FORTALECIMIENTO DE MUSEOS<br />
+                MUSEO NACIONAL DE COLOMBIA<br />
+                MINISTERIO DE CULTURA<br />
+                CARRERA 7 No. 28 - 66<br />
+                Tel&eacute;fono: (57 + 1) 3816470 Ext. 2217 - 2214<br />
+                Email: simco@museonacional.gov.co<br />
+                BOGOT&Aacute; D.C. - COLOMBIA<br />
+            </p>
+        </div>
+
+    </div>
+
+    <div>
+        @Html.RenderMessages()
+    </div>
+</body>
+</html>

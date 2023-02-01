@@ -1,0 +1,340 @@
+﻿@using System.Configuration
+@using Microsoft.Web.Helpers
+@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+
+@model InicioSesionModel
+@{
+    ReCaptcha.PublicKey = ConfigurationManager.AppSettings["ReCaptchaPublicKey"];
+    ViewBag.Title = "Registro institución aliada";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Registro de empresas o instituciones aliadas</h1>
+<p> Le damos la bienvenida al  registro de  instituciones y empresas  que prestan y ofrecen asesorías, productos  y/o servicios al sector museal colombiano. Con el registro de esta información en SIMCO se podrá establecer  redes de contacto y consolidar un directorio de oferta se servicios para este sector.</p>
+<p> A continuación encontrará un cuestionario donde podrá registrar datos básicos de contacto y una breve descripción del perfil de la institución, lo cual permitirá brindar mayor información a quienes estén interesados en acceder a servicios especializados. </p>
+
+<div class="formulario">
+
+    @using (Html.BeginForm("InstitucionAliada", "Registro", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+
+        @Html.ValidationSummary(true)
+
+        @Html.HiddenFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.Departamento)
+        @Html.HiddenFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.Municipio)
+
+        <fieldset>
+
+            <legend class="texto-negrita">Información de usuario</legend>
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.CorreoElectronico)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.CorreoElectronico)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.CorreoElectronico)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.Contrasena)
+                </div>
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.ConfirmarContrasena)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.EditorFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.Contrasena)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.Contrasena)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.EditorFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.ConfirmarContrasena)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.ConfirmarContrasena)
+                    </div>
+                </div>
+            </div>
+            <br />
+        </fieldset>
+
+        <fieldset>
+            <legend class="texto-negrita">Información personal</legend>
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.NombreDeLaInstitucion)
+                </div>
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.NombreContacto)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.NombreDeLaInstitucion)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.NombreDeLaInstitucion)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.NombreContacto)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.NombreContacto)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.Nit)
+                </div>
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.Categoria)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.Nit)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.Nit)
+                    </div>
+                </div>
+                <div class="box">
+                    @Html.DropDownListFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.Categoria, new SelectList(Model.PersonaJuridicaRegistroModel.TiposPersonaJuridica, "Valor", "Etiqueta", Model.PersonaJuridicaRegistroModel.PersonaJuridica.Categoria), "Seleccione una categoria...", new { data_placeholder = "Seleccione una categoria...", @class = "chosen" })
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.Categoria)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <em>*</em> @Html.LabelFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.Resena)
+            <div class="formulario-control">
+                @Html.TextAreaFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.DescripcionInstitucion)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.DescripcionInstitucion)
+            </div>
+            <br />
+        </fieldset>
+
+        <fieldset>
+            <legend class="texto-negrita">Información de contacto</legend>
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.Departamento)
+                </div>
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.Municipio)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    @Html.DropDownListFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.CodigoDepartamento, new SelectList(Model.PersonaJuridicaRegistroModel.Departamentos, "Id", "Nombre", Model.PersonaJuridicaRegistroModel.PersonaJuridica.CodigoDepartamento), "Seleccione un departamento...", new { data_placeholder = "Seleccione un departamento...", @class = "chosen" })
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.CodigoDepartamento)
+                    </div>
+                </div>
+                <div class="box">
+                    @Html.DropDownListFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.CodigoMunicipio, Enumerable.Empty<SelectListItem>(), "Seleccione una ciudad o municipio...", new { data_placeholder = "Seleccione una ciudad o municipio...", @class = "chosen" })
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.CodigoMunicipio)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    @Html.LabelFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.DireccionCorrespondencia)
+                </div>
+                <div class="box">
+                    @Html.LabelFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.TelefonoFijo)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.DireccionCorrespondencia)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.DireccionCorrespondencia)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.TelefonoFijo)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.TelefonoFijo)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    @Html.LabelFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.SitioWebInstitucional)
+                </div>
+                <div class="box">
+                    @Html.LabelFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.TelefonoCelular)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.SitioWebInstitucional)
+                    </div>
+                    <div class="formulario-control-nota">
+                        Ej: http://www.museoscolombianos.gov.co/
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.SitioWebInstitucional)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.TelefonoCelular)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.TelefonoCelular)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    @Html.LabelFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.ImageUpload)
+                </div>
+            </div>
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.ImageUpload, new { type = "file", accept = "image/*" })
+            </div>
+            <div class="formulario-control-nota">
+                @Html.Raw(Constante.ErrorSoloImagenes)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.ImageUpload)
+            </div>
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.Label(@Constante.Captcha)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        <div class="g-recaptcha" data-sitekey="@ConfigurationManager.AppSettings["ReCaptchaPublicKey"]"></div>
+                    </div>
+                </div>
+            </div>
+
+            <br />
+        </fieldset>
+
+        <fieldset>
+            <legend class="texto-negrita">Tratamiento de la información: </legend>
+
+            <div class="formulario-control">
+                <textarea readonly>El Programa Fortalecimiento de Museos (P.F.M.), como responsable y/o como encargado del tratamiento de datos personales y de entidades museales registradas en este módulo, solicitará al final del registro de datos personales, su autorización para que de manera libre, previa, expresa, voluntaria y debidamente informada, permita, recolectar, recaudar, almacenar, usar, circular, suprimir, procesar, compilar, intercambiar, dar tratamiento, actualizar, compartir, transmitir y/o transferir a terceros, y disponer de los datos que han sido suministrados, (Conforme a la ley 1581 de 2012, Régimen General de Protección de Datos Personales), y que se han incorporado o se incorporen en distintos archivos, bases o bancos de datos, o en repositorios electrónicos de todo tipo con que cuenta nuestro Programa.
+
+De conformidad con el numeral 4 del artículo 10 del decreto 1377 de 2013, si transcurridos treinta (30) días hábiles contados a partir del ingreso de información en SIMCO, si el Programa Fortalecimiento de Museos (P.F.M.) no recibe una solicitud de supresión de sus datos personales, podrá seguir haciendo uso de ellos sin perjuicio que el titular la información pueda ejercer posteriormente éste y los demás derechos contemplados por la Ley.
+
+Esta información es y será utilizada en el desarrollo de los procesos administrativos y de gestión que se consideren pertinentes en el sector museal. En el evento en que se considere que el P.F.M. dio un uso contrario al autorizado y a las leyes aplicables, podrá contactarnos a través del correo electrónico: simco@museonacional.gov.co;
+                </textarea>
+            </div>
+
+            <div class="formulario-control">
+                <p>@Html.CheckBoxFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.InformacionPublica) @Html.LabelFor(model => model.PersonaJuridicaRegistroModel.PersonaJuridica.InformacionPublica)</p>
+            </div>
+
+        </fieldset>
+
+        <div class="centrarBotones">
+            @Html.ActionLink(Constante.BotonCancelar, "Index", "Registro", new object(), new { @class = "boton" })
+            <input type="submit" value="@Html.Raw(Constante.BotonRegistrarse)" name="Registrarse" class="boton" />
+        </div>
+
+    }
+
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        CargarListaMunicipios();
+
+        $('#PersonaJuridicaRegistroModel_PersonaJuridica_CodigoDepartamento').change(function () {
+            CargarListaMunicipios();
+        });
+
+        $('#PersonaJuridicaRegistroModel_PersonaJuridica_CodigoMunicipio').change(function () {
+            AsignarDeptoMpio();
+        });
+
+    });
+
+    function CargarListaMunicipios() {
+
+        var selectedItem = $('#PersonaJuridicaRegistroModel_PersonaJuridica_CodigoDepartamento').val();
+        var destination = $('#PersonaJuridicaRegistroModel_PersonaJuridica_CodigoMunicipio');
+
+        if (selectedItem != null && selectedItem != '') {
+            $.getJSON('@Url.Action("Municipios")', { zonaPadreId: selectedItem }, function (municipio) {
+
+                destination.empty();
+                destination.append('<option value="">Seleccione una ciudad o municipio...</option>');
+
+                $.each(municipio, function (index, item) {
+                    if (item.Id == '@Model.PersonaJuridicaRegistroModel.PersonaJuridica.CodigoMunicipio') {
+                        destination.append('<option value="' + item.Id + '" selected="selected">' + item.Nombre + '</option>');
+                        AsignarDeptoMpio();
+                    } else {
+                        destination.append('<option value="' + item.Id + '">' + item.Nombre + '</option>');
+                    }
+                    destination.trigger("chosen:updated");
+                });
+
+            });
+        }
+        else {
+            destination.empty();
+            destination.trigger("chosen:updated");
+        }
+    }
+
+    function AsignarDeptoMpio() {
+
+        var selectedTextDepto = $("#PersonaJuridicaRegistroModel_PersonaJuridica_CodigoDepartamento option:selected").text();
+        var selectedTextMpio = $("#PersonaJuridicaRegistroModel_PersonaJuridica_CodigoMunicipio option:selected").text();
+
+        $('#PersonaJuridicaRegistroModel_PersonaJuridica_Departamento').val(selectedTextDepto);
+        $('#PersonaJuridicaRegistroModel_PersonaJuridica_Municipio').val(selectedTextMpio);
+    }
+
+</script>

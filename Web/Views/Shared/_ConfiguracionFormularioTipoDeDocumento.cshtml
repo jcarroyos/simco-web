@@ -1,0 +1,54 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model ConfiguracionTipoDocumentoModel
+
+@if (Model != null)
+{
+    using (Html.BeginForm("TiposDeDocumentos", "Administrador", FormMethod.Post, new { id = "FormTiposDeDocumentos" }))
+    {
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+            
+            <p>Los campos marcados con asterisco (*) son obligatorios</p>
+                    
+            @Html.HiddenFor(model => model.TipoDeDocumentoValorOriginal)
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> @Html.LabelFor(model => model.TipoDeDocumento)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.TipoDeDocumento, new { style = "width:550px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.TipoDeDocumento)
+                    </div>
+                </div>
+            </div>
+            <br />
+        </fieldset>
+
+        <div class="formulario-botones">
+            <input type="submit" value="@Html.Raw(Constante.BotonGuardarCambios)" name="GuardarCambios" class="boton" />
+            @if(!string.IsNullOrEmpty(Model.TipoDeDocumentoValorOriginal))
+            {
+                @Html.ActionLink(Constante.BotonEliminarTipoDoc, "EliminarTipoDeDocumento", "Administrador", new {Id = Model.TipoDeDocumentoValorOriginal}, new {@class = "boton", id = "btnEliminarTipoDocumento"})
+            }
+        </div>
+    }
+}
+
+<script type="text/javascript">
+
+    $("#btnEliminarTipoDocumento").click(function () {
+        return confirm('¿Está seguro de que desea eliminar el tipo de documento?');
+    });
+
+</script>

@@ -1,0 +1,601 @@
+﻿@using Simco.Infrastructure.Notification
+@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model CategoriaNuevaModel
+@{
+    ViewBag.Title = "NuevaCategoria";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+@using (Html.BeginForm("NuevaCategoria", "PlanFortalecimiento", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.PantallaMostrar)
+    @Html.HiddenFor(model => model.Categoria.Id)
+    @Html.HiddenFor(model => model.Tema.Id)
+    @Html.HiddenFor(model => model.Actividad.Id)
+
+    <div id="divCategoria" style="margin-top: 5px;">
+
+        <h2>Registro de una nueva categoría</h2>
+
+        <fieldset>
+            <legend>Información de la categoría</legend>
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> @Html.LabelFor(model => model.Categoria.Categoria)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.Categoria.Categoria, new { style = "width:590px; " })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.Categoria.Categoria)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.Categoria.Descripcion)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="formulario-control">
+                    @Html.TextAreaFor(model => model.Categoria.Descripcion, new { style = "width:600px; height: 180px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Categoria.Descripcion)
+                </div>
+            </div>
+            <br />
+
+        </fieldset>
+
+        <fieldset>
+            <div class="grilladatos-opciones">
+                <div class="grilladatos-opciones-derecha">
+                    <legend>Temas</legend>
+                    <div class="clear">
+                    </div>
+                    <div id="BtnCrearNuevoPlan" class="boton">
+                        @Html.Raw(Constante.BotonCrearTema)
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <div class="grilladatos-tabla-scroll">
+                <div style="width: 2000px">
+                    @(Html.Kendo().Grid(Model.Temas)
+                       .Name("GridTemas")
+                       .Columns(columns =>
+                       {
+                           columns.Bound(o => o.Nivel).Width(40);
+                           columns.Bound(o => o.Tema).Template(o => @Html.ActionLink(@HtmlHelperExtensions.Truncate(o.Tema, 60), "NuevaCategoria", "PlanFortalecimiento", new { id = Criptografia.EncriptarUrl(o.Id.ToString()), pantalla = "Tema" }, null)
+                               ).Title("Tema").Width(180);
+                           columns.Bound(o => o.Objetivo).Width(150);
+                           columns.Bound(o => o.Meta).Width(150);
+                           columns.Bound(o => o.Indicador).Width(150);
+                           columns.Bound(o => o.MedioVerificacion).Width(150);
+                           columns.Bound(o => o.RecursoSugerido).Width(150);
+                       })
+                       .Sortable()
+                       .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} temas")
+                                .Empty("No se encontraron temas")
+                                .First("Ir a la primera página")
+                                .Last("Ir a la última página")
+                                .Next("Ir a la página siguiente")
+                                .Previous("Ir a la página anterior")))
+                    )
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="izquierdaBotones">
+            <input type="submit" value="@Html.Raw(Constante.BotonGuardarCategoria)" name="CrearCategoria" class="boton" /> @Html.ActionLink(Constante.BotonCancelar, "CargarCategorias", "PlanFortalecimiento", new object(), new { @class = "boton" })
+        </div>
+    </div>
+
+    <div id="divTema" style="margin-top: 5px;">
+
+        <h2>Registro de un nuevo tema</h2>
+        <fieldset>
+            <legend>Información del tema</legend>
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> @Html.LabelFor(model => model.Tema.Tema)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.Tema.Tema, new { style = "width:590px; " })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.Tema.Tema)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.Tema.Descripcion)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextAreaFor(model => model.Tema.Descripcion, new { style = "width:600px; height: 150px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.Tema.Descripcion)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> @Html.LabelFor(model => model.Tema.Nivel)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.DropDownListFor(model => model.Tema.Nivel, new SelectList(Model.Tema.Niveles, "Id", "Nivel", Model.Tema.Nivel), new { @class = "chosen", style = "width:140px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.Tema.Nivel)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> @Html.LabelFor(model => model.Tema.Objetivo)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextAreaFor(model => model.Tema.Objetivo, new { style = "width:600px; height: 150px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.Tema.Objetivo)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.Tema.Meta)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextAreaFor(model => model.Tema.Meta, new { style = "width:600px; height: 150px;" })
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.Tema.Indicador)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextAreaFor(model => model.Tema.Indicador, new { style = "width:600px; height: 150px;" })
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.Tema.MedioVerificacion)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextAreaFor(model => model.Tema.MedioVerificacion, new { style = "width:600px; height: 150px;" })
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.Tema.RecursoSugerido)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+
+                    <div class="formulario-control">
+                        @Html.TextAreaFor(model => model.Tema.RecursoSugerido, new { style = "width:600px; height: 150px;" })
+                    </div>
+                </div>
+            </div>
+            <br />
+
+        </fieldset>
+
+        <fieldset>
+            <div class="grilladatos-opciones">
+                <div class="grilladatos-opciones-derecha">
+                    <legend>Actividades</legend>
+                    <div class="clear">
+                    </div>
+                    <div id="BtnCrearNuevaActividad" class="boton">
+                        @Html.Raw(Constante.BotonCrearActividad)
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <div class="clear">
+            </div>
+            <div class="grilladatos-tabla">
+                @(Html.Kendo().Grid(Model.Actividades)
+                    .Name("GridActividades")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(o => o.Actividad).Template(o => @Html.ActionLink(@HtmlHelperExtensions.Truncate(o.Actividad, 60), "NuevaCategoria", "PlanFortalecimiento", new { id = Criptografia.EncriptarUrl(o.Id.ToString()), Pantalla = "Actividad" }, null)
+                            ).Title("Actividades").Width(350);
+                        columns.Bound(o => o.Descripcion).Width(250);
+                        columns.Bound(o => o.Estado);
+                    })
+                    .Sortable()
+                    .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} actividades")
+                                .Empty("No se encontraron actividades")
+                                .First("Ir a la primera página")
+                                .Last("Ir a la última página")
+                                .Next("Ir a la página siguiente")
+                                .Previous("Ir a la página anterior")))
+                )
+            </div>
+        </fieldset>
+
+        <div class="izquierdaBotones">
+            <input type="submit" value="@Html.Raw(Constante.BotonGuardarTema)" name="CrearTema" class="boton" /><div id="BtnCancelarTema" class="boton-cancelar"> @Html.Raw(Constante.BotonCancelar) </div>
+        </div>
+
+    </div>
+
+    <div id="divActividad" class="formulario-oculto" style="margin-top: 5px;">
+
+        <h2>Registro de una nueva actividades</h2>
+        <fieldset>
+            <legend>Información de la actividades</legend>
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> @Html.LabelFor(model => model.Actividad.Actividad)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.Actividad.Actividad, new { style = "width:550px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.Actividad.Actividad)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.Actividad.Estado)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+
+                    <div class="formulario-control">
+                        Activa @Html.CheckBoxFor(model => model.Actividad.Estado)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.Actividad.Estado)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.Actividad.Descripcion)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextAreaFor(model => model.Actividad.Descripcion, new { style = "width:600px; height: 200px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.Actividad.Descripcion)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+        </fieldset>
+
+        <div class="izquierdaBotones">
+            <input type="submit" value="@Html.Raw(Constante.BotonGuardarActividad)" name="CrearActividad" class="boton" /> <div id="BtnCancelarActividad" class="boton-cancelar">@Html.Raw(Constante.BotonCancelar)</div>
+        </div>
+    </div>
+
+}
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        CargarPantalla();
+
+        $('#BtnCrearNuevoPlan').click(function () {
+            LimpiarPantallaCategoria();
+            CargaPantallaTema();
+        });
+
+        $('#BtnCrearNuevaActividad').click(function () {
+            LimpiarPantallaActividad();
+            CargaPantallaActividad();
+        })
+
+        $('#BtnCancelarTema').click(function () {
+            CargaPantallaCategoria();
+        });
+
+        $('#BtnCancelarActividad').click(function () {
+            CargaPantallaTema();
+        });
+
+        $('#BtnAceptarActividad').click(function () {
+            CargaPantallaTema();
+        });
+
+    });
+
+    function LimpiarPantallaCategoria() {
+        $('#Tema_Id').val('0');
+        $('#Tema_Tema').val('');
+        $('#Tema_Descripcion').htmlarea('html', ' ');
+        $('#Tema_Objetivo').htmlarea('html', ' ');
+        $('#Tema_Meta').htmlarea('html', ' ');
+        $('#Tema_Indicador').htmlarea('html', ' ');
+        $('#Tema_RecursoSugerido').htmlarea('html', ' ');
+        $('#Tema_MedioVerificacion').htmlarea('html', ' ');
+    }
+
+    function LimpiarPantallaActividad() {
+        $('#Actividad_Id').val('0');
+        $('#Actividad_Actividad').val('');
+        $('#Actividad_Descripcion').htmlarea('html', ' ');
+    }
+
+    function CargarPantalla() {
+        var pantalla = $('#PantallaMostrar').val().toString();
+        switch (pantalla) {
+            case "Categoria":
+                CargaPantallaCategoria();
+                break;
+            case "Tema":
+                CargaPantallaTema();
+                break;
+            case "Actividad":
+                CargaPantallaActividad();
+                break;
+        }
+    }
+
+    function CargaPantallaCategoria() {
+        $('#divCategoria').show();
+        $('#divTema').hide();
+        $('#divActividad').hide();
+        $('#PantallaMostrar').val('NuevoCategoria');
+    }
+
+    function CargaPantallaTema() {
+        $('#divCategoria').hide();
+        $('#divTema').show();
+        $('#divActividad').hide();
+        $('#PantallaMostrar').val('Categoria');
+    }
+
+    function CargaPantallaActividad() {
+        $('#divCategoria').hide();
+        $('#divTema').hide();
+        $('#divActividad').show();
+        $('#PantallaMostrar').val('Tema');
+    }
+
+    $(function () {
+        $("#Categoria_Descripcion").htmlarea({
+            toolbar: [
+                ["bold", "italic", "underline", "strikethrough", "|", "subscript", "superscript"],
+                ["increasefontsize", "decreasefontsize"], ["orderedlist", "unorderedlist"], ["indent", "outdent"],
+                ["justifyleft", "justifycenter", "justifyright"], ["link", "unlink", "image", "horizontalrule"],
+                ["p", "h1", "h2", "h3", "h4", "h5", "h6"], ["cut", "copy", "paste"],
+            ],
+
+            toolbarText: $.extend({}, jHtmlArea.defaultOptions.toolbarText, {
+                "bold": "Negrita",
+                "italic": "Cursiva",
+                "underline": "Subrayado"
+            }),
+
+        });
+    });
+
+    $(function () {
+        $("#Tema_Descripcion").htmlarea({
+            toolbar: [
+                ["bold", "italic", "underline", "strikethrough", "|", "subscript", "superscript"],
+                ["increasefontsize", "decreasefontsize"], ["orderedlist", "unorderedlist"], ["indent", "outdent"],
+                ["justifyleft", "justifycenter", "justifyright"], ["link", "unlink", "image", "horizontalrule"],
+                ["p", "h1", "h2", "h3", "h4", "h5", "h6"], ["cut", "copy", "paste"],
+            ],
+
+            toolbarText: $.extend({}, jHtmlArea.defaultOptions.toolbarText, {
+                "bold": "Negrita",
+                "italic": "Cursiva",
+                "underline": "Subrayado"
+            }),
+
+        });
+    });
+
+    $(function () {
+        $("#Tema_Objetivo").htmlarea({
+            toolbar: [
+                ["bold", "italic", "underline", "strikethrough", "|", "subscript", "superscript"],
+                ["increasefontsize", "decreasefontsize"], ["orderedlist", "unorderedlist"], ["indent", "outdent"],
+                ["justifyleft", "justifycenter", "justifyright"], ["link", "unlink", "image", "horizontalrule"],
+                ["p", "h1", "h2", "h3", "h4", "h5", "h6"], ["cut", "copy", "paste"],
+            ],
+
+            toolbarText: $.extend({}, jHtmlArea.defaultOptions.toolbarText, {
+                "bold": "Negrita",
+                "italic": "Cursiva",
+                "underline": "Subrayado"
+            }),
+
+        });
+    });
+
+    $(function () {
+        $("#Tema_Meta").htmlarea({
+            toolbar: [
+                ["bold", "italic", "underline", "strikethrough", "|", "subscript", "superscript"],
+                ["increasefontsize", "decreasefontsize"], ["orderedlist", "unorderedlist"], ["indent", "outdent"],
+                ["justifyleft", "justifycenter", "justifyright"], ["link", "unlink", "image", "horizontalrule"],
+                ["p", "h1", "h2", "h3", "h4", "h5", "h6"], ["cut", "copy", "paste"],
+            ],
+
+            toolbarText: $.extend({}, jHtmlArea.defaultOptions.toolbarText, {
+                "bold": "Negrita",
+                "italic": "Cursiva",
+                "underline": "Subrayado"
+            }),
+
+        });
+    });
+
+    $(function () {
+        $("#Tema_Indicador").htmlarea({
+            toolbar: [
+                ["bold", "italic", "underline", "strikethrough", "|", "subscript", "superscript"],
+                ["increasefontsize", "decreasefontsize"], ["orderedlist", "unorderedlist"], ["indent", "outdent"],
+                ["justifyleft", "justifycenter", "justifyright"], ["link", "unlink", "image", "horizontalrule"],
+                ["p", "h1", "h2", "h3", "h4", "h5", "h6"], ["cut", "copy", "paste"],
+            ],
+
+            toolbarText: $.extend({}, jHtmlArea.defaultOptions.toolbarText, {
+                "bold": "Negrita",
+                "italic": "Cursiva",
+                "underline": "Subrayado"
+            }),
+        });
+    });
+
+    $(function () {
+        $("#Tema_MedioVerificacion").htmlarea({
+            toolbar: [
+                ["bold", "italic", "underline", "strikethrough", "|", "subscript", "superscript"],
+                ["increasefontsize", "decreasefontsize"], ["orderedlist", "unorderedlist"], ["indent", "outdent"],
+                ["justifyleft", "justifycenter", "justifyright"], ["link", "unlink", "image", "horizontalrule"],
+                ["p", "h1", "h2", "h3", "h4", "h5", "h6"], ["cut", "copy", "paste"],
+            ],
+
+            toolbarText: $.extend({}, jHtmlArea.defaultOptions.toolbarText, {
+                "bold": "Negrita",
+                "italic": "Cursiva",
+                "underline": "Subrayado"
+            }),
+
+        });
+    });
+
+    $(function () {
+        $("#Tema_RecursoSugerido").htmlarea({
+            toolbar: [
+                ["bold", "italic", "underline", "strikethrough", "|", "subscript", "superscript"],
+                ["increasefontsize", "decreasefontsize"], ["orderedlist", "unorderedlist"], ["indent", "outdent"],
+                ["justifyleft", "justifycenter", "justifyright"], ["link", "unlink", "image", "horizontalrule"],
+                ["p", "h1", "h2", "h3", "h4", "h5", "h6"], ["cut", "copy", "paste"],
+            ],
+
+            toolbarText: $.extend({}, jHtmlArea.defaultOptions.toolbarText, {
+                "bold": "Negrita",
+                "italic": "Cursiva",
+                "underline": "Subrayado"
+            }),
+        });
+    });
+
+    $(function () {
+        $("#Actividad_Descripcion").htmlarea({
+            toolbar: [
+                ["bold", "italic", "underline", "strikethrough", "|", "subscript", "superscript"],
+                ["increasefontsize", "decreasefontsize"], ["orderedlist", "unorderedlist"], ["indent", "outdent"],
+                ["justifyleft", "justifycenter", "justifyright"], ["link", "unlink", "image", "horizontalrule"],
+                ["p", "h1", "h2", "h3", "h4", "h5", "h6"], ["cut", "copy", "paste"],
+            ],
+
+            toolbarText: $.extend({}, jHtmlArea.defaultOptions.toolbarText, {
+                "bold": "Negrita",
+                "italic": "Cursiva",
+                "underline": "Subrayado"
+            }),
+
+        });
+    });
+
+</script>
+

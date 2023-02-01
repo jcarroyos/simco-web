@@ -1,0 +1,82 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.Infrastructure.Notification
+@using Simco.CrossInfraestructureLayer
+
+@model IEnumerable<SolicitudModel>
+@{
+    ViewBag.Title = "Consultar Solicitudes";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Solicitudes</h2>
+<p>Este servicio ha sido creado para gestionar las inquietudes y asesorías que las entidades museales, instituciones o personas naturales tengan sobre temas del sector.</p>
+
+<div class="grilladatos-opciones-izquierda">
+    @Html.ActionLink("Nueva solicitud", "NuevaSolicitud", "Solicitudes", new object(), new { @class = "boton" })
+</div>
+<br />
+<br />
+<div class="formulario-busqueda-entidad">
+    @using (Html.BeginForm("ConsultarSolicitudes", "Solicitudes", FormMethod.Get, new { id = "FormBuscarSolicitudes" }))
+    {
+        <fieldset>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        Solicitante a buscar:
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBox("Consulta", (string)ViewBag.Consulta, new { style = "width:360px;" })
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    }
+</div>
+<div class="grilladatos-tabla-entidades">
+    @if (ViewBag.Perfil != null && ViewBag.Perfil != Perfiles.Agente)
+    {
+        @(Html.Kendo().Grid(Model)
+                .Name("GridSolicitudes")
+                .Columns(columns =>
+                {
+                    columns.Bound(o => o.Nombre).Template(o => @Html.ActionLink(@HtmlHelperExtensions.Truncate(o.Nombre, 20), "SolicitudConsultada", "Solicitudes", new { id = Criptografia.EncriptarUrl(o.Id.ToString()) }, null)).Title("Solicitante");
+                    columns.Bound(o => o.ResponsableActual).Width(160);
+                    columns.Bound(o => o.FechaRegistro).Format("{0:dd/MM/yyyy}");
+                    columns.Bound(o => o.EstadoActual);
+                    columns.Bound(o => o.NumeroRadicacion).Title("No. radicación");
+                })
+                .Sortable()
+                .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} soli...")
+                    .Empty("No se encontraron solicitudes")
+                    .First("Ir a la primera página")
+                    .Last("Ir a la última página")
+                    .Next("Ir a la página siguiente")
+                    .Previous("Ir a la página anterior")))
+        )
+    }
+    else
+    {
+        @(Html.Kendo().Grid(Model)
+                .Name("GridSolicitudes")
+                .Columns(columns =>
+                {
+                    columns.Bound(o => o.Descripcion).Template(o => @Html.ActionLink(@HtmlHelperExtensions.Truncate(o.Descripcion, 60), "Solicitud", "Solicitudes", new { id = Criptografia.EncriptarUrl(o.Id.ToString()) }, null)).Width(300);
+                    columns.Bound(o => o.ResponsableActual);
+                    columns.Bound(o => o.FechaRegistro).Format("{0:dd/MM/yyyy}");
+                    columns.Bound(o => o.EstadoActual).Width(135);
+                })
+                .Sortable()
+                .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} solicitudes")
+                    .Empty("No se encontraron solicitudes")
+                    .First("Ir a la primera página")
+                    .Last("Ir a la última página")
+                    .Next("Ir a la página siguiente")
+                    .Previous("Ir a la página anterior")))
+        )
+    }
+</div>

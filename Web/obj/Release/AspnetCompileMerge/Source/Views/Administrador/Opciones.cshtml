@@ -1,0 +1,141 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model PreguntaOpcionRegistroModel
+@{
+    ViewBag.Title = "Opciones";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Opciones</h2>
+
+@Html.HiddenFor(model => model.TokenEncuesta)
+
+<div class="box-row">
+    <div class="box">
+        <div class="formulario-label">
+            @Html.LabelFor(model => model.Preguntas)
+        </div>
+    </div>
+</div>
+<div class="box-row">
+    <div class="box">
+        <div class="formulario-control">
+            @Html.DropDownListFor(model => model.PreguntaSeleccionadaId, new SelectList(Model.Preguntas, "Id", "Enunciado", Model.PreguntaSeleccionadaId), "Seleccione una pregunta...", new { @class = "chosen", style = "width:556px;" })
+        </div>
+        <div class="formulario-validator">
+            @Html.ValidationMessageFor(model => model.Preguntas)
+        </div>
+    </div>
+</div>
+<br />
+
+<div id="divopciones">
+
+    <div style="margin-top: 20px;">
+        <a href="#" id="nuevaopcion" class="boton">Nueva opción</a>
+    </div>
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.Opciones)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DropDownListFor(model => model.OpcionSeleccionadaId, Enumerable.Empty<SelectListItem>(), "Seleccione una opción...", new { @class = "chosen", style = "width:556px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.Preguntas)
+            </div>
+        </div>
+    </div>
+    <br />
+</div>
+
+<div id="t"></div>
+
+<div class="formulario-botones">
+    @Html.ActionLink(Constante.BotonRegresar, "Preguntas", "Administrador", new { id = Model.TokenEncuesta }, new { @class = "boton" })
+    @Html.ActionLink(Constante.BotonSiguiente, "Filtros", "Administrador", new { id = Model.TokenEncuesta }, new { @class = "boton" })
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        mostrarOpciones();
+
+        $('#nuevaopcion').click(function () {
+            cargarOpcion($('#TokenEncuesta').val(), $('#PreguntaSeleccionadaId').val(), -1);
+            $('#OpcionSeleccionadaId').val("");
+            $('#OpcionSeleccionadaId').trigger("chosen:updated");
+        });
+
+        $('#PreguntaSeleccionadaId').change(function () {
+            mostrarOpciones();
+        });
+
+        $('#OpcionSeleccionadaId').change(function () {
+            var pId = $('#PreguntaSeleccionadaId').val();
+            var oId = $('#OpcionSeleccionadaId').val();
+            if (pId != null && pId != '' && oId != null && oId != '') {
+                cargarOpcion($('#TokenEncuesta').val(), pId, oId);
+            } else {
+                $('#t').empty();
+            }
+        });
+
+        function mostrarOpciones() {
+            var selectedItem = $('#PreguntaSeleccionadaId').val();
+
+            $('#t').empty();
+            $('#OpcionSeleccionadaId').empty();
+            $('#OpcionSeleccionadaId').append('<option value="">Seleccione una opción...</option>');
+            $('#OpcionSeleccionadaId').trigger("chosen:updated");
+            $('#divopciones').hide();
+            if (selectedItem != null && selectedItem != '') {
+                cargarOpciones(selectedItem);
+                $('#divopciones').show();
+            }
+        }
+
+        function cargarOpcion(eId, pId, oId) {
+            $.ajax({
+                url: '@Url.Action("Opcion", "Administrador")',
+                type: 'POST',
+                dataType: 'html',
+                data: { tokenEncuesta: eId, preguntaId: pId, opcionId: oId },
+                success: function (data) {
+                    if (data) {
+                        $('#t').html(data);
+                        $.validator.unobtrusive.parse("#t");
+                    }
+                }
+            });
+        }
+
+        function cargarOpciones(id) {
+            $.ajax({
+                url: '@Url.Action("ListaDeOpciones", "Administrador")',
+                type: 'POST',
+                dataType: 'json',
+                data: { preguntaId: id },
+                success: function (data) {
+                    $('#OpcionSeleccionadaId').empty();
+                    if (data) {
+                        $('#OpcionSeleccionadaId').append('<option value="">Seleccione una opción...</option>');
+                        $(data.items).each(function () {
+                            $('#OpcionSeleccionadaId').append('<option value="' + this.Valor + '">' + this.Etiqueta + '</option>');
+                        });
+                        $('#OpcionSeleccionadaId').trigger("chosen:updated");
+                    }
+                }
+            });
+        }
+    });
+
+</script>

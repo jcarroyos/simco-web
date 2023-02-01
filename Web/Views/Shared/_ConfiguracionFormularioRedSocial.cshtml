@@ -1,0 +1,93 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model ConfiguracionRedSocialModel
+
+@if (Model != null)
+{
+    using (Html.BeginForm("RedesSociales", "Administrador", FormMethod.Post, new {id = "FormRedesSociales"}))
+    {
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+            
+            <p>Los campos marcados con asterisco (*) son obligatorios</p>
+                    
+            @Html.HiddenFor(model => model.NombreValorOriginal)
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> @Html.LabelFor(model => model.Nombre)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.Nombre, new { style = "width:550px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.Nombre)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> @Html.LabelFor(model => model.Url)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.Url, new { style = "width:550px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.Url)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.EjemploPerfil)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.EjemploPerfil, new { style = "width:550px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.EjemploPerfil)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+        </fieldset>
+
+        <div class="formulario-botones">
+            <input type="submit" value="@Html.Raw(Constante.BotonGuardarCambios)" name="GuardarCambios" class="boton" />
+            @if(!string.IsNullOrEmpty(Model.NombreValorOriginal))
+            {
+                @Html.ActionLink(Constante.BotonEliminarRedSocial, "EliminarRedSocial", "Administrador", new {Id = Model.NombreValorOriginal}, new {@class = "boton", id = "btnEliminarRedSocial"})
+            }
+        </div>
+    }
+}
+
+<script type="text/javascript">
+
+    $("#btnEliminarRedSocial").click(function () {
+        return confirm('¿Está seguro de que desea eliminar la red social?');
+    });
+
+</script>

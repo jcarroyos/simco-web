@@ -1,0 +1,521 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+@using Simco.Infrastructure.Notification
+
+@model SolicitudRegistroModel
+
+@Html.ValidationSummary(true)
+
+@Html.HiddenFor(model => model.Solicitud.Id)
+
+<fieldset>
+
+    <legend>[<a href="#" class="show_hide" divtarget="solicitudeshijas">+</a>] Solicitudes hijas </legend>
+
+    <div id="solicitudeshijas" class="formulario-oculto" style="margin: 15px 0 15px 0;">
+        
+        <div class="grilladatos-interno">
+            <div class="grilladatos-opciones-izquierda">
+                @Html.ActionLink(Constante.BotonSolicitudHija, "SolicitudHija", "Administrador", new { id = Criptografia.EncriptarUrl(Model.Solicitud.Id.ToString()) }, new { @class = "boton" })
+            </div>
+            <br />
+            <br />
+            @(Html.Kendo().Grid(Model.SolicitudesHijas)
+                .Name("GridSolicitudes")
+                .Columns(columns =>
+                {
+                    columns.Bound(o => o.Solicitud.ResponsableActual)
+                                .Template(o => @Html.ActionLink(@HtmlHelperExtensions.Truncate(o.Solicitud.ResponsableActual, 60), "Solicitud", "Administrador", new { id = Criptografia.EncriptarUrl(o.Solicitud.Id.ToString()) }, null))
+                                .Title("Responsable actual").Width(350);
+                    columns.Bound(o => o.Solicitud.FechaRegistro).Width(180);
+                    columns.Bound(o => o.Solicitud.EstadoActual).Width(120);
+                })
+                .Sortable()
+                .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} solicitudes")
+                                            .Empty("No se encontraron solicitudes")
+                                            .First("Ir a la primera página")
+                                            .Last("Ir a la última página")
+                                            .Next("Ir a la página siguiente")
+                                            .Previous("Ir a la página anterior")))
+            )
+        </div>
+    </div>
+
+    <legend>
+        [<a href="#" class="show_hide" divtarget="solicitante">-</a>] Información del
+        solicitante
+    </legend>
+
+    <div id="solicitante">
+
+        <div class="box-row">
+            <div class="box">
+                @Html.LabelFor(model => model.Solicitud.NumeroRadicacion)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control-texto">
+                    <strong>@Html.DisplayTextFor(model => model.Solicitud.NumeroRadicacion)</strong>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                @Html.LabelFor(model => model.Solicitud.Nombre)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control-texto">
+                    <strong>@Html.DisplayTextFor(model => model.Solicitud.Nombre)</strong>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                @Html.LabelFor(model => model.Solicitud.TipoDocumento)
+            </div>
+            <div class="box">
+                @Html.LabelFor(model => model.Solicitud.NumeroDocumento)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control-texto">
+                    @Html.DisplayTextFor(model => model.Solicitud.TipoDocumento)
+                </div>
+            </div>
+            <div class="box">
+                <div class="formulario-control">
+                    <div class="formulario-control-texto">
+                        @Html.DisplayTextFor(model => model.Solicitud.NumeroDocumento)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                @Html.LabelFor(model => model.Solicitud.Departamento)
+            </div>
+            <div class="box">
+                @Html.LabelFor(model => model.Solicitud.Municipio)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control-texto">
+                    @Html.DisplayTextFor(model => model.Solicitud.Departamento)
+                </div>
+            </div>
+            <div class="box">
+                <div class="formulario-control">
+                    <div class="formulario-control-texto">
+                        @Html.DisplayTextFor(model => model.Solicitud.Municipio)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                @Html.LabelFor(model => model.Solicitud.DireccionCorrespondencia)
+            </div>
+            <div class="box">
+                @Html.LabelFor(model => model.Solicitud.TelefonoFijo)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control-texto">
+                    @Html.DisplayTextFor(model => model.Solicitud.DireccionCorrespondencia)
+                </div>
+            </div>
+            <div class="box">
+                <div class="formulario-control">
+                    <div class="formulario-control-texto">
+                        @Html.DisplayTextFor(model => model.Solicitud.TelefonoFijo)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                @Html.LabelFor(model => model.Solicitud.TelefonoCelular)
+            </div>
+            <div class="box">
+                @Html.LabelFor(model => model.Solicitud.CorreoElectronico)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control-texto">
+                    @Html.DisplayTextFor(model => model.Solicitud.TelefonoCelular)
+                </div>
+            </div>
+            <div class="box">
+                <div class="formulario-control">
+                    <div class="formulario-control-texto">
+                        @Html.DisplayTextFor(model => model.Solicitud.CorreoElectronico)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+
+    </div>
+</fieldset>
+
+<fieldset>
+    <legend>
+        [<a href="#" class="show_hide" divtarget="solicitud">-</a>] Información de la
+        solicitud
+    </legend>
+
+    <div id="solicitud">
+
+        <div class="box-row">
+            <div class="box">
+                @Html.LabelFor(model => model.Solicitud.FechaRegistro)
+            </div>
+            <div class="box">
+                @Html.LabelFor(model => model.Solicitud.Fuente)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control-texto">
+                    @Html.DisplayTextFor(model => model.Solicitud.FechaRegistro)
+                </div>
+            </div>
+            <div class="box">
+                <div class="formulario-control">
+                    <div class="formulario-control-texto">
+                        @Html.DisplayTextFor(model => model.Solicitud.Fuente)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                @Html.LabelFor(model => model.Solicitud.EstadoActual)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control-texto">
+                    <strong>@Html.DisplayTextFor(model => model.Solicitud.EstadoActual)</strong>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                @Html.LabelFor(model => model.Solicitud.Prioridad)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @if (Model.Solicitud.EstadoActual != EstadosSolicitudes.Solucionada.ToString() && Model.Solicitud.EstadoActual != EstadosSolicitudes.Cerrada.ToString())
+                    {
+                        <div class="formulario-control">
+                            @Html.DropDownListFor(model => model.Solicitud.Prioridad, new SelectList(Model.Prioridades, Model.Solicitud.Prioridad), new { @class = "chosen", style = "width:264px;" })
+                        </div>
+                        <div class="formulario-validator">
+                            @Html.ValidationMessageFor(model => model.Solicitud.Prioridad)
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="formulario-control-texto">
+                            @Html.DisplayTextFor(model => model.Solicitud.Prioridad)
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                @Html.LabelFor(model => model.Solicitud.Categoria)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @if (Model.Solicitud.EstadoActual != EstadosSolicitudes.Solucionada.ToString() && Model.Solicitud.EstadoActual != EstadosSolicitudes.Cerrada.ToString())
+                    {
+                        <div class="formulario-control">
+                            @Html.DropDownListFor(model => model.Solicitud.CategoriaId, new SelectList(Model.Categorias, "Id", "Categoria", Model.Solicitud.CategoriaId), "Seleccione una categoría...", new { @class = "chosen", style = "width:564px;" })
+                        </div>
+                        <div class="formulario-validator">
+                            @Html.ValidationMessageFor(model => model.Solicitud.Categoria)
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="formulario-control-texto">
+                            @Html.DisplayTextFor(model => model.Solicitud.Categoria)
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                @Html.LabelFor(model => model.Solicitud.ResponsableActual)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    <div class="formulario-control">
+                        @Html.DropDownListFor(model => model.Solicitud.ResponsableActualId, new SelectList(Model.Administrativos, "UsuarioId", "Nombre", Model.Solicitud.ResponsableActualId), new { @class = "chosen", style = "width:564px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.Solicitud.ResponsableActual)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                @Html.LabelFor(model => model.Solicitud.Tipo)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    <div class="formulario-control">
+                        @Html.DropDownListFor(model => model.Solicitud.TipoId, new SelectList(Model.Tipos, "Id", "Tipo", Model.Solicitud.TipoId), "Seleccione un tipo...", new { @class = "chosen", style = "width:564px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.Solicitud.Tipo)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                @Html.LabelFor(model => model.Solicitud.Descripcion)
+            </div>
+        </div>
+
+        @Html.Raw(HttpUtility.HtmlDecode(Model.Solicitud.Descripcion))
+
+    </div>
+</fieldset>
+
+<fieldset>
+    <legend>[<a href="#" class="show_hide" divtarget="documentos">+</a>] Documentos adjuntos</legend>
+
+    <div id="documentos" class="formulario-oculto">
+        @if (Model.Documentos.Any())
+        {
+            foreach (DocumentoModel item in Model.Documentos)
+            {
+                <div class="box-row">
+                    <div class="box">
+                        @Html.ActionLink(@item.Nombre, "Index", "Documentos", new { id = Criptografia.EncriptarUrl(item.Id.ToString()) }, new { @title = "Descargar archivo" })
+                    </div>
+                </div>
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-control-nota">
+                            Autor: @item.Autor<br />
+                            Publicación: @item.FechaRegistro
+                        </div>
+                    </div>
+                </div>
+                <br />
+            }
+        }
+        else
+        {
+            <div>
+                @Html.Raw(Constante.NoHayDocumentosAdjuntos)
+            </div>
+        }
+    </div>
+</fieldset>
+
+<fieldset>
+    <legend>[<a href="#" class="show_hide" divtarget="comentarios">+</a>] Comentarios </legend>
+
+    <div id="comentarios" class="formulario-oculto">
+        @if (Model.Comentarios.Any())
+            {
+                foreach (ComentarioModel item in Model.Comentarios)
+                {
+                <div class="box-row">
+                    <div class="box">
+                        De : @item.NombreCompletoAutor
+                    </div>
+                </div>
+
+                <div class="formulario-control-texto">
+                    Comentario : @Html.Raw(HttpUtility.HtmlDecode(@item.Comentario))
+                </div>
+
+                <div class="box-row">
+                    <div class="box">
+
+                        <div class="formulario-control-nota">
+                            Tipo:
+                            @if (@item.EsPublico == true)
+                            { <text>Público</text> }
+                            else if (@item.EsPublico == false)
+                            { <text>Privado</text> } - Publicación: @item.FechaRegistro
+                        </div>
+                    </div>
+                </div>
+                <br />
+            }
+        }
+        else
+        {
+            <div>
+                @Html.Raw(Constante.NoHayComentarios)
+            </div>
+        }
+    </div>
+</fieldset>
+
+@if (Model.Solicitud.EstadoActual != EstadosSolicitudes.Solucionada.ToString() && Model.Solicitud.EstadoActual != EstadosSolicitudes.Cerrada.ToString())
+{
+    <fieldset>
+        <legend>[<a href="#" class="show_hide" divtarget="observaciones">+</a>] Nuevo comentario </legend>
+        <div id="observaciones" class="formulario-oculto">
+
+            <div class="box-row">
+                <div class="box">
+                    @Html.LabelFor(model => model.NuevoDocumento.ImageUpload)
+                </div>
+            </div>
+
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.NuevoDocumento.ImageUpload, new { type = "file" })
+            </div>
+            <div class="formulario-control-nota">
+                @Html.Raw(Constante.NotaArchivosSolicitudes)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.NuevoDocumento.ImageUpload)
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    @Html.LabelFor(model => model.DocumentoPublico)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        Si @Html.RadioButtonFor(model => model.DocumentoPublico, "True")
+                        No @Html.RadioButtonFor(model => model.DocumentoPublico, "False")
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    @Html.LabelFor(model => model.TextoNuevoComentario)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextAreaFor(model => model.TextoNuevoComentario, new { style = "width:550px; height: 1550px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.TextoNuevoComentario)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    @Html.LabelFor(model => model.ComentarioPublico)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        Si @Html.RadioButtonFor(model => model.ComentarioPublico, "True")
+                        No @Html.RadioButtonFor(model => model.ComentarioPublico, "False")
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.ComentarioPublico)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>[<a href="#" class="show_hide" divtarget="respuesta">+</a>] Respuesta final (Dar como solucionada) </legend>
+        <div id="respuesta" class="formulario-oculto">
+
+            <div class="box-row">
+                <div class="box">
+                    @Html.LabelFor(model => model.DocumentoRespuesta.ImageUpload)
+                </div>
+            </div>
+
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.DocumentoRespuesta.ImageUpload, new { type = "file" })
+            </div>
+            <div class="formulario-control-nota">
+                @Html.Raw(Constante.NotaArchivosSolicitudes)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.DocumentoRespuesta.ImageUpload)
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    @Html.LabelFor(model => model.TextoRespuesta)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextAreaFor(model => model.TextoRespuesta, new { style = "width:550px; height: 120px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.TextoRespuesta)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+        </div>
+    </fieldset>
+
+}

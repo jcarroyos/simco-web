@@ -1,0 +1,55 @@
+﻿@using Simco.Infrastructure.Notification
+@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model IEnumerable<CategoriaModel>
+@{
+    ViewBag.Title = "CargarCategorias";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Categorías</h2>
+
+<div class="grilladatos-opciones-izquierda">
+    @Html.ActionLink("Nueva categoria", "NuevaCategoria", "PlanFortalecimiento", new object(), new { @class = "boton" })
+</div>
+
+<div class="formulario-busqueda">
+    @using (Html.BeginForm("CargarCategorias", "PlanFortalecimiento", FormMethod.Get, new { id = "FormBuscarCategorias" }))
+    {
+        <fieldset>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        Categoria a buscar:
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBox("Consulta", (string)ViewBag.Consulta, new { style = "width:360px;" })
+                    </div>
+                </div>
+            </div>
+            <br />
+        </fieldset>
+    }
+</div>
+
+<div class="grilladatos-tabla">
+    @(Html.Kendo().Grid(Model)
+           .Name("GridCategorias")
+           .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Categoria).Template(o => @Html.ActionLink(@HtmlHelperExtensions.Truncate(o.Categoria, 60), "NuevaCategoria", "PlanFortalecimiento", new { id = Criptografia.EncriptarUrl(o.Id.ToString()), Pantalla = "Categoria" }, null)).Title("Categorías").Width(186);
+                        })
+           .Sortable()
+           .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} categorias")
+                .Empty("No se encontraron categorias")
+                .First("Ir a la primera página")
+                .Last("Ir a la última página")
+                .Next("Ir a la página siguiente")
+                .Previous("Ir a la página anterior")))
+    )
+</div>

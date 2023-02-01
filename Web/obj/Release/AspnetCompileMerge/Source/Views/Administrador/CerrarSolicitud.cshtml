@@ -1,0 +1,47 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model SolicitudCerrarModel
+@{
+    ViewBag.Title = "SolicitudCerrar";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Cerrar una solicitud</h2>
+
+<div class="formulario">
+
+    @using (Html.BeginForm("CerrarSolicitud", "Administrador", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(model => model.Token)
+
+        <fieldset>
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.TextoRespuesta)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextAreaFor(model => model.TextoRespuesta, new { style = "width:550px; height: 200px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.TextoRespuesta)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+        </fieldset>
+
+        <div class="formulario-botones">
+            <input type="submit" value="@Html.Raw(Constante.BotonCerrarSolicitud)" id="CerrarSolicitud" name="CerrarSolicitud" class="boton" />
+            @Html.ActionLink(Constante.BotonCancelar, "SolicitudesAsignadas", "Administrador", new object(), new { @class = "boton" })
+        </div>
+    }
+
+</div>

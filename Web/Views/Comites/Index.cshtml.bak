@@ -1,0 +1,63 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+
+@{
+    ViewBag.Title = "Comites";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Comites</h2>
+
+<div class="formulario-busqueda-entidad">
+    @using (Html.BeginForm("Index", "Comites", FormMethod.Get, new { id = "FormBuscarComites" }))
+    {
+        <fieldset>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        Comite a buscar:
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBox("Consulta", ViewBag.Consulta as string, new { style = "width:536px" })
+                    </div>
+                </div>
+            </div>
+            <br />
+        </fieldset>
+
+        <div class="formulario-botones">
+            <input type="submit" value="@Html.Raw(Constante.BotonBuscar)" name="Buscar" class="boton" />
+            @Html.ActionLink("Mostrar todos", "Index", "Comites", new object(), new { @class = "boton" })
+            @Html.ActionLink("Nuevo Comite", "AdminComite", "Comites", new { ComiteId = 0 }, new { @class = "boton" })
+        </div>
+    }
+</div>
+
+<div>
+    @(Html.Kendo().Grid((IEnumerable<ComiteModel>)ViewBag.Comites)
+                                .Name("GridComites")
+                                .Columns(columns =>
+                                {
+                                    columns.Bound(o => o.NumeroActa).Template(@<text><strong>@Html.ActionLink(@item.NumeroActa, "AdminComite", "Comites", new { ComiteId = @item.Id }, null)</strong></text>);
+                                            columns.Bound(per => per.Fecha);
+                                            columns.Bound(per => per.Hora);
+                                            columns.Bound(per => per.Lugar);
+                                            columns.Bound(per => per.Estado);
+                                //columns.Template(per => per.).HeaderTemplate(@<text><strong> Documentos </strong></text>);
+                                columns.Template(@<text>
+                                    @Html.ActionLink("Ver", "Index", "ComiteDocumentos", new { ComiteId = @item.Id }, new { style = @item.Estado == "Pendiente Documentación" || @item.Estado == "Cerrado" ? "display:block" : "display:none" })
+                                    @*<input id = "@("btnDocumentos")" type="submit"  name="@(item.Id)" value="Ver" class="boton" onclick="location.href='@Url.Action("ConsultarDocumentosComite", "Comites")'" />*@</text>).Title("Documentos").Width(150);
+                                    })
+                                                        .Sortable()
+                                                        .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} Comites")
+                                                                        .Empty("No se encontraron Comites")
+                                                                        .First("Ir a la primera página")
+                                                                        .Last("Ir a la última página")
+                                                                        .Next("Ir a la página siguiente")
+                                                                        .Previous("Ir a la página anterior")))
+    )

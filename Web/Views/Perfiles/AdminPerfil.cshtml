@@ -1,0 +1,323 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model PerfilModel
+@{
+    ViewBag.Title = "Perfil";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Perfil</h2>
+
+@using (Html.BeginForm("AdminPerfil", "Perfiles", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.RegistrosModificados)
+
+    <fieldset>
+        <legend><b>Información del perfil</b></legend>
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.Nombre)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.Nombre)
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Nombre)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Descripcion)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.Descripcion)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.Estado)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @if (Model.Nombre == "Administrador")
+                    {
+                        @Html.CheckBoxFor(model => model.ChkEstado, new { @disabled = "disabled" })
+                    }
+                    else
+                    {
+                        @Html.CheckBoxFor(model => model.ChkEstado)
+                    }
+                </div>
+            </div>
+        </div>
+        <br />
+
+    </fieldset>
+
+    <div class="formulario-botones">
+        @Html.ActionLink(Constante.BotonCancelar, "Index", "Perfiles", new object(), new { @class = "boton" })
+        <input type="submit" value="@Html.Raw(Constante.BotonGuardarCambios)" name="GuardarCambios" class="boton" onclick="actualizarData()" />
+    </div>
+
+    <div>
+        @(Html.Kendo().TreeList<FuncionalidadesModel>()
+            .Name("treelist")
+            .Columns(columns =>
+            {
+                columns.Add().Field(e => e.Nombre).Width(250).Title("Funcionalidad");
+                columns.Add().Field(e => e.PuedeConsultar).Template(
+                    "#if(PuedeConsultar == true){#" +
+                        "<input " + "id='#:Id#'" + " name='PuedeConsultar' type='checkbox' checked />" +
+                    "#}else{#" +
+                         "<input " + "id='#:Id#'" + " name='PuedeConsultar' type='checkbox' />" +
+                    "#}#"
+                    ).Title("Puede Consultar");
+                columns.Add().Field(e => e.PuedeCrear).Template(
+                  "#if(PuedeCrear == true){#" +
+                        "<input " + "id='#:Id#'" + " name='PuedeCrear' type='checkbox' checked />" +
+                    "#}else{#" +
+                         "<input " + "id='#:Id#'" + " name='PuedeCrear' type='checkbox' />" +
+                    "#}#"
+                   ).Title("Puede Crear");
+                columns.Add().Field(e => e.PuedeEditar).Template(
+                  "#if(PuedeEditar == true){#" +
+                        "<input " + "id='#:Id#'" + " name='PuedeEditar' type='checkbox' checked />" +
+                    "#}else{#" +
+                         "<input " + "id='#:Id#'" + " name='PuedeEditar' type='checkbox' />" +
+                    "#}#"
+                   ).Title("Puede Editar");
+                columns.Add().Field(e => e.PuedeEliminar).Template(
+                   "#if(PuedeEliminar == true){#" +
+                        "<input " + "id='#:Id#'" + " name='PuedeEliminar' type='checkbox' checked />" +
+                    "#}else{#" +
+                         "<input " + "id='#:Id#'" + " name='PuedeEliminar' type='checkbox' />" +
+                    "#}#"
+                   ).Title("Puede Eliminar");
+            })
+            .Filterable()
+            .Sortable()
+            .Events(ev => ev.DataBound("treeListDataBound"))
+            .DataSource(dataSource => dataSource
+                .Read(read => read.Action("CargarFuncionalidadesPadre", "Perfiles"))
+                .ServerOperation(false)
+                .Model(m =>
+                {
+                    m.Id(f => f.Id);
+                    m.ParentId(f => f.PadreId);
+                    m.Expanded(true);
+                    m.Field(f => f.Nombre);
+                })
+            )
+        )
+    </div>
+
+    <script>
+
+        function treeListDataBound(e) {
+            var view = this.dataSource.view();
+            this.items().each(function (index, row) {
+                kendo.bind(row, view[index]);
+            });
+
+            //$(".checkbox").bind("change", function (e) {
+            //    var row = $(e.target).closest("tr");
+            //    this.checked ? row.addClass("k-state-selected") : row.removeClass("k-state-selected");
+            //});
+        }
+
+        function actualizarData() {
+            var updatedRecords = [];
+            var funcionalidadId;
+            var puedeConsultar = false;
+            var puedeCrear = false;
+            var puedeEditar = false;
+            var puedeEliminar = false;
+
+            $('#treelist tr').each(function () {
+                var nodeList = $(this)[0].childNodes;
+
+                $.each(nodeList, function (index, node) {
+
+                    if (node.firstChild != null) {
+                        switch (index) {
+                            case 1:
+                                puedeConsultar = node.firstChild.checked;
+                                break;
+                            case 2:
+                                puedeCrear = node.firstChild.checked;
+                                break;
+                            case 3:
+                                puedeEditar = node.firstChild.checked;
+                                break;
+                            case 4:
+                                puedeEliminar = node.firstChild.checked;
+
+                                if (node.firstChild.id != '') {
+                                    var funcionalidad = {
+                                        FuncionalidadId: node.firstChild.id,
+                                        PuedeConsultar: puedeConsultar,
+                                        PuedeCrear: puedeCrear,
+                                        PuedeEditar: puedeEditar,
+                                        PuedeEliminar: puedeEliminar
+                                    };
+
+                                    updatedRecords.push(funcionalidad);
+                                }
+                                break;
+                        }
+                    } //Fin If
+                }); // Fin Each
+            });
+
+            $('#RegistrosModificados').val(JSON.stringify(updatedRecords).replace(/\/Date/g, "\\\/Date").replace(/\)\//g, "\)\\\/"));
+        }
+
+        function toggleAll(e) {
+            if (e.target.checked) {
+                $("#treelist [role='row'] .checkbox").each(function () {
+                    this.checked = "checked";
+                });
+            }
+            else {
+                $("#treelist [role='row'] .checkbox").removeAttr("checked");
+            }
+
+            $("#treelist [role='row'] .checkbox").trigger("change");
+        }
+
+        function checkboxChanged(e) {
+            var $this = $(e),
+                id = ($this.attr("data-id"));
+            checked = $this.prop("checked"),
+            strName = $this.attr("name"),
+            childrens = $('input[data-parent="' + id + '"]'),
+            isRoot = false;
+            if ($this.attr("id") == "check-all") {
+                childrens = $(":checkbox[data-parent]");
+                isRoot = true;
+            };
+            $this.parent()
+            .removeClass('custom-checked custom-unchecked custom-indeterminate')
+            .addClass(checked ? 'custom-checked' : 'custom-unchecked');
+            childrens
+            .prop({
+                indeterminate: false,
+                checked: checked
+            })
+            .parent()
+            .removeClass('custom-checked custom-unchecked custom-indeterminate')
+            .addClass(checked ? 'custom-checked' : 'custom-unchecked');
+            if (!isRoot) {
+                //console.log(childrens);
+                checkSiblings($this, checked);
+            }
+        }
+
+        function checkSiblings($el, checked) {
+            var pid = ($el.attr("data-parent"));
+            var parent = $('input[id=ck' + pid + ']'),
+                all = true,
+                indeterminate = false;
+
+            strName = ($el.attr("name")),
+            siblings = $('input[name="' + strName + '"]');
+
+            siblings.each(function () {
+                return all = ($(this).prop("checked") === checked);
+            });
+
+            if (all && checked) {
+                console.log('1');
+                $("#check-all").prop({
+                    indeterminate: false,
+                    checked: checked
+                }).parent()
+                .removeClass('custom-checked custom-unchecked custom-indeterminate')
+                .addClass(checked ? 'custom-checked' : 'custom-unchecked');
+                parent.prop({
+                    indeterminate: false,
+                    checked: checked
+                })
+                .parent()
+                .removeClass('custom-checked custom-unchecked custom-indeterminate')
+                .addClass(checked ? 'custom-checked' : 'custom-unchecked');
+
+                //checkSiblings(parent, checked);
+            }
+            else if (all && !checked) {
+                console.log('2');
+                var pid = ($el.attr("data-parent"));
+                var allChilds = $('input[data-parent=' + pid + ']')
+                var checkedChilds = $('input[data-parent=' + pid + ']:checked')
+                indeterminate = checkedChilds.length > 0;
+                $("#check-all").prop({
+                    indeterminate: indeterminate,
+                    checked: checked
+                }).parent()
+                .removeClass('custom-checked custom-unchecked custom-indeterminate')
+                .addClass(indeterminate ? 'custom-indeterminate' : (checked ? 'custom-checked' : 'custom-unchecked'));
+                parent
+                .prop("checked", checked)
+                .prop("indeterminate", indeterminate)
+                .parent()
+                .removeClass('custom-checked custom-unchecked custom-indeterminate')
+                .addClass(indeterminate ? 'custom-indeterminate' : (checked ? 'custom-checked' : 'custom-unchecked'));
+
+                //checkSiblings(parent, checked);
+            }
+            else {
+                console.log('3');
+                $("#check-all").prop({
+                    indeterminate: true,
+                    checked: checked
+                }).parent()
+              .removeClass('custom-checked custom-unchecked custom-indeterminate')
+              .addClass('custom-indeterminate');
+                parent
+                 .prop({
+                     indeterminate: true,
+                     checked: false
+                 })
+                 .parent()
+                 .removeClass('custom-checked custom-unchecked custom-indeterminate')
+                 .addClass('custom-indeterminate');
+            }
+        }
+
+        function customCheckbox() {
+            var checkBox = $('input[type="checkbox"]');
+            $(checkBox).each(function () {
+                $(this).wrap("<span class='custom-unchecked'></span>");
+            });
+        }
+
+        $(document).ready(function () {
+            customCheckbox();
+            //$('input[type="checkbox"]').change(checkboxChanged);
+        });
+
+    </script>
+}

@@ -1,0 +1,243 @@
+﻿@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+
+@model PublicacionIndicadoresModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Publicación de indicadores</h2>
+
+@using (Html.BeginForm("AdminIndicadores", "PublicacionIndicadores", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(model => model.IndicadorId)
+
+    <fieldset>
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Preguntas)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.DropDownListFor(model => model.PreguntaId, new SelectList(Model.Preguntas, "Valor", "Etiqueta", Model.PreguntaId), "Seleccione una pregunta...", new { @class = "chosen", style = "width:558px; " })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.PreguntaId)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.Titulo)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.Titulo, new { style = "width:550px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Titulo)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <strong>@Html.LabelFor(model => model.Publicar)</strong>
+                @Html.CheckBoxFor(model => model.Publicar)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    <strong>@Html.LabelFor(model => model.TipoGrafico)</strong>
+                    @Html.LabelFor(model => model.Torta)
+                    @Html.CheckBoxFor(model => model.Torta, new { onclick = "return SeleccionarTipoGraficoTorta(this);" })
+                    @Html.LabelFor(model => model.Barras)
+                    @Html.CheckBoxFor(model => model.Barras, new { onclick = "return SeleccionarTipoGraficoBarras(this);" })
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    <strong>@Html.LabelFor(model => model.TipoDato)</strong>
+                    @Html.LabelFor(model => model.Porcentaje)
+                    @Html.CheckBoxFor(model => model.Porcentaje, new { onclick = "return SeleccionarTipoDatoPorcentaje(this);" })
+                    @Html.LabelFor(model => model.Numero)
+                    @Html.CheckBoxFor(model => model.Numero, new { onclick = "return SeleccionarTipoDatoNumero(this);" })
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="formulario-botones">
+            <button class="boton">@Html.Raw(Constante.BotonGuardar)</button>
+        </div>
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Visualizacion)
+                </div>
+            </div>
+        </div>
+
+        <div id="container" class="container-interno">
+        </div>
+
+    </fieldset>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        Graficar();
+
+        $('#PreguntaId').change(function () {
+            Graficar();
+        });
+
+    });
+
+    function SeleccionarTipoGraficoBarras(obj) {
+        $("#Torta").attr('checked', false);
+        Graficar();
+        return true;
+    }
+
+    function SeleccionarTipoGraficoTorta(obj) {
+        $("#Barras").attr('checked', false);
+        Graficar();
+        return true;
+    }
+
+    function SeleccionarTipoDatoPorcentaje(obj) {
+        $("#Numero").attr('checked', false);
+        Graficar();
+        return true;
+    }
+
+    function SeleccionarTipoDatoNumero(obj) {
+        $("#Porcentaje").attr('checked', false);
+        Graficar();
+        return true;
+    }
+
+    function Graficar() {
+        var selectedPreguntaId = $('#PreguntaId').val();
+        var selectedTorta = $('#Torta').is(":checked");
+        var selectedPorcentaje = $('#Porcentaje').is(":checked");
+        var selectedTitulo = $('#Titulo').val();
+        var tipo = 'bar';
+        var seriesArr = [];
+        var datos = new Array();
+        var catogorias = new Array();
+        var formato = '<b>{point.name}</b>: {point.y:.1f} ';
+
+        if (selectedTorta) {
+            tipo = 'pie';
+        }
+
+        if (selectedPorcentaje) {
+            formato = '<b>{point.name}</b>: {point.y:.1f} %';
+        }
+
+        if (selectedPreguntaId != null && selectedPreguntaId != '' && selectedTorta != null && selectedPorcentaje != null) {
+            $.getJSON('@Url.Action("CargarIndicador")', { preguntaId: selectedPreguntaId, tipoTorta: selectedTorta, tipoPorcentaje: selectedPorcentaje, titulo: selectedTitulo }, function (jdata) {
+
+                $.each(jdata, function (key, data) {
+                    if (key == 'series') {
+                        $.each(data, function (indice, dato) {
+                            datos.push([dato.name, parseFloat(dato.data)]);
+                        });
+                        seriesArr.push(datos);
+                    }
+                    else {
+                        catogorias = data;
+                    } // Fin If
+                }); // Fin each
+
+                $('#container').highcharts({
+                    chart: {
+                        type: tipo,
+                        plotBackgroundColor: null,
+                        plotBorderWidth: 1,
+                        plotShadow: false
+                    },
+                    title: {
+                        text: $('#Titulo').val()
+                    },
+                    subtitle: {
+                        text: $("#PreguntaId option:selected").text()
+                    },
+                    xAxis: {
+                        categories: [catogorias],
+                        title: {
+                            text: null
+                        }
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: 'Gráfica SIMCO – Publicación de indicadores del sector museal colombiano, año 2013',
+                            align: 'high'
+                        },
+                        labels: {
+                            overflow: 'justify'
+                        }
+                    },
+                    tooltip: {
+                        valueSuffix: ''
+                    },
+                    plotOptions: {
+                        bar: {
+                            dataLabels: {
+                                enabled: true,
+                                format: formato,
+                                style: {
+                                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                }
+                            }
+                        }
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: true,
+                                format: formato,
+                                style: {
+                                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                }
+                            }
+                        }
+                    },
+                    credits: {
+                        enabled: false
+                    },
+
+                    series: [{
+                        type: tipo,
+                        name: 'Respuestas',
+                        data: seriesArr[0]
+                    }]
+
+                }); // fin contenedor
+            });
+        }
+    } // Fin
+
+</script>

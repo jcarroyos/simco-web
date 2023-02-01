@@ -1,0 +1,282 @@
+﻿@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+
+@model InicioSesionModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Indicadores</h2>
+
+<div class="formulario">
+    @using (Html.BeginForm("Index", "PublicacionIndicadores", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.HiddenFor(model => model.Indicadores.Torta)
+        @Html.HiddenFor(model => model.Indicadores.Porcentaje)
+        @Html.HiddenFor(model => model.Indicadores.Titulo)
+
+        if (ViewBag.CargarPublicacionIndicador != null && ViewBag.CargarPublicacionIndicador)
+        {
+
+            <p style='text-align: justify;'>
+                @Html.Raw(HttpUtility.HtmlDecode(ViewBag.TextoPublicacionIndicador))
+            </p>
+
+            <fieldset>
+                <legend>Opciones de búsqueda:</legend>
+
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-label">
+                            @Html.LabelFor(model => model.Indicadores.Preguntas)
+                        </div>
+                    </div>
+                </div>
+                <div class="formulario-control">
+                    @Html.DropDownListFor(model => model.Indicadores.PreguntaId, new SelectList(Model.Indicadores.Preguntas, "Valor", "Etiqueta", Model.Indicadores.PreguntaId), "Seleccione una pregunta...", new { @class = "chosen", style = "width:558px; " })
+                </div>
+                <br />
+
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-label">
+                            @Html.LabelFor(model => model.Indicadores.Colecciones)
+                        </div>
+                    </div>
+                </div>
+                <div class="formulario-control">
+                    @Html.DropDownListFor(model => model.Indicadores.ColeccionId, new SelectList(Model.Indicadores.Colecciones, "Valor", "Etiqueta", Model.Indicadores.ColeccionId), "Seleccione un tipo...", new { @class = "chosen", style = "width:558px; " })
+                </div>
+                <br />
+
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-label">
+                            @Html.LabelFor(model => model.Indicadores.ClasesEntidades)
+                        </div>
+                    </div>
+                </div>
+                <div class="formulario-control">
+                    @Html.DropDownListFor(model => model.Indicadores.ClaseEntidadId, new SelectList(Model.Indicadores.ClasesEntidades, "Valor", "Etiqueta", Model.Indicadores.ClaseEntidadId), "Seleccione una clase...", new { @class = "chosen", style = "width:558px; " })
+                </div>
+                <br />
+
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-label">
+                            @Html.LabelFor(model => model.Indicadores.Departamentos)
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="formulario-label">
+                            @Html.LabelFor(model => model.Indicadores.Municipios)
+                        </div>
+                    </div>
+                </div>
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-control">
+                            @Html.DropDownListFor(model => model.Indicadores.CodigoDepartamento, new SelectList(Model.Indicadores.Departamentos, "Id", "Nombre", Model.Indicadores.CodigoDepartamento), "Seleccione un departamento...", new { @class = "chosen", data_placeholder = "Seleccione un departamento..." })
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="formulario-control">
+                            @Html.DropDownListFor(model => model.Indicadores.CodigoMunicipio, Enumerable.Empty<SelectListItem>(), "Seleccione un municipio...", new { @class = "chosen", data_placeholder = "Seleccione un municipio..." })
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-label">
+                            @Html.LabelFor(model => model.Indicadores.Visualizacion)
+                        </div>
+                    </div>
+                </div>
+
+                <div id="container" class="container">
+                </div>
+
+            </fieldset>
+        }
+        else
+        {
+            <p style='text-align: justify;'>
+                @Html.Raw(HttpUtility.HtmlDecode(ViewBag.Indicadores.TextoPublicacionIndicador))
+            </p>
+        }
+
+    }
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        CargarListaMunicipios();
+
+        $('#Indicadores_CodigoDepartamento').change(function () {
+            CargarListaMunicipios();
+            Graficar();
+        });
+
+        $('#Indicadores_PreguntaId').change(function () {
+            Graficar();
+        });
+
+        $('#Indicadores_ColeccionId').change(function () {
+            Graficar();
+        });
+
+        $('#Indicadores_ClaseEntidadId').change(function () {
+            Graficar();
+        });
+
+        $('#CodigoMunicipio').change(function () {
+            Graficar();
+        });
+
+    });
+
+    function CargarListaMunicipios() {
+        var selectedItem = $('#Indicadores_CodigoDepartamento').val();
+        var destination = $('#Indicadores_CodigoMunicipio');
+
+          if (selectedItem != null && selectedItem != '') {
+            $.getJSON('@Url.Action("Municipios")', { zonaPadreId: selectedItem }, function (municipio) {
+
+                destination.empty();
+                destination.append('<option value="">Seleccione una ciudad o municipio...</option>');
+
+                $.each(municipio, function (index, item) {
+                    if (item.Id == '@Model.Indicadores.CodigoMunicipio') {
+                        destination.append('<option value="' + item.Id + '" selected="selected">' + item.Nombre + '</option>');
+                    } else {
+                        destination.append('<option value="' + item.Id + '">' + item.Nombre + '</option>');
+                    }
+                    destination.trigger("chosen:updated");
+                });
+            });
+        }
+        else {
+            destination.empty();
+            destination.trigger("chosen:updated");
+        }
+    }
+
+    function Graficar() {
+        var selectedPreguntaId = $('#Indicadores_PreguntaId').val();
+        var selectedTorta = $('#Indicadores_Torta').val();
+        var selectedPorcentaje = $('#Indicadores_Porcentaje').val();
+        var selectedTitulo = $('#Indicadores_Titulo').val();
+
+        var selectedColeccionId = $('#Indicadores_ColeccionId').val();
+        var selectedEntidadId = $('#Indicadores_ClaseEntidadId').val();
+
+        var selectedCodigoDepartamento = $('#Indicadores_CodigoDepartamento').val();
+        var selectedCodigoMunicipio = $('#Indicadores_CodigoMunicipio').val();
+
+        var tipo = 'bar';
+        var seriesArr = [];
+        var datos = new Array();
+        var catogorias = new Array();
+        var formato = '<b>{point.name}</b>: {point.y:.1f} ';
+
+        if (selectedPreguntaId != null && selectedPreguntaId != '' && selectedTorta != null && selectedPorcentaje != null) {
+            $.getJSON('@Url.Action("CargarIndicadorPublico")', { preguntaId: selectedPreguntaId, tipoTorta: selectedTorta, tipoPorcentaje: selectedPorcentaje, titulo: selectedTitulo, coleccionId: selectedColeccionId, claseEntidadId: selectedEntidadId, codigoDepartamento: selectedCodigoDepartamento, codigoMunicipio: selectedCodigoMunicipio }, function (jdata) {
+
+                selectedTorta = jdata.Torta;
+                selectedPorcentaje = jdata.Porcentaje;
+                selectedTitulo = jdata.Titulo;
+
+                if (selectedTorta) {
+                    tipo = 'pie';
+                }
+
+                if (selectedPorcentaje) {
+                    formato = '<b>{point.name}</b>: {point.y:.1f} %';
+                }
+
+                $.each(jdata, function (key, data) {
+                    if (key == 'series') {
+                        $.each(data, function (indice, dato) {
+                            datos.push([dato.name, parseFloat(dato.data)]);
+                        });
+                        seriesArr.push(datos);
+                    }
+                    else {
+                        catogorias = data;
+                    } // Fin If
+                }); // Fin each
+
+                $('#container').highcharts({
+                    chart: {
+                        type: tipo,
+                        plotBackgroundColor: null,
+                        plotBorderWidth: 1,
+                        plotShadow: false
+                    },
+                    title: {
+                        text: selectedTitulo
+                    },
+                    subtitle: {
+                        text: $("#PreguntaId option:selected").text()
+                    },
+                    xAxis: {
+                        categories: [catogorias],
+                        title: {
+                            text: null
+                        }
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: 'Gráfica SIMCO – Publicación de indicadores del sector museal colombiano, año 2013',
+                            align: 'high'
+                        },
+                        labels: {
+                            overflow: 'justify'
+                        }
+                    },
+                    tooltip: {
+                        valueSuffix: ''
+                    },
+                    plotOptions: {
+                        bar: {
+                            dataLabels: {
+                                enabled: true,
+                                format: formato,
+                                style: {
+                                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                }
+                            }
+                        }
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: true,
+                                format: formato,
+                                style: {
+                                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                }
+                            }
+                        }
+                    },
+                    credits: {
+                        enabled: false
+                    },
+
+                    series: [{
+                        type: tipo,
+                        name: 'Respuestas',
+                        data: seriesArr[0]
+                    }]
+
+                }); // fin contenedor
+            });
+        }
+    } // Fin
+</script>

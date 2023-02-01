@@ -1,0 +1,152 @@
+﻿@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+
+@model SolicitudConsultaModel
+@{
+    ViewBag.Title = "Resumen solicitud";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h3>Resumen solicitud</h3>
+
+<fieldset>
+
+    <legend class="texto-negrita">Información de la solicitud</legend>
+
+    <div class="box-row">
+        <div class="box">
+            @Html.LabelFor(model => model.Solicitud.NumeroRadicacion)
+        </div>
+        <div class="box">
+            @Html.LabelFor(model => model.Solicitud.FechaRegistro)
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DisplayTextFor(model => model.Solicitud.NumeroRadicacion)
+            </div>
+        </div>
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DisplayTextFor(model => model.Solicitud.FechaRegistro)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="box-row">
+        <div class="box">
+            @Html.LabelFor(model => model.Solicitud.EstadoActual)
+        </div>
+        <div class="box">
+            @Html.LabelFor(model => model.Solicitud.Categoria)
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DisplayTextFor(model => model.Solicitud.EstadoActual)
+            </div>
+        </div>
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DisplayTextFor(model => model.Solicitud.Categoria)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="box-row">
+        <div class="box">
+            @Html.LabelFor(model => model.Solicitud.Descripcion)
+        </div>
+    </div>
+
+    @Html.Raw(HttpUtility.HtmlDecode(Model.Solicitud.Descripcion))
+
+</fieldset>
+
+<fieldset>
+    <legend>[<a href="#" class="show_hide" divtarget="comentarios">+</a>] Comentarios </legend>
+
+    <div id="comentarios" class="formulario-oculto">
+        @if (Model.Comentarios.Any())
+            {
+                foreach (ComentarioModel item in Model.Comentarios)
+                {
+                <div class="box-row">
+                    <div class="box">
+                        @item.NombreCompletoAutor
+                    </div>
+                </div>
+
+                <div class="formulario-control-texto">
+                    @Html.Raw(HttpUtility.HtmlDecode(@item.Comentario))
+                </div>
+
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-control-nota">
+                            Tipo:
+                            @if (@item.EsPublico == true)
+                            { <text>Público</text> }
+                            else if (@item.EsPublico == false)
+                            { <text>Privado</text> } - Publicación: @item.FechaRegistro
+                        </div>
+                    </div>
+                </div>
+                <br />
+            }
+        }
+        else
+        {
+            <div>
+                @Html.Raw(Constante.NoHayComentarios)
+            </div>
+        }
+    </div>
+</fieldset>
+
+<fieldset>
+    <legend>Documentos adjuntos</legend>
+
+    @if (Model.Documentos.Any())
+    {
+        foreach (DocumentoModel item in Model.Documentos)
+        {
+            <div class="formulario-field-1">
+                <div class="formulario-label">
+                    @Html.ActionLink(@item.Nombre, "Index", "Documentos", new { id = Criptografia.EncriptarUrl(item.Id.ToString()) }, new { @title = "Descargar archivo" })
+                </div>
+                <div class="formulario-control-nota">
+                    Autor: @item.UsuarioId<br />
+                    Publicación: @item.FechaRegistro
+                </div>
+                <div class="formulario-control-texto">
+                </div>
+            </div>
+
+            <div class="formulario-clear"></div>
+        }
+    }
+    else
+    {
+        <div>
+            @Html.Raw(Constante.NoHayDocumentosAdjuntos)
+        </div>
+    }
+
+</fieldset>
+
+<div class="formulario-botones">
+    @if (ViewBag.Perfil != null && (ViewBag.Perfil == Perfiles.Asesor || ViewBag.Perfil == Perfiles.Administrador))
+    {
+        @Html.ActionLink(Constante.BotonRegresar, "ConsultarSolicitudes", "Solicitudes", new object(), new { @class = "boton" })
+    }
+    else
+    {
+        @Html.ActionLink(Constante.BotonRegresar, "SolicitudesAgentes", "Solicitudes", new object(), new { @class = "boton" })
+    }
+</div>
+
