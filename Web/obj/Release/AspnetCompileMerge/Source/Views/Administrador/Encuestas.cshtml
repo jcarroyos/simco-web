@@ -1,0 +1,194 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+@using Simco.Infrastructure.Notification
+
+@model IEnumerable<EncuestaModel>
+
+@{
+    ViewBag.Title = "Encuestas";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Encuestas</h2>
+
+<div class="grilladatos-opciones-izquierda">
+    @Html.ActionLink("Nueva encuesta", "Encuesta", "Administrador", null, new { @class = "boton" })
+    <a href="#" id="duplicarencuesta" class="boton">Duplicar encuesta</a>
+</div>
+
+<div id="divduplicarencuesta" class="duplicar-encuestas">
+    @using (Html.BeginForm("DuplicarEncuesta", "Administrador", FormMethod.Post, new { id = "FormDuplicarEncuesta" }))
+    {
+    <fieldset>
+        <br />
+        <h2>Duplicar encuesta</h2>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    Encuestas
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.DropDownList("EncuestaFuenteId", new SelectList(Model, "Id", "Nombre"), "Seleccione una encuesta...", new { @class = "chosen", style = "width:560px;" })
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <legend><span id="MsgEspera" /></legend>
+    </fieldset>
+
+    <div class="grilladatos-opciones-izquierda">
+        <input type="submit" value="@Html.Raw(Constante.BotonAceptar)" name="Aceptar" id="BotonAceptar" class="boton" />
+        <a href="#" id="cancelarduplicarencuesta" class="boton">Cancelar</a>
+    </div>
+    }
+</div>
+
+<div class="formulario-busqueda">
+    @using (Html.BeginForm("Encuestas", "Administrador", FormMethod.Get, new { id = "FormBuscarEncuestas" }))
+    {
+        <fieldset>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        Encuestas a buscar:
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBox("Consulta", (string)ViewBag.Consulta, new { style = "width:360px;" })
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    }
+</div>
+
+<div class="grilladatos-tabla-encuestas">
+    @(Html.Kendo().Grid(Model)
+           .Name("GridEncuestas")
+           .Columns(columns =>
+           {
+               columns.Bound(o => o.Nombre).Template(o => @Html.ActionLink(@HtmlHelperExtensions.Truncate(o.Nombre, 80), "Encuesta", "Administrador", new { id = Criptografia.EncriptarUrl(o.Id.ToString()) }, null)).Width(450);
+               columns.Bound(o => o.FechaInicio).Width(120);
+               columns.Bound(o => o.FechaFinalizacion).Width(120);
+           })
+           .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} encuestas")
+                                                .Empty("No se encontraron encuestas")
+                                                .First("Ir a la primera página")
+                                                .Last("Ir a la última página")
+                                                .Next("Ir a la página siguiente")
+                                                .Previous("Ir a la página anterior")))
+
+    )
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <div id="secuenciaEncuestas" class="formulario-interno">
+
+        @using (Html.BeginForm("EncuestasRegistroClasificacion", "Administrador", FormMethod.Post))
+        {
+            @Html.ValidationSummary(true)
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.Raw(Constante.EncuestaRegistroClasificacion)
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @foreach (EncuestaModel encuesta in Model)
+                        {
+                            string t = string.Format("orden_{0}", encuesta.Id);
+
+                            if ((bool)encuesta.EsRegistroClasificacion)
+                            {
+                                <input type="checkbox" name="SecuenciaEncuestasRegistroClasificacion" value="@encuesta.Id" checked="checked" class="encuestacheck" divtarget="@t" />
+
+                                <input name="@t" id="@t" style="width: 30px;" type="text" data-val="true" data-val-number="El campo debe ser un n&#250;mero." value="@encuesta.RegistroClasificacionOrden" title="Posición de la encuesta en la secuencia" />
+                                @encuesta.Nombre <br />
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="SecuenciaEncuestasRegistroClasificacion" value="@encuesta.Id" class="encuestacheck" divtarget="@t" />
+                                <input name="@t" id="@t" style="width: 30px;" type="text" data-val="true" data-val-number="El campo debe ser un n&#250;mero." value="@encuesta.RegistroClasificacionOrden" title="Posición de la encuesta en la secuencia" />
+                                @encuesta.Nombre <br />
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="formulario-botones">
+                <input type="submit" value="@Html.Raw(Constante.BotonGuardarCambios)" name="GuardarCambios" class="boton" />
+            </div>
+        }
+    </div>
+}
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        var validating = false;
+
+        $("#MsgEspera").hide();
+
+        var button = $('#BotonAceptar');
+        button.show();
+
+        $("#divduplicarencuesta").hide(true);
+
+        $("#secuenciaEncuestas :checkbox").each(function () {
+            ValidarCheck($(this), "#" + $(this).attr('divtarget'));
+        });
+
+        $('.encuestacheck').change(function () {
+            ValidarCheck($(this), "#" + $(this).attr('divtarget'));
+        });
+
+        $("#duplicarencuesta").click(function () {
+            $('#divduplicarencuesta').slideToggle();
+        });
+
+        $("#cancelarduplicarencuesta").click(function () {
+            $('#divduplicarencuesta').slideToggle();
+        });
+
+
+        $('form').submit(function () {
+            var selectedItem = $('#EncuestaFuenteId').val();
+
+            if (selectedItem != null && selectedItem != '') {
+                if (validating) return false;
+                var button = $(this).find('input:submit, input:button');
+
+                $("#MsgEspera").html("Un momento por favor ...").show();
+                button.hide();
+                validating = true;
+            }
+        });
+
+    });
+
+    function ValidarCheck(divo, divd) {
+        if ($(divo).is(':checked')) {
+            $(divd).show();
+        } else {
+            $(divd).hide();
+        }
+    }
+
+</script>

@@ -1,0 +1,228 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.DomainModelLayer.Entidades
+@using Simco.CrossInfraestructureLayer
+
+@model InicioSesionModel
+@{
+    ViewBag.Title = "Inicio";
+}
+
+@section home {
+
+    <section id="intro" class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="logo">
+                    <a href="@Url.Action("Index", "Home")"><img src="@Url.Content("~/Images/logo_simco.svg")"></a>
+                </div>
+                <div class="row menu">
+                    <div class="col-md-5">
+                        <div class="card registro">
+                            <a href="/Registro">
+                                <img src="@Url.Content("~/Images/address-card-solid.svg")" />
+                            </a>
+                            <div class="card-body">
+                                <a href="/Registro">Registro</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="card directorio">
+                            <a href="/Home/PersonaNatural">
+                                <img src="@Url.Content("~/Images/address-card-solid.svg")" />
+                            </a>
+                            <div class="card-body">
+                                <a href="/Home/PersonaNatural">Directorio</a>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+                <div class="row menu">
+                    <div class="col-md-5">
+                        <div class="card asesoria">
+                            <a href="/Solicitudes">
+                                <img src="@Url.Content("~/Images/address-card-solid.svg")" />
+                            </a>
+                            <div class="card-body">
+                                <a href="/Solicitudes">Asesoría</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="card colecciones">
+                            <a href="/Colecciones/Index" target="_blank">
+                                <img src="@Url.Content("~/Images/address-card-solid.svg")" />
+                            </a>
+                            <div class="card-body">
+                                <a href="/Colecciones/Index" target="_blank">Colecciones</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row menu">
+                    <div class="col-md-5"></div>
+                    <div class="col-md-7">
+                        <div class="card indicadores">
+                            <a href="/PublicacionIndicadores">
+                                <img src="@Url.Content("~/Images/address-card-solid.svg")" />
+                            </a>
+                            <div class="card-body">
+                                <a href="/PublicacionIndicadores">Indicadores</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <div id="login" class="row">
+                        @using (Html.BeginForm("Index", "Home", FormMethod.Post))
+                        {
+                            @Html.ValidationSummary(true)
+                                <hr />
+                                <div class="zlogin col-md-8">
+                                    <h2 class="zlogin-titulo-h2">Usuarios registrados</h2>
+                                    <div class="clear-10"></div>
+                                    <div class="zlogin-input-email">
+                                        @Html.LabelFor(model => model.CorreoElectronico)
+                                        @Html.EditorFor(model => model.CorreoElectronico, new { @class = "form-control" })
+                                        <div class="formulario-validator">
+                                            @Html.ValidationMessageFor(model => model.CorreoElectronico)
+                                        </div>
+                                    </div>
+                                    <div class="zlogin-input-password">
+                                        @Html.LabelFor(model => model.Contrasena)
+                                        @Html.EditorFor(model => model.Contrasena, new { @class = "form-control" })
+                                        <div class="formulario-validator">
+                                            @Html.ValidationMessageFor(model => model.Contrasena)
+                                        </div>
+                                    </div>
+                                    <div class="zlogin-input-botton btn btn-secondary btn-sm">
+                                        <input type="submit" value="Iniciar sesión" class="boton" />
+                                    </div>
+                                    <div class="zlogin-olvide-contrasena">
+                                        @Html.ActionLink("Olvidé la contraseña", "RecuperarContrasena", "Home", null)
+                                    </div>
+                                </div>
+                            
+                        }
+                    </div>
+                </div>
+                <div class="col-md-9 nopadding">
+                    <div class="owl-carousel owl-theme">
+                        <div class="item"><img src="https://i.imgur.com/sfObItm.jpg" alt="Museo Casa Natal General Santander" title="Museo Casa Natal General Santander"/></div>
+                        <div class="item"><img src="https://i.imgur.com/Xkc58fZ.jpg" alt="Museo de Millonarios FC" title="Museo de Millonarios FC" /></div>
+                    </div>
+                </div>
+            </div>
+    </section>
+    <section id="museos" class="container-fluid">
+        <div class="row bg">
+            <div class="container descubre">
+                <h2>Descubre los museos de Colombia</h2>
+                <hr />
+                <p>Nuestro país posee una gran diversidad de patrimonio material, inmaterial y natural. Conozca a través de esta herramienta el sector museal colombiano registrado ante el Programa Fortalecimiento de Museos del Ministerio de Cultura, para obtener  más información sobre estas instituciones.</p>
+
+                
+                @using (Html.BeginForm("Buscar", "Home", FormMethod.Post, new { id = "FormEncuesta", @class= "row" }))
+                {
+
+                    <div class="buscador col-md-3">
+
+                        <div class="formulario-control-busqueda">
+                            <label>Departamento</label>
+                            @Html.DropDownListFor(model => model.Directorio.CodigoDepartamento, new SelectList(Model.Directorio.Departamentos, "Id", "Nombre", Model.Directorio.CodigoDepartamento), "Seleccione un departamento...", new { data_placeholder = "Seleccione un departamento...", @class = "chosen" })
+                            <label>Municipio</label>
+                            @Html.DropDownListFor(model => model.Directorio.CodigoMunicipio, Enumerable.Empty<SelectListItem>(), "Seleccione una ciudad ...", new { data_placeholder = "Seleccione una ciudad ...", @class = "chosen" })
+                            <label>Palabra o tema</label>
+                            @Html.TextBoxFor(model => model.Directorio.PalabrasClaves, new { placeholder = "Palabras claves" })
+
+                            <input type="submit" value="@Html.Raw(Constante.BotonBuscar)" name="Buscar" class="boton" style="width: 80px" />
+
+                        </div>
+
+                    </div>
+
+                    @(Html.Kendo().ListView<DirectorioMuseo>(Model.Directorio.Resultados)
+                                                    .HtmlAttributes(new { @class = "col-md-8" })
+                                                    .Name("listView")
+                                                    .TagName("div")
+                                                    .ClientTemplateId("template")
+                                                    .DataSource(dataSource => dataSource
+                                                        .PageSize(3)
+                                                        .ServerOperation(false))
+                    )
+                }
+               
+            </div>
+        </div>
+    </section>
+
+
+    
+
+    <script type="text/x-kendo-tmpl" id="template">
+        <div class="museo">
+            <img src="#:RutaFachada#" alt="#:Nombre#" />
+            <h3>#:Nombre#</h3>
+            <p>#:ResenaHistorica# ... </p>
+            <p><a href="@Url.Content("~/Home/Museo?personaJuridicaId=")#:PersonaJuridicaId#">Ver museo</a></p>
+        </div>
+    </script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            CargarListaMunicipios();
+
+            $('#Directorio_CodigoDepartamento').change(function () {
+                CargarListaMunicipios();
+            });
+
+            $('#Directorio_CodigoMunicipio').change(function () {
+                AsignarDeptoMpio();
+            });
+        });
+
+        function CargarListaMunicipios() {
+
+            var selectedItem = $('#Directorio_CodigoDepartamento').val();
+            var destination = $('#Directorio_CodigoMunicipio');
+
+            if (selectedItem != null && selectedItem != '') {
+                $.getJSON('@Url.Action("Municipios")', { zonaPadreId: selectedItem }, function (municipio) {
+
+                    destination.empty();
+                    destination.append('<option value="">Seleccione una ciudad ...</option>');
+
+                    $.each(municipio, function (index, item) {
+                        if (item.Id == '@Model.Directorio.CodigoMunicipio') {
+                            destination.append('<option value="' + item.Id + '" selected="selected">' + item.Nombre + '</option>');
+                            AsignarDeptoMpio();
+                        } else {
+                            destination.append('<option value="' + item.Id + '">' + item.Nombre + '</option>');
+                        }
+                        destination.trigger("chosen:updated");
+                    });
+                });
+            }
+            else {
+                destination.empty();
+                destination.trigger("chosen:updated");
+            }
+        }
+
+        function AsignarDeptoMpio() {
+
+            var selectedTextDepto = $("#Directorio_CodigoDepartamento option:selected").text();
+            var selectedTextMpio = $("#Directorio_CodigoMunicipio option:selected").text();
+
+            $('#Directorio_Departamento').val(selectedTextDepto);
+            $('#Directorio_Municipio').val(selectedTextMpio);
+        }
+
+        /* frontend */
+        $(document).ready(function () {
+            $(".topmenu").hide();
+        })
+
+    </script>
+
+}

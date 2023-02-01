@@ -1,0 +1,110 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model GrupoDeUsuariosRegistroModel
+@{
+    ViewBag.Title = "Grupo";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Grupo</h2>
+
+@using (Html.BeginForm("Grupo", "Administrador", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+
+    <fieldset>
+
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(model => model.Edicion)
+        @Html.HiddenFor(model => model.GrupoDeUsuarios.Id)
+
+        <p>
+            Los campos marcados con asterisco (*) son obligatorios
+        </p>
+        <legend>Información de un Grupo de usuarios</legend>
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.GrupoDeUsuarios.Nombre)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.GrupoDeUsuarios.Nombre, new { style = "width:550px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.GrupoDeUsuarios.Nombre)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.GrupoDeUsuarios.Descripcion)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextAreaFor(model => model.GrupoDeUsuarios.Descripcion, new { style = "width:550px; height: 155px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.GrupoDeUsuarios.Descripcion)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.CoordinadorId)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.DropDownListFor(model => model.CoordinadorId, new SelectList(Model.Usuarios, "UsuarioId", "Nombre", Model.CoordinadorId), "Seleccione un usuario...", new { @class = "chosen", style = "width:414px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.CoordinadorId)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.GrupoDeUsuarios.Tipo)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.CheckBox("Tipo_Uno")
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.GrupoDeUsuarios.Tipo)
+                </div>
+            </div>
+        </div>
+        <br />
+    </fieldset>
+
+    if (ViewBag.Perfil != null && (ViewBag.Perfil == Perfiles.Administrador || ViewBag.Perfil == Perfiles.Asesor))
+    {
+        <div class="formulario-botones">
+            <input type="submit" value="@Html.Raw(Constante.BotonGuardar)" name="Guardar" class="boton" />
+            @Html.ActionLink(Constante.BotonCancelar, "Grupos", "Administrador", new object(), new { @class = "boton" })
+        </div>
+    }
+}

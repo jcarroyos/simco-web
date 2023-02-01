@@ -1,0 +1,148 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@{
+    ViewBag.Title = "Participantes";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Participantes</h2>
+
+<div class="formulario-busqueda-entidad">
+    @using (Html.BeginForm("Index", "Participantes", FormMethod.Get, new { id = "FormBuscarParticipantes" }))
+    {
+        <fieldset>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        Participante a buscar:
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBox("Consulta", ViewBag.Consulta as string, new { style = "width:536px" })
+                    </div>
+                </div>
+            </div>
+            <br />
+        </fieldset>
+
+        <div class="formulario-botones">
+            <input type="submit" value="@Html.Raw(Constante.BotonBuscar)" name="Buscar" class="boton" />
+            @Html.ActionLink("Mostrar todos", "Index", "Participantes", new object(), new { @class = "boton" })
+            @Html.ActionLink("Nuevo Participante", "AdminParticipante", "Participantes", new { ParticipanteId = 0 }, new { @class = "boton" })
+        </div>
+    }
+</div>
+
+<div>
+    @(Html.Kendo().Grid<ParticipanteModel>()
+            .Name("GridParticipantes")
+            .Columns(columns =>
+            {
+                columns.Bound(per => per.Nombre).ClientTemplate("<strong><a href=/Participantes/AdminParticipante?ParticipanteId=${Id}>${Nombre}</a></strong>");
+                columns.Bound(per => per.Correo);
+                columns.Bound(per => per.Cargo);
+                columns.Bound(per => per.Estado);
+                columns.Command(per => per.Destroy().Text("Eliminar"));
+            })
+            .Sortable()
+            .Events(e =>
+            {
+                e.DataBound("dataBound");
+            })
+            .Editable(edit =>
+            {
+                edit.ConfirmDelete("Desea eliminar este participante?");
+            })
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .Batch(false)
+                .PageSize(20)
+                .ServerOperation(false)
+                .Events(events => events.Error("error_handler"))
+                .Model(m =>
+                {
+                    m.Id(model => model.Id);
+                })
+                .Destroy(destroy => destroy.Action("ParticipantesEliminar", "Participantes"))
+                .Read(read => read.Action("ParticipantesConsultar", "Participantes").Data("parametrosConsulta"))
+             )
+            .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} Participantes")
+                .Empty("No se encontraron Participantes")
+                .First("Ir a la primera página")
+                .Last("Ir a la última página")
+                .Next("Ir a la página siguiente")
+                .Previous("Ir a la página anterior")))
+        )
+</div>
+
+<script type="text/javascript">
+
+    function dataBound(e) {
+        var grid = this;
+        $("#GridParticipantes tbody tr .k-grid-delete").each(function () {
+            var currentDataItem = $("#GridParticipantes").data("kendoGrid").dataItem($(this).closest("tr"));
+            if (currentDataItem.ComiteParticipantes.length != 0) {
+                $(this).remove();
+            }
+        })
+    }
+
+    function error_handler(e) {
+        if (e.errors) {
+
+            $('.k-grid').each(function (item) {
+                var grid = $(this).data("kendoGrid");
+                if (e.sender === grid.dataSource) {
+                    grid.cancelChanges();
+
+                    var message = "";
+                    $.each(e.errors, function (key, value) {
+                        if ('errors' in value) {
+                            $.each(value.errors, function () {
+                                message += this;
+                            });
+                        }
+                    });
+
+                    //Noty
+                    noty({
+                        text: message,
+                        layout: 'top',
+                        type: 'error',
+                        animateOpen: { 'height': 'toggle' },
+                        animateClose: { 'height': 'toggle' },
+                        speed: 400,
+                        timeout: 5000,
+                        closeButton: false,
+                        closeOnSelfClick: true,
+                        closeOnSelfOver: false
+                    });
+                }
+            });
+        }
+    }
+
+    function parametrosConsulta() {
+        return {
+            consulta: $("#Consulta").val()
+        }
+    }
+</script>
+
+<style>
+    input.k-textbox {
+        text-indent: .1em !important;
+    }
+
+    .k-textbox {
+        width: 100%;
+    }
+
+    .k-dropdown {
+        width: 100%;
+    }
+</style>

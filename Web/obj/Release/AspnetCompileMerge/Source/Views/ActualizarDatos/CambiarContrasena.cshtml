@@ -1,0 +1,84 @@
+﻿@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+
+@model ContrasenaCambiarModel
+
+@{
+    ViewBag.Title = "CambiarContrasena";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Cambiar contraseña</h2>
+
+@using (Html.BeginForm("CambiarContrasena", "ActualizarDatos", FormMethod.Post, new { id = "FormCambiarContrasena" }))
+{
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+
+        <p>Los campos marcados con asterisco (*) son obligatorios</p>
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.Contrasena)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.PasswordFor(model => model.Contrasena)
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Contrasena)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.NuevaContrasena)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.PasswordFor(model => model.NuevaContrasena)
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.NuevaContrasena)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.ConfirmarContrasena)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.PasswordFor(model => model.ConfirmarContrasena)
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.ConfirmarContrasena)
+                </div>
+            </div>
+        </div>
+        <br />
+
+    </fieldset>
+
+        <div class="formulario-botones">
+            <input type="submit" value="@Html.Raw(Constante.BotonGuardarCambios)" name="GuardarCambios" class="boton" />
+        </div>
+}
+

@@ -1,0 +1,500 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model PersonaNaturalRegistroModel
+@{
+    ViewBag.Title = "NuevoUsuarioPersonaNatural";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Registro de una persona natural</h2>
+<p>Ingrese su información básica de contacto y seleccione el tipo de agente al cual corresponde: Conservador (a), Restaurador(a), Coordinador(a) de servicios educativos y/o culturales, Curador(a), Guía o Monitor (a), Museógrafo (a), Museólogo (a) ó ninguno de los anteriores.</p>
+<p>Puede digitar su experiencia laboral y dar permiso para publicar su tipología de agente, correo electrónico y ciudad y departamento en el directorio en línea.</p>
+
+<p>Los campos marcados con asterisco (*) son obligatorios</p>
+
+@using (Html.BeginForm("NuevoUsuarioPersonaNatural", "Administrador", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+
+        @*@Html.HiddenFor(model => model.Usuario.Perfil.Nombre)*@
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.PersonaNatural.CorreoElectronico)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.PersonaNatural.CorreoElectronico)
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.PersonaNatural.CorreoElectronico)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.PersonaNatural.Contrasena)
+                </div>
+            </div>
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.PersonaNatural.ConfirmarContrasena)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.PasswordFor(model => model.PersonaNatural.Contrasena)
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.PersonaNatural.Contrasena)
+                </div>
+            </div>
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.PasswordFor(model => model.PersonaNatural.ConfirmarContrasena)
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.PersonaNatural.ConfirmarContrasena)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Usuario.Estado)
+                </div>
+            </div>
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Usuario.Perfil)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.DropDownListFor(model => model.Usuario.Estado, new SelectList(Model.Estados, Model.Usuario.Estado), new { @class = "chosen", style = "width:264px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Usuario.Estado)
+                </div>
+            </div>
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.DropDownListFor(model => model.Usuario.Perfil.Id, new SelectList(Model.Perfiles, "Id", "Nombre", Model.Usuario.Perfil.Id), new { @class = "chosen", style = "width:264px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Usuario.Perfil)
+                </div>
+            </div>
+        </div>
+        <br />
+
+    </fieldset>
+
+        <fieldset>
+
+            <legend>Información personal</legend>
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> @Html.LabelFor(model => model.PersonaNatural.Nombres)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> @Html.LabelFor(model => model.PersonaNatural.Apellidos)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PersonaNatural.Nombres)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaNatural.Nombres)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PersonaNatural.Apellidos)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaNatural.Apellidos)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.PersonaNatural.TipoDocumento)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> @Html.LabelFor(model => model.PersonaNatural.NumeroDocumento)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.DropDownListFor(model => model.PersonaNatural.TipoDocumento, new SelectList(Model.TiposDocumento, "Valor", "Etiqueta", Model.PersonaNatural.TipoDocumento), new { @class = "chosen", style = "width:264px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaNatural.TipoDocumento)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PersonaNatural.NumeroDocumento)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaNatural.NumeroDocumento)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> @Html.LabelFor(model => model.PersonaNatural.NivelEstudio)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.PersonaNatural.Profesion)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.DropDownListFor(model => model.PersonaNatural.NivelEstudio, new SelectList(Model.NivelesEstudio, "Valor", "Etiqueta", Model.PersonaNatural.NivelEstudio), new { @class = "chosen", style = "width:264px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaNatural.NivelEstudio)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PersonaNatural.Profesion)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaNatural.Profesion)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> @Html.LabelFor(model => model.PersonaNatural.Tipo)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.DropDownListFor(model => model.PersonaNatural.Tipo, new SelectList(Model.TiposPersonaNatural, "Valor", "Etiqueta", Model.PersonaNatural.Tipo), "Seleccione un tipo...", new { @class = "chosen", style = "width:414px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaNatural.Tipo)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+        </fieldset>
+
+        <fieldset>
+
+            <legend>Información de contacto</legend>
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> @Html.LabelFor(model => model.PersonaNatural.Departamento)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> @Html.LabelFor(model => model.PersonaNatural.Municipio)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.DropDownListFor(model => model.PersonaNatural.CodigoDepartamento, new SelectList(Model.Departamentos, "Id", "Nombre", Model.PersonaNatural.CodigoDepartamento), "Seleccione un departamento...", new { @class = "chosen", data_placeholder = "Seleccione un departamento...", style = "width:264px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaNatural.CodigoDepartamento)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.DropDownListFor(model => model.PersonaNatural.CodigoMunicipio, Enumerable.Empty<SelectListItem>(), "Seleccione un municipio...", new { @class = "chosen", data_placeholder = "Seleccione un municipio...", style = "width:264px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaNatural.CodigoMunicipio)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.PersonaNatural.DireccionCorrespondencia)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PersonaNatural.DireccionCorrespondencia, new { style = "width:550px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaNatural.DireccionCorrespondencia)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.PersonaNatural.TelefonoFijo)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.PersonaNatural.TelefonoCelular)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PersonaNatural.TelefonoFijo)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaNatural.TelefonoFijo)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PersonaNatural.TelefonoCelular)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaNatural.TelefonoCelular)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.PersonaNatural.SitioWebPersonal)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PersonaNatural.SitioWebPersonal, new { style = "width:550px;" })
+                    </div>
+                    <div class="formulario-control-nota">
+                        Ejemplo: http://www.museoscolombianos.gov.co/
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaNatural.SitioWebPersonal)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.PersonaNatural.Imagen)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        <input type="file" id="fileUpload" name="fileUpload" style="width: 414px;" />
+                    </div>
+                    <div class="formulario-control-nota">
+                        @Html.Raw(Constante.MensajeSoloImagenes)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.PersonaNatural.InformacionAdicional)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextAreaFor(model => model.PersonaNatural.InformacionAdicional, new { style = "width:550px; height: 155px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaNatural.InformacionAdicional)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div id="divinformacionpublica">
+                <div class="formulario-label">
+
+                </div>
+                <div class="formulario-control">
+                    @Html.CheckBoxFor(model => model.PersonaNatural.InformacionPublica)
+                    @Html.LabelFor(model => model.PersonaNatural.InformacionPublica)
+                </div>
+                <div class="formulario-validator">
+
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+
+            <legend>Georeferenciación</legend>
+
+            @*<p>
+                    <a href="@Url.Content("~/Content/documentos/Coordenadas desde Google Maps.pdf")" target="_blank">Documentación de ayuda</a>
+                </p>*@
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.PersonaNatural.Latitud)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.PersonaNatural.Longitud)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PersonaNatural.Latitud)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaNatural.Latitud)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.PersonaNatural.Longitud)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.PersonaNatural.Longitud)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+        </fieldset>
+
+        <div class="formulario-botones">
+            <input type="submit" value="@Html.Raw(Constante.BotonGuardarCambios)" name="GuardarCambios" class="boton" />
+            @Html.ActionLink(Constante.BotonCancelar, "Usuarios", "Administrador", new object(), new { @class = "boton" })
+        </div>
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        CargarListaMunicipios();
+
+        $('#PersonaNatural_CodigoDepartamento').change(function () {
+            CargarListaMunicipios();
+        });
+
+        $('#PersonaNatural_CodigoMunicipio').change(function () {
+            AsignarDeptoMpio();
+        });
+
+        $('#PersonaNatural_Tipo').change(function () {
+            ValidarTipo();
+        });
+
+    });
+
+    function CargarListaMunicipios() {
+        var selectedItem = $('#PersonaNatural_CodigoDepartamento').val();
+        var destination = $('#PersonaNatural_CodigoMunicipio');
+
+        if (selectedItem != null && selectedItem != '') {
+            $.getJSON('@Url.Action("Municipios")', { zonaPadreId: selectedItem }, function (municipio) {
+                destination.empty();
+                $.each(municipio, function (index, item) {
+                    if (item.Id == '@Model.PersonaNatural.CodigoMunicipio') {
+                        destination.append('<option value="' + item.Id + '" selected="selected">' + item.Nombre + '</option>');
+                        AsignarDeptoMpio();
+                    } else {
+                        destination.append('<option value="' + item.Id + '">' + item.Nombre + '</option>');
+                    }
+                    destination.trigger("chosen:updated");
+                });
+            });
+        }
+        else {
+            destination.empty();
+            destination.trigger("chosen:updated");
+        }
+    }
+
+    function ValidarTipo() {
+        if ($('#PersonaNatural_Tipo').val() == "Ninguno") {
+            $('#divinformacionpublica').hide();
+            $('input[id=PersonaNatural_InformacionPublica]').attr('checked', false);
+        } else {
+            $('#divinformacionpublica').show();
+        }
+    }
+
+    function AsignarDeptoMpio() {
+
+        var selectedTextDepto = $("#PersonaNatural_CodigoDepartamento option:selected").text();
+        var selectedTextMpio = $("#PersonaNatural_CodigoMunicipio option:selected").text();
+
+        $('#PersonaNatural_CodigoDepartamento').val(selectedTextDepto);
+        $('#PersonaNatural_CodigoMunicipio').val(selectedTextMpio);
+    }
+
+</script>

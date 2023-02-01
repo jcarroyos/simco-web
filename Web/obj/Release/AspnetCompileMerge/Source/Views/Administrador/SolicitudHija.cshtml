@@ -1,0 +1,81 @@
+﻿@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+
+@model SolicitudHijaRegistroModel
+@{
+    ViewBag.Title = "Solicitud Hija";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Crear una solicitud hija</h2>
+
+@using (Html.BeginForm("SolicitudHija", "Administrador", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.SolicitudPadreId)
+
+    <fieldset>
+
+        <legend>Información de la solicitud</legend>
+
+        <div class="box-row">
+            <div class="box">
+                <em>*</em> @Html.LabelFor(model => model.Solicitud)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextAreaFor(model => model.Solicitud, new { style = "width:550px; height: 155px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Solicitud)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                @Html.LabelFor(model => model.ResponsableId)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.DropDownListFor(model => model.ResponsableId, new SelectList(Model.UsuariosAdministrativos, "UsuarioId", "Nombre", Model.ResponsableId), new { @class = "chosen", style = "width:564px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.ResponsableId)
+                </div>
+            </div>
+        </div>
+        <br />
+    </fieldset>
+
+        <fieldset>
+            <legend>Documento adjunto</legend>
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.NuevoDocumento.Archivo)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        <input type="file" id="fileUpload" name="fileUpload" style="width: 414px;" />
+                    </div>
+                </div>
+            </div>
+            <br />
+        </fieldset>
+
+        <div class="formulario-botones">
+            <input type="submit" value="@Html.Raw(Constante.BotonCrearSolicitud)" name="CrearSolicitud" class="boton" />
+            @Html.ActionLink(Constante.BotonCancelar, "SolicitudAsignada", "Administrador", new { id = ViewBag.Id }, new { @class = "boton" })
+        </div>
+}
+

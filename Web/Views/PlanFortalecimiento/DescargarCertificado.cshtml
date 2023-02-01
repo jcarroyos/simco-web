@@ -1,0 +1,41 @@
+﻿
+@{
+    ViewBag.Title = "Descargar Certificado";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+@using (Html.BeginForm("GenerarPDFCertificado", "PlanFortalecimiento", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <h2>Certificado de registro y clasificación</h2>
+        <ul>
+            <li>
+                <p style='text-align: justify;'>Acceder a asesorías especializadas para mejorar la gestión y administración museal.</p>
+            </li>
+            <li>
+                <p style='text-align: justify;'>Participar con sus proyectos en las convocatorias realizadas por el Ministerio de Cultura, entre otras entidades del Estado.</p>
+            </li>
+            <li>
+                <p style='text-align: justify;'>Formar parte del Directorio georreferenciado de museos colombianos, publicado en <a href="http://simco.museoscolombianos.gov.co"><b>SIMCO</b></a>, entre otros canales de difusión.</p>
+            </li>
+            <li>
+                <p style='text-align: justify;'>Tener acceso a las actividades académicas que el Ministerio de Cultura desarrolla en las distintas regiones del país.</p>
+            </li>
+            <li>
+                <p style='text-align: justify;'>Obtener gratuitamente una licencia de uso del software “Colecciones Colombianas”, para inventariar, registrar, catalogar y gestionar colecciones de arte, antropología, etnografía, arqueología e historia.</p>
+            </li>
+            <li>
+                <p style='text-align: justify;'>Consolidar indicadores del sector para tener una proyección nacional e internacional. </p>
+            </li>
+            <li>
+                <p style='text-align: justify;'>Recibir un Plan de Fortalecimiento (diagnóstico técnico de su gestión museal), el cual tendrá el acompañamiento de los asesores del Programa Fortalecimiento de Museos.</p>
+            </li>
+        </ul>
+        <div class="formulario-field-1">
+            <div class="formulario-botones">
+                @Html.ActionLink("Descargar PDF", "GenerarPDFCertificado", "PlanFortalecimiento", new object(), new { @class = "boton" })
+            </div>
+        </div>
+        <div class="formulario-clear">
+        </div>
+        <p style='text-align: justify;'>Si posee algún inconveniente con su certificado, lo invitamos a contactarse a través del módulo de asesorías del Sistema de Información de Museos Colombianos – SIMCO, en el siguiente enlace: <a href="http://simco.museoscolombianos.gov.co/SolicitudesPublicas"><b>Solicitudes Públicas</b></a></p>
+}

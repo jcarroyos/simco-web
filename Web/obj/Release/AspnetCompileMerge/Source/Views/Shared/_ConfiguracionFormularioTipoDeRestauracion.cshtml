@@ -1,0 +1,55 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model ConfiguracionTipoRestauracionModel
+
+@if (Model != null)
+{
+    using (Html.BeginForm("TiposDeRestauraciones", "Administrador", FormMethod.Post, new {id = "FormTiposDeRestauraciones"}))
+    {
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+            
+            <p>Los campos marcados con asterisco (*) son obligatorios</p>
+                    
+            @Html.HiddenFor(model => model.TipoDeRestauracionValorOriginal)
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> @Html.LabelFor(model => model.TipoDeRestauracion)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.TipoDeRestauracion, new { style = "width:550px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.TipoDeRestauracion)
+                    </div>
+                </div>
+            </div>
+            <br />
+        </fieldset>
+
+        <div class="formulario-botones">
+            <input type="submit" value="@Html.Raw(Constante.BotonGuardarCambios)" name="GuardarCambios" class="boton" />
+            @if(!string.IsNullOrEmpty(Model.TipoDeRestauracionValorOriginal))
+            {
+                @Html.ActionLink(Constante.BotonEliminarTipoRestauracion, "EliminarTipoDeRestauracion", "Administrador", new {Id = Model.TipoDeRestauracionValorOriginal}, new {@class = "boton", id = "btnEliminarTipoRestauracion"})
+            }
+        </div>
+    }
+}
+
+<script type="text/javascript">
+
+    $("#btnEliminarTipoRestauracion").click(function () {
+        return confirm('¿Está seguro de que desea eliminar el tipo de restauración?');
+    });
+
+</script>

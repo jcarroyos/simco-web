@@ -1,0 +1,97 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model ConfiguracionZonaGeograficaModel
+
+@if (Model != null)
+{
+    using (Html.BeginForm("ZonasGeograficas", "Administrador", FormMethod.Post, new { id = "FormZonasGeograficas" }))
+     {
+         @Html.ValidationSummary(true)
+
+         <fieldset>
+            
+             <p>Los campos marcados con asterisco (*) son obligatorios</p>
+                    
+             @Html.HiddenFor(model => model.IdValorOriginal)
+
+             <div class="box-row">
+                 <div class="box">
+                     <div class="formulario-label">
+                         <em>*</em> @Html.LabelFor(model => model.Id)
+                     </div>
+                 </div>
+             </div>
+             <div class="box-row">
+                 <div class="box">
+                     <div class="formulario-control">
+                         @Html.TextBoxFor(model => model.Id, new { style = "width:50px;" })
+                     </div>
+                     <div class="formulario-validator">
+                         @Html.ValidationMessageFor(model => model.Id)
+                     </div>
+                 </div>
+             </div>
+             <br />
+
+             <div class="box-row">
+                 <div class="box">
+                     <div class="formulario-label">
+                         <em>*</em> @Html.LabelFor(model => model.ZonaGeografica)
+                     </div>
+                 </div>
+             </div>
+             <div class="box-row">
+                 <div class="box">
+                     <div class="formulario-control">
+                         @Html.TextBoxFor(model => model.ZonaGeografica, new { style = "width:550px;" })
+                     </div>
+                     <div class="formulario-validator">
+                         @Html.ValidationMessageFor(model => model.ZonaGeografica)
+                     </div>
+                 </div>
+             </div>
+             <br />
+                          
+             <div class="box-row">
+                 <div class="box">
+                     <div class="formulario-label">
+                         @Html.LabelFor(model => model.ZonaGeograficaPadreId)
+                     </div>
+                 </div>
+             </div>
+             <div class="box-row">
+                 <div class="box">
+                     <div class="formulario-control">
+                         @Html.DropDownListFor(model => model.ZonaGeograficaPadreId, new SelectList(Model.ZonasGeograficas, "Id", "Nombre"), "Seleccione una zona geográfica padre...", new { @class = "chosen", style = "width:564px;" })
+                     </div>
+                     <div class="formulario-validator">
+                         @Html.ValidationMessageFor(model => model.ZonaGeograficaPadreId)
+                     </div>
+                 </div>
+             </div>
+             <br />
+        
+         </fieldset>
+
+         <div class="formulario-botones">
+             <input type="submit" value="@Html.Raw(Constante.BotonGuardarCambios)" name="GuardarCambios" class="boton" />
+             @if(!string.IsNullOrEmpty(Model.IdValorOriginal))
+             {
+                 @Html.ActionLink(Constante.BotonEliminarZonaGeografica, "EliminarZonaGeografica", "Administrador", new { id = Model.IdValorOriginal }, new { @class = "boton", id = "btnEliminarZonaGeografica" })
+             }
+         </div>
+     }
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $(".chosen").chosen();
+
+        $("#btnEliminarZonaGeografica").click(function () {
+            return confirm('¿Está seguro de que desea eliminar la zona geográfica?');
+        });
+    });
+
+</script>

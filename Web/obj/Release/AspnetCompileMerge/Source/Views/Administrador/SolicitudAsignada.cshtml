@@ -1,0 +1,43 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model SolicitudRegistroModel
+@{
+    ViewBag.Title = "SolicitudAsignada";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Resumen de la solicitud asignada</h2>
+
+@if (Model.Solicitud.EstadoActual != EstadosSolicitudes.Solucionada.ToString() && Model.Solicitud.EstadoActual != EstadosSolicitudes.Cerrada.ToString())
+{
+    <div class="formulario-botones">
+        @if (Model.Solicitud.SolicitudPadreId != null && Model.Solicitud.SolicitudPadreId > 0)
+        {
+            @Html.ActionLink("Ver solicitud padre", "Solicitud", "Administrador", new { id = Criptografia.EncriptarUrl(Model.Solicitud.SolicitudPadreId.ToString()) }, new { @class = "boton" })
+        }
+        @Html.ActionLink(Constante.BotonCerrarSolicitud, "CerrarSolicitud", "Administrador", new { id = Criptografia.EncriptarUrl(Model.Solicitud.Id.ToString()) }, new { @class = "boton" })
+    </div>
+
+    <br />
+
+    using (Html.BeginForm("SolicitudAsignada", "Administrador", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.ValidationSummary(true)
+
+        Html.RenderPartial("_SolicitudAdministrador", Model);
+
+        <div class="formulario-botones">
+            <input type="submit" value="@Html.Raw(Constante.BotonGuardarCambios)" name="GuardarCambios" class="boton" />
+            @Html.ActionLink(Constante.BotonCancelar, "SolicitudesAsignadas", "Administrador", new object(), new { @class = "boton" })
+        </div>
+    }
+}
+else
+{
+    Html.RenderPartial("_SolicitudAdministrador", Model);
+
+    <div class="formulario-botones">
+        @Html.ActionLink(Constante.BotonRegresar, "SolicitudesAsignadas", "Solicitudes", new object(), new { @class = "boton" })
+    </div>
+}

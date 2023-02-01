@@ -1,0 +1,139 @@
+﻿@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+
+@model InicioSesionModel
+@{
+    ViewBag.Title = "Resumen solicitud";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Resumen solicitud</h3>
+
+<div class="formulario">
+
+    <fieldset>
+
+        <legend class="texto-negrita">Información de la solicitud</legend>
+
+        <div class="box-row">
+            <div class="box">
+                @Html.LabelFor(model => model.SolicitudConsulta.Solicitud.NumeroRadicacion)
+            </div>
+            <div class="box">
+                @Html.LabelFor(model => model.SolicitudConsulta.Solicitud.FechaRegistro)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.DisplayTextFor(model => model.SolicitudConsulta.Solicitud.NumeroRadicacion)
+                </div>
+            </div>
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.DisplayTextFor(model => model.SolicitudConsulta.Solicitud.FechaRegistro)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                @Html.LabelFor(model => model.SolicitudConsulta.Solicitud.EstadoActual)
+            </div>
+            <div class="box">
+                @Html.LabelFor(model => model.SolicitudConsulta.Solicitud.Categoria)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.DisplayTextFor(model => model.SolicitudConsulta.Solicitud.EstadoActual)
+                </div>
+            </div>
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.DisplayTextFor(model => model.SolicitudConsulta.Categoria)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                @Html.LabelFor(model => model.SolicitudConsulta.Solicitud.Descripcion)
+            </div>
+        </div>
+
+        @Html.Raw(HttpUtility.HtmlDecode(Model.SolicitudConsulta.Solicitud.Descripcion))
+
+    </fieldset>
+
+    <fieldset>
+        <legend>[<a href="#" class="show_hide" divtarget="comentarios">+</a>] Comentarios </legend>
+
+        <div id="comentarios" class="formulario-oculto">
+            @if (Model.SolicitudConsulta.Comentarios.Any())
+            {
+                foreach (ComentarioModel item in Model.SolicitudConsulta.Comentarios)
+                {
+                <div class="box-row">
+                    <div class="box">
+                        @item.NombreCompletoAutor
+                    </div>
+                </div>
+                <div class="formulario-control-texto">
+                    @Html.Raw(HttpUtility.HtmlDecode(@item.Comentario))
+                </div>
+                <div class="formulario-control-nota">
+                    Tipo:
+                    @if (@item.EsPublico == true)
+                    { <text>Público</text> }
+                    else if (@item.EsPublico == false)
+                    { <text>Privado</text> } - Publicación: @item.FechaRegistro
+                </div>
+               
+                <br />
+                }
+            }
+            else
+            {
+            <div>
+                @Html.Raw(Constante.NoHayComentarios)
+            </div>
+            }
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Documentos adjuntos</legend>
+
+        @if (Model.SolicitudConsulta.Documentos.Any())
+        {
+            foreach (DocumentoModel item in Model.SolicitudConsulta.Documentos)
+            {
+        <div class="formulario-field-1">
+            <div class="formulario-label">
+                @Html.ActionLink(@item.Nombre, "Index", "Documentos", new { id = Criptografia.EncriptarUrl(item.Id.ToString()) }, new { @title = "Descargar archivo" })
+            </div>
+            <div class="formulario-control-nota">
+                Autor: @item.UsuarioId<br />
+                Publicación: @item.FechaRegistro
+            </div>
+            <div class="formulario-control-texto">
+            </div>
+        </div>
+
+        <div class="formulario-clear"></div>
+            }
+        }
+        else
+        {
+        <div>
+            @Html.Raw(Constante.NoHayDocumentosAdjuntos)
+        </div>
+        }
+
+    </fieldset>
+
+</div>

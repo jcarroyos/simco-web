@@ -1,0 +1,70 @@
+﻿@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+@using Simco.DomainModelLayer.Entidades
+
+@model InicioSesionModel
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>ENCUESTA DE REGISTRO Y CLASIFICACIÓN DE ENTIDADES MUSEALES</h3>
+<p>El Museo Nacional de Colombia a través del Programa Fortalecimiento de Museos y en cumplimiento del procedimiento de registro y clasificación sancionado por medio de resolución ministerial 1976 del 9 de julio de 2013, lo invita a iniciar y/o actualizar el proceso de registro y clasificación de su entidad museal ante el Ministerio de Cultura.</p>
+<p>El procedimiento de registro y clasificación de entidades museales en el Sistema de Información de Museos de Colombia – SIMCO, tiene por objeto identificar, registrar y clasificar las instituciones museísticas del país, como también contar con información actualizada para la presentación anual de indicadores sectoriales; así como también, identificar necesidades, fortalezas y debilidades que brinden insumos para emprender acciones de fortalecimiento en beneficio del patrimonio y la cultura de la nación.</p>
+<h3>Periodicidad del registro</h3>
+<p>Al finalizar el proceso de registro ante el Ministerio de Cultura, las entidades museales obtendrán un certificado y número de registro que tendrá una periodicidad de tres años. Así mismo deberán reportar anualmente la información sobre la gestión adelantada, año vencido, con el propósito de establecer su avance y nivel de desempeño.</p>
+<p>Nota: Si no se diligencia de manera completa la información solicitada, su institución se puede ubicar en un nivel de desempeño que no corresponde a la realidad, dado que la ausencia de datos impedirá el análisis integral de la gestión realizada. Por lo tanto se solicita el diligenciamiento total de la encuesta.</p>
+
+@using (Html.BeginForm("Encuesta", "Encuesta", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+
+    <div class="formulario-tab">
+        <div id="tabstrip">
+            <ul>
+                @foreach (EncuestasActivas encuesta in Model.EncuestasDisponibles)
+                {
+                    <li>@encuesta.ENC_NOMBRE</li>
+                }
+            </ul>
+            @foreach (EncuestaPreguntasRegistroModel encuesta in Model.EncuestasPreguntas)
+            {
+                @Html.Hidden(string.Format("EncuestaId{0}", encuesta.Encuesta.Id), encuesta.Encuesta.Id)
+
+                if (encuesta.Encuesta.Nombre.ToLowerInvariant().Contains("documentos"))
+                {
+                    <div class="cuerpo-tab">@Html.Partial("_DocumentosRegistro", Model.EntidadMuseal)</div>
+                }
+                else
+                {
+                    <div class="cuerpo-tab">@Html.Partial("_Preguntas", encuesta.Preguntas)</div>
+                }
+            }
+        </div>
+
+        <div class="derechaBotones">
+            <input type="submit" value="@Html.Raw(Constante.BotonGuardarTemporalmente)" name="BtnGuardarCambios" class="boton" />
+            <input type="submit" value="@Html.Raw(Constante.BotonFinalizar)" name="BtnEnviar" class="boton" />
+            <input type="submit" value="@Html.Raw(Constante.BotonCancelar)" name="BtnCancelar" class="boton" />
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        var tabStrip = $("#tabstrip").kendoTabStrip({
+            animation: {
+                close: {
+                    duration: 500,
+                    effects: "fadeOut"
+                },
+                open: {
+                    duration: 500,
+                    effects: "fadeIn"
+                }
+            }
+        }).data("kendoTabStrip");
+        tabStrip.select(0);
+    });
+</script>

@@ -1,0 +1,586 @@
+﻿/* Hoja de estilos interfaz SIMCO 2020 */
+/* Juan Carlos Arroyo Sosa jcarroyos@gmail.com */
+
+@import "./reset.css";
+@import "./directiva03.css";
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700,900&display=swap');
+
+/* paleta de colores */
+@naranja: #F8A339;
+@aguamarina: #4CB3A5;
+@rojo: #EB5C2E;
+@verde: #C8D63C;
+@amarillo: #F2E441;
+@azuloscuro: #3366CC;
+@azulclaro: #E5EEFB;
+@gris: #F6F6F6;
+@grisraton: #6c757d;
+@blanco: #FFFFFF;
+@negro: #000000;
+@casinegro: #565656;
+
+/* Mixin */
+.transition (@prop: all, @time: 1s, @ease: linear) {
+    -webkit-transition: @prop @time @ease;
+    -moz-transition: @prop @time @ease;
+    -o-transition: @prop @time @ease;
+    -ms-transition: @prop @time @ease;
+    transition: @prop @time @ease;
+}
+
+body {
+    /* 
+    background-color: #269;
+    background-image: linear-gradient(white 2px, transparent 2px), linear-gradient(90deg, white 2px, transparent 2px), linear-gradient(rgba(255,255,255,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
+    background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+    background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;*/
+    font-family: 'Roboto', sans-serif;
+}
+
+.nopadding {
+    padding: 0;
+}
+.clear-10 {
+    clear: both;
+    display: block;
+    height: 10px;
+}
+.mt-40 {
+    margin-top: 40px;
+}
+strong {
+    font-weight: 500;
+}
+
+/* Formularios */
+.boton {
+    background: @grisraton;
+    color: #ffffff;
+    font-size: 12px;
+    padding: 12px;
+    text-decoration: none;
+    border: 0px;
+    cursor: pointer;
+    margin: 0 5px 0 0;
+    border-radius: 0.25rem;
+
+    &:hover {
+        background: lighten(@grisraton, 40%);
+        color: @casinegro;
+    }
+}
+.formulario {
+    margin: 40px auto;
+    display: table;
+    width: 550px;
+
+    label {
+        font-size: 17px;
+        margin: 12px 0;
+    }
+}
+.chosen-container {
+    position: relative;
+    display: inline-block;
+    width: 100% !important;
+    margin: 10px 0;
+}
+ul.k-pager-numbers li {
+    list-style: none !important;
+}
+
+ul.k-pager-numbers {
+    width: auto !important;
+    margin: 0 2px !important;
+}
+
+#FormEncuesta {
+    .persona-directorio {
+        background-color: transparent;
+        text-align: left;
+        width: 30%;
+        height: 442px;
+        padding: 0px;
+        float: left;
+        margin: 0 8px;
+        border-left: 1px solid @gris;
+        border-right: 1px solid @gris;
+        border-bottom: transparent;
+
+        img {
+            width: 100%;
+            margin: 0 auto;
+        }
+    }
+
+    a.boton {
+        position: absolute;
+        top: 170px;
+    }
+
+    .k-widget {
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    div#listViewBuscar-interno-persona_pager {
+        display: inline-block;
+        clear: both;
+        width: 100%;
+    }
+
+    .resena {
+        height: 130px;
+        overflow: auto;
+        border-top: 1px dashed @gris;
+        margin-top: 15px;
+        border-bottom: 1px solid @gris;
+        padding: 5px;
+        font-size: 11px;
+        line-height: 1.4em;
+        margin-bottom: -18px;
+
+        &::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+            background-color: #F5F5F5;
+        }
+
+        &::-webkit-scrollbar {
+            width: 6px;
+            background-color: #F5F5F5;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: #000000;
+        }
+    }
+
+    .name {
+        height: 76px;
+        padding: 5px;
+
+        span {
+            font-size: 12px;
+            color: gray;
+        }
+
+        h3 {
+            font-size: 14px;
+        }
+    }
+}
+
+/*Masterpage*/
+section#renderBody {
+    height: auto;
+    max-width: 100%;
+    background-color: #FFF;
+
+    p {
+        line-height: 1.7em;
+    }
+
+    ul {
+        width: 80%;
+        margin: 20px auto;
+
+        li {
+            list-style: disc;
+            line-height: 2em;
+        }
+    }
+
+    h1 {
+        font-size: x-large;
+        font-weight: 500;
+        margin-bottom: 30px;
+    }
+}
+.topmenu {
+    hr {
+        position: relative;
+        top: -25px;
+        border-top: 2px solid darken(@gris, 10%);
+    }
+
+    .logo {
+        text-align: center;
+
+        img {
+            width: 50%;
+            margin: 35px auto 20px auto;
+        }
+    }
+
+    nav {
+        position: absolute;
+        bottom: 0;
+
+        li a:hover {
+            color: @casinegro;
+            font-weight: 500;
+        }
+
+        .nav li:hover > ul {
+            border-top: 2px solid #000;
+            display: inline-block;
+            top: 49px;
+            z-index:999;
+        }
+
+        li ul li {
+            background-color: @azulclaro;
+
+            &:hover {
+                background-color: lighten(@azulclaro, 2%);
+                border-left: 3px solid @azuloscuro;
+                border-right: 3px solid @azuloscuro;
+            }
+        }
+    }
+}
+
+    /*Inicio*/
+    section#intro {
+        background-color: @gris;
+
+        #login {
+            margin-top: 100px;
+
+            &.row hr {
+                position: relative;
+                top: 40px;
+                border-top: 2px solid @blanco;
+            }
+
+            .zlogin {
+                height: auto;
+                background-color: transparent;
+                float: none;
+                width: auto;
+                color: @casinegro;
+                padding: 0;
+                padding: 0;
+                margin-left: 40px;
+
+                .zlogin-titulo-h2 {
+                    padding: 0px;
+                    font-weight: 800;
+                    font-size: 14px;
+                    padding-bottom: 6px;
+                    display: inline-block;
+                    border-bottom: 2px solid;
+                }
+
+                .zlogin-input-email {
+                    float: none;
+                    width: auto;
+                    margin: auto;
+                }
+
+                .zlogin-input-email input[type=email], .zlogin-input-password input[type=password] {
+                    width: auto;
+                    height: auto;
+                    font-size: initial;
+                    border: 1px solid darken(@gris, 20%);
+                    border-radius: 0.25em;
+                }
+
+                .zlogin-input-botton {
+                    float: right;
+                    width: auto;
+                    margin: 16px -8px;
+                }
+
+                .boton {
+                    background: transparent;
+                }
+
+                &:hover {
+                    background: transparent;
+                }
+
+                label {
+                    display: inline-block;
+                    color: @casinegro;
+                    font-size: 13px;
+                    margin: 10px 0;
+                    font-weight: 500;
+                }
+
+                .zlogin-input-password {
+                    float: none;
+                    width: auto;
+                    margin: 0;
+                }
+
+                .zlogin-olvide-contrasena {
+                    clear: both;
+                    padding: 0;
+                    font-size: 12px;
+                    color: @casinegro;
+                    text-align: right;
+
+                    a {
+                        color: @casinegro;
+                    }
+
+                    &:hover {
+                        font-weight: 500;
+                    }
+                }
+            }
+        }
+
+        .logo {
+            width: 50%;
+            margin: 30px auto;
+        }
+
+        .row.menu {
+            margin: 10px 0;
+
+            img {
+                padding: 13px;
+                width: 65px;
+            }
+
+            .card {
+                text-align: left;
+                border-radius: 0px;
+                border: 0px solid transparent;
+                .transition(all, 0.5s, ease-in);
+
+                &.registro {
+                    background-color: @naranja;
+
+                    &:hover {
+                        background-color: spin(@naranja, -30);
+                    }
+                }
+
+                &.directorio {
+                    background-color: @aguamarina;
+
+                    &:hover {
+                        background-color: spin(@aguamarina, 30);
+                    }
+                }
+
+                &.asesoria {
+                    background-color: @rojo;
+
+                    &:hover {
+                        background-color: spin(@rojo, -30);
+                    }
+                }
+
+                &.colecciones {
+                    background-color: @verde;
+
+                    &:hover {
+                        background-color: spin(@verde, -30);
+                    }
+                }
+
+                &.indicadores {
+                    background-color: @amarillo;
+
+                    &:hover {
+                        background-color: spin(@amarillo, -30);
+                    }
+                }
+            }
+
+            .card-body {
+                padding: 5px 5px 10px 5px;
+                text-align: left;
+                background-color: @blanco;
+                font-size: 13px;
+            }
+        }
+
+        .owl-carousel {
+            .owl-dots {
+                position: absolute;
+                top: 10px;
+                right: 20px;
+
+                .owl-dot span {
+                    width: 13px;
+                    height: 13px;
+                }
+            }
+        }
+    }
+
+    section#museos {
+        background: rgb(86,86,86);
+        background: -moz-linear-gradient(0deg, rgba(86,86,86,1) 0%, rgba(86,86,86,1) 34%, rgba(86,86,86,1) 34%, rgba(164,173,68,0.4) 34%, rgba(200,214,60,0.4) 34%, rgba(200,214,60,0.4) 100%);
+        background: -webkit-linear-gradient(0deg, rgba(86,86,86,1) 0%, rgba(86,86,86,1) 34%, rgba(86,86,86,1) 34%, rgba(164,173,68,0.4) 34%, rgba(200,214,60,0.4) 34%, rgba(200,214,60,0.4) 100%);
+        background: linear-gradient(0deg, rgba(86,86,86,1) 0%, rgba(86,86,86,1) 34%, rgba(86,86,86,1) 34%, rgba(164,173,68,0.4) 34%, rgba(200,214,60,0.4) 34%, rgba(200,214,60,0.4) 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#565656",endColorstr="#c8d63c",GradientType=1);
+        max-width: 100%;
+
+        .container.descubre {
+            background-color: #fff;
+            margin-top: 100px;
+            padding: 40px 20px;
+            margin-bottom: 20px;
+
+            .chosen-search input {
+                height: 20px;
+                padding: 3px !important;
+            }
+
+            h2 {
+                color: @casinegro;
+                font-size: 24px;
+                font-weight: 500;
+                margin-bottom: 22px;
+                border-bottom: 5px solid;
+                display: inline-flex;
+                padding-bottom: 10px;
+            }
+
+            hr {
+                border-top: 2px solid darken(@gris, 30%);
+                position: relative;
+                top: -39px;
+            }
+        }
+
+        .row.bg {
+            background-image: url('../Images/ceremonial_muisca.png');
+            background-repeat: no-repeat;
+            background-position: right top;
+            background-size: 815px;
+        }
+
+        form#FormEncuesta {
+            margin-top: 30px;
+
+            .buscador {
+                width: auto;
+
+                label {
+                    font-weight: 700;
+                    margin-top: 10px;
+                }
+            }
+
+            #listView {
+                height: auto;
+                right: -30px;
+
+                .museo {
+                    width: 30%;
+                    margin: 0 10px;
+
+                    img {
+                        width: 100%;
+                        height: auto;
+                    }
+                }
+            }
+
+            .formulario-control-busqueda {
+                margin: 10px 0;
+
+                .chosen-container {
+                    position: relative;
+                    display: inline-block;
+                    width: 100% !important;
+                    margin: 10px 0;
+                }
+
+                input[type="text"] {
+                    width: 100%;
+                    margin: 10px 0;
+                    padding: 22px 18px;
+                    font-size: 15px;
+                    border-radius: 20px;
+                }
+
+                > input[type="submit"] {
+                    margin: 10px;
+                    padding: 10px 0;
+                    display: inline-block;
+                    position: relative;
+                    height: auto;
+                    background-color: @grisraton;
+                    float: right;
+                }
+            }
+        }
+    }
+    /*Recuperar contraseña*/
+    .container.logos {
+        img {
+            width: 100%;
+            height: auto;
+        }
+    }
+    /* Breakpoints */
+    /* Source: http://blog.scur.pl/2012/06/variable-media-queries-less-css/ */
+    @highdensity: ~"only screen and (-webkit-min-device-pixel-ratio: 1.5)", ~"only screen and (min--moz-device-pixel-ratio: 1.5)", ~"only screen and (-o-min-device-pixel-ratio: 3/2)", ~"only screen and (min-device-pixel-ratio: 1.5)";
+    @mobile: ~"only screen and (max-width: 529px)";
+    @tablet: ~"only screen and (min-width: 530px) and (max-width: 949px)";
+    @desktop: ~"only screen and (min-width: 950px) and (max-width: 1128px)";
+    @desktop-xl: ~"only screen and (min-width: 1129px)";
+
+    html, body {
+        max-width: 100%;
+        overflow-x: hidden;
+
+        section, div, span {
+            @media @mobile {
+
+                section#intro #login {
+                    margin-top: 0px;
+
+                    .zlogin {
+                        margin-left: 180px;
+                        margin-bottom: 20px;
+
+                        label {
+                            display: block;
+                        }
+                    }
+                }
+
+                section#museos form#FormEncuesta {
+                    #listView {
+                        right: 0px;
+
+                        .museo {
+                            width: 90%;
+                            height: auto;
+                        }
+                    }
+
+                    .buscador {
+                        label {
+                            display: block;
+                        }
+
+                        select {
+                            width: 100%;
+                        }
+                    }
+                }
+            }
+
+            @media @tablet {
+            }
+
+            @media @desktop {
+            }
+
+            @media @desktop-xl {
+            }
+
+            @media @desktop, @desktop-xl {
+            }
+        }
+    }

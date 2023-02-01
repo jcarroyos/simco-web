@@ -1,0 +1,34 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+
+@model ColeccionObjetoDetalleModel
+@{
+    Layout = "~/Views/Shared/_LayoutColecciones.cshtml";
+}
+
+<div class="lista">
+    @if (Model.Titulo != string.Empty)
+    {
+        <h2>@Html.Raw(Model.Titulo)</h2>
+    }
+    <div style="margin: 15px 0px 15px 0px; text-align: center;">
+        <img style="float:left" src="@Url.Content(@Model.UrlImagen)" alt="" />
+    </div>
+    <div class="detalle">
+        @Html.Raw(Model.Html)
+    </div>
+</div>
+
+<style scoped>
+    .lista {
+        padding: 0px;
+        width: 800px;
+        height: 650px;
+        margin-left: -190px;
+    }
+
+    .detalle {
+        padding: 0;
+        position: absolute;
+        left: 600px;
+    }
+</style>

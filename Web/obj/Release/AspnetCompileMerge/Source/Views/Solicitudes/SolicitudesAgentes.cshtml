@@ -1,0 +1,31 @@
+﻿@using Simco.CrossInfraestructureLayer
+@using Simco.Infrastructure.Notification
+@using Simco.DomainModelLayer.ViewModels
+
+@model IEnumerable<SolicitudConsultaModel>
+@{
+    ViewBag.Title = "SolicitudesAsignadas";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Resumen de la solicitud creadas</h2>
+
+@(Html.Kendo().Grid(Model)
+        .Name("GridSolicitudes")
+        .Columns(columns =>
+                    {
+                        columns.Bound(o => o.Solicitud.Descripcion).Template(o => @Html.ActionLink(@HtmlHelperExtensions.Truncate(o.Solicitud.Descripcion, 32), "Solicitud", "Solicitudes", new { id = Criptografia.EncriptarUrl(o.Solicitud.Id.ToString()) }, null)).Title("Descripcion").Width(300);
+                        columns.Bound(o => o.Solicitud.FechaRegistro).Format("{0:dd/MM/yyyy}");
+                        columns.Bound(o => o.Solicitud.Prioridad);
+                        columns.Bound(o => o.Solicitud.EstadoActual);
+                        columns.Bound(o => o.Solicitud.NumeroRadicacion).Title("No. radicación");
+                    })
+        .Sortable()
+        .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} solicitudes")
+                                                .Empty("No se encontraron solicitudes")
+                                                .First("Ir a la primera página")
+                                                .Last("Ir a la última página")
+                                                .Next("Ir a la página siguiente")
+                                                .Previous("Ir a la página anterior")))
+
+)

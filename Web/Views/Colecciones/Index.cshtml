@@ -1,0 +1,276 @@
+﻿@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+
+@model ColeccionModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutColecciones.cshtml";
+}
+
+<div class="cuerpo-colecciones">
+    
+    @using (Html.BeginForm("Index", "Colecciones", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <h2>Consulta de colecciones</h2>
+
+        <div class="menu-colecciones">
+
+            @Html.ValidationSummary(true)
+
+            <fieldset>
+
+                <div class="box-row">
+                    <div class="box">
+                        @Html.LabelFor(model => model.ClaseColecciones)
+                    </div>
+                </div>
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-control">
+                            @Html.DropDownListFor(model => model.OpcId, new SelectList(Model.ClaseColecciones, "OpcionId", "Etiqueta", Model.OpcId), "Seleccione una colección...", new { @class = "chosen", style = "width:264px;" })
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+                <div class="box-row">
+                    <div class="box">
+                        @Html.LabelFor(model => model.NombreMuseo)
+                    </div>
+                </div>
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-control">
+                            @Html.DropDownListFor(model => model.CodigoIdMuseal, new SelectList(Model.Museos, "Id", "Nombre", Model.CodigoIdMuseal), "Seleccione un museo...", new { @class = "chosen", style = "width:264px;" })
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+                <div class="box-row">
+                    <div class="box">
+                        @Html.LabelFor(model => model.Autor)
+                    </div>
+                </div>
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-control">
+                            @Html.TextBoxFor(model => model.Autor)
+                        </div>
+                        <div class="formulario-validator">
+                            @Html.ValidationMessageFor(model => model.Autor)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box-row">
+                    <div class="box">
+                        @Html.LabelFor(model => model.Titulo)
+                    </div>
+                </div>
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-control">
+                            @Html.TextBoxFor(model => model.Titulo)
+                        </div>
+                        <div class="formulario-validator">
+                            @Html.ValidationMessageFor(model => model.Titulo)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box-row">
+                    <div class="box">
+                        @Html.LabelFor(model => model.Tecnica)
+                    </div>
+                </div>
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-control">
+                            @Html.TextBoxFor(model => model.Tecnica)
+                        </div>
+                        <div class="formulario-validator">
+                            @Html.ValidationMessageFor(model => model.Tecnica)
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+                <div class="box-row">
+                    <div class="box">
+                        @Html.LabelFor(model => model.Datacion)
+                    </div>
+                </div>
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-control">
+                            @Html.RadioButton("Anio", "1", true) @Html.LabelFor(model => model.Anio)
+                            @Html.RadioButton("Siglo", "2", false) @Html.LabelFor(model => model.Siglo)
+                        </div>
+                    </div>
+                </div>
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-control">
+                            @Html.DropDownListFor(model => model.ADCId, new SelectList(Model.AntesDespuesCristo, "Id", "AntesDespuesCristo", Model.ADCId), new { @class = "chosen", style = "width:60px;" })
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+                <div class="box-row">
+                    <div class="box">
+                        @Html.LabelFor(model => model.AnioDesde) -
+                        @Html.LabelFor(model => model.AnioHasta)
+                    </div>
+                </div>
+                <div class="box-row">
+                    <div class="box">
+                        <div class="formulario-control">
+                            @Html.TextBoxFor(model => model.AnioDesde, new { style = "width:70px;", @maxlength = "4" })
+                            @Html.TextBoxFor(model => model.AnioHasta, new { style = "width:70px;", @maxlength = "4" })
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+                <div class="box-row">
+                    <div class="box">
+                        <input type="button" value="@Html.Raw(Constante.BotonBuscar)" id="btnBuscar" class="boton" />
+                    </div>
+                </div>
+            </fieldset>
+
+        </div>
+
+        <div class="grilladatos">
+            <div id="divcoleccion">
+                @Html.Partial("_ColeccionObjeto", Model.Coleccion)
+                <div id="divcoleccionobjetosadicionales" class="divcoleccionobjetosadicionales">
+                </div>
+                <div id="divcargando" class="cargando">
+                    <img src="@Url.Content("~/Images/cargando.gif")" alt="Cargando..." />
+                </div>
+            </div>
+
+            <div id="contenedor" class="contenedor-colecciones">
+                <a id="btnAnterior" class="boton"><<</a>
+                <a id="btnSiguiente" class="boton">>></a>
+            </div>
+        </div>
+
+    }
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#contenedor').hide();
+    });
+
+    $("#Siglo").on("click", function () {
+        var isChecked = $('#Siglo').attr('checked') ? true : false;
+        if (isChecked)
+            $("#Anio").prop("checked", false);
+        else
+            $("#Siglo").prop("checked", true);
+    });
+
+    $("#Anio").on("click", function () {
+        var isChecked = $('#Anio').attr('checked') ? true : false;
+        if (isChecked)
+            $("#Siglo").prop("checked", false);
+        else
+            $("#Anio").prop("checked", true);
+    });
+
+    $("#btnAnterior").click(function (event) {
+        Buscar(-1);
+    });
+
+    $("#btnSiguiente").click(function (event) {
+        Buscar(1);
+    });
+
+    $("#btnBuscar").click(function (event) {
+        Buscar(0);
+    });
+
+    function Buscar(valPagina) {
+        var opc = $('#OpcId').val();
+        var per = $('#CodigoIdMuseal').val();
+        var aut = $('#Autor').val();
+        var tit = $('#Titulo').val();
+        var tec = $('#Tecnica').val();
+        var acd = $('#ADCId').val();
+        var des = $('#AnioDesde').val();
+        var has = $('#AnioHasta').val();
+        var ani = 0; //Anio
+        var isChecked = $('#Siglo').attr('checked') ? true : false;
+        if (isChecked)
+            ani = 1; // Siglo
+
+        $.ajax({
+            url: '@Url.Action("BuscarColecciones", "Colecciones")',
+            type: 'POST',
+            dataType: 'html',
+            beforeSend: function () {
+                $("#divcargando").show();
+            },
+            complete: function () {
+                $("#divcargando").hide();
+            },
+
+            data: { opcionId: opc, museoId: per, autor: aut, titulo: tit, tecnica: tec, anoSiglo: ani, acdc: acd, desde: des, hasta: has, pagina: valPagina },
+            success: function (data) {
+                if (data) {
+                    $("#divcoleccionobjetosadicionales").empty();;
+                    $("#divcoleccionobjetosadicionales").append(data);
+                    $('#contenedor').show("fast");
+                }
+                else {
+                    $('#contenedor').hide("fast");
+                }
+
+                if (data.indexOf("class") > -1) {
+                    $('#btnSiguiente').show("fast");
+                }
+                else {
+                    $('#btnSiguiente').hide("fast");
+                }
+            }
+        });
+    }
+
+    $("#btnMostrarMas").click(function (event) {
+        var np = $('.pagina').length;
+        var ne = $('.itempersona-directorio').length;
+        var t = '@Model.Token';
+        var p = np + 1;
+        var a = '@Model.Autor';
+        var ti = '@Model.Titulo';
+        var nc = '@Model.NombreColeccion';
+        var pc = '@Model.PalabrasClaves';
+        var opc = $('#OpcId').val();
+
+        $.ajax({
+            url: '@Url.Action("CargarPaginaColeccion", "Colecciones")',
+            type: 'POST',
+            dataType: 'html',
+            beforeSend: function () {
+                $("#divcargando").show();
+            },
+            complete: function () {
+                $("#divcargando").hide();
+            },
+            data: { token: t, pagina: p, numeroelementos: ne, autor: a, titulo: ti, nombrecoleccion: nc, palabrasclaves: pc, opcionId: opc },
+            success: function (data) {
+                if (data) {
+                    $("#divcoleccionobjetosadicionales").append(data);
+                }
+            }
+        });
+
+    });
+
+</script>

@@ -1,0 +1,15 @@
+﻿@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+
+@model InicioSesionModel
+@{
+    ViewBag.Title = "Confirmación";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Confirmación de envío de contraseña</h3>
+
+<p>La contraseña ha sido enviada a su correo electrónico (@Model.CorreoElectronico).</p>
+<div>
+    @Html.ActionLink(Constante.BotonAceptar, "Index", "Home", new object(), new { @class = "boton" })
+</div>

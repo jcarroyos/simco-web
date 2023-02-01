@@ -1,0 +1,142 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model List<FuncionalidadesModel>
+@{
+    ViewBag.Title = "Funcionalidades";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Funcionalidades</h2>
+
+@using (Html.BeginForm("ConsultarFuncionalidades", "Perfiles", FormMethod.Get, new { id = "FormConsultarFuncionalidades" }))
+{
+    <fieldset>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    Funcionalidad a buscar:
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBox("Consulta", ViewBag.Consulta as string, new { style = "width:536px" })
+                </div>
+            </div>
+        </div>
+        <br />
+    </fieldset>
+
+    <div class="formulario-botones">
+        <input type="submit" value="@Html.Raw(Constante.BotonBuscar)" name="Buscar" class="boton" />
+        @Html.ActionLink("Mostrar todos", "ConsultarFuncionalidades", "Perfiles", new object(), new { @class = "boton" })
+    </div>
+}
+
+<div>
+
+    @(Html.Kendo().Grid(Model)
+        .Name("gridFuncionalidades")
+        .Columns(columns =>
+        {
+            columns.Bound(per => per.Nombre);
+            columns.ForeignKey(p => p.PadreId, (System.Collections.IEnumerable)ViewData["funcionalidades"], "Id", "Nombre").EditorTemplateName("FuncionalidadEditor").Title("Padre");
+            columns.Bound(per => per.Descripcion);
+            columns.Bound(per => per.OrdenFuncionalidad);
+            columns.Bound(per => per.Url);
+            columns.Bound(per => per.Icono);
+            columns.Bound(per => per.Estado);
+            columns.Command(command => { command.Edit().Text("Editar").UpdateText("Guardar").CancelText("Cancelar"); });
+        })
+        .HtmlAttributes(new { id = "editWindow", @width = "700px" })
+        .Sortable()
+        .ToolBar(toolbar => toolbar.Create().Text("Agrear una nueva funcionalidad"))
+        .Editable(editable => editable.Mode(GridEditMode.PopUp)
+            .TemplateName("FuncionaliadEditar")
+            .Window(w => w.Title("Administrar Funcionalidad")
+            .Width(600)))
+        .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} funcionalidades")
+                        .Empty("No se encontraron funcionalidades")
+                        .First("Ir a la primera página")
+                        .Last("Ir a la última página")
+                        .Next("Ir a la página siguiente")
+                        .Previous("Ir a la página anterior")))
+        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(20)
+                        .Events(events => events.Error("error_handler"))
+                        .Model(model =>
+                        {
+                            model.Id(p => p.Id);
+                            model.Field(p => p.Id).Editable(false);
+                        })
+                        .Read(read => read.Action("FuncionalidadesConsultar", "Perfiles").Data("parametrosConsulta"))
+                        .Create(update => update.Action("FuncionalidadesCrearActualizar", "Perfiles"))
+                        .Update(update => update.Action("FuncionalidadesCrearActualizar", "Perfiles"))
+                        )
+    )
+</div>
+
+<script type="text/javascript">
+
+    function error_handler(e) {
+        if (e.errors) {
+
+            $('.k-grid').each(function (item) {
+                var grid = $(this).data("kendoGrid");
+                if (e.sender === grid.dataSource) {
+                    grid.cancelChanges();
+
+                    var message = "";
+                    $.each(e.errors, function (key, value) {
+                        if ('errors' in value) {
+                            $.each(value.errors, function () {
+                                message += this;
+                            });
+                        }
+                    });
+
+                    //Noty
+                    noty({
+                        text: message,
+                        layout: 'top',
+                        type: 'error',
+                        animateOpen: { 'height': 'toggle' },
+                        animateClose: { 'height': 'toggle' },
+                        speed: 400,
+                        timeout: 5000,
+                        closeButton: false,
+                        closeOnSelfClick: true,
+                        closeOnSelfOver: false
+                    });
+                }
+            });
+        }
+    }
+
+    function parametrosConsulta() {
+        return {
+            consulta: $("#Consulta").val()
+        }
+    }
+</script>
+
+<style>
+    .k-edit-form-container {
+        width: 580px;
+    }
+
+    input.k-textbox {
+        text-indent: .1em !important;
+    }
+
+    .k-textbox {
+        width: 100%;
+    }
+
+    .k-dropdown {
+        width: 100%;
+    }
+</style>

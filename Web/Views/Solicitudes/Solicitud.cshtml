@@ -1,0 +1,81 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model SolicitudRegistroModel
+@{
+    ViewBag.Title = "Solicitud";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h1>Registro de una nueva solicitud</h1>
+
+@using (Html.BeginForm("Solicitud", "Solicitudes", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+
+        @Html.HiddenFor(model => model.Categoria)
+        @Html.HiddenFor(model => model.Tipo)
+
+        @Html.HiddenFor(model => model.Solicitud.Fuente)
+        @Html.HiddenFor(model => model.Solicitud.FechaRegistro)
+        @Html.HiddenFor(model => model.Solicitud.Prioridad)
+
+        <p>
+            Los campos marcados con asterisco (*) son obligatorios
+        </p>
+        <legend>Información de la solicitud</legend>
+        <div class="box-row">
+            <div class="box">
+                <em>*</em> @Html.LabelFor(model => model.Solicitud.Descripcion)
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextAreaFor(model => model.Solicitud.Descripcion, new { style = "width:550px; height: 180px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Solicitud.Descripcion)
+                </div>
+            </div>
+        </div>
+        <br />
+    </fieldset>
+
+        <fieldset>
+            <legend>Documento adjunto</legend>
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.NuevoDocumento.Archivo)
+                    </div>
+                </div>
+            </div>
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.NuevoDocumento.ImageUpload, new { type = "file" })
+            </div>
+            <div class="formulario-control-nota">
+                @Html.Raw(Constante.NotaArchivosSolicitudes)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.NuevoDocumento.ImageUpload)
+            </div>
+            <br />
+
+        </fieldset>
+
+        <div class="formulario-botones">
+            <input type="submit" value="@Html.Raw(Constante.BotonCrearSolicitud)" name="CrearSolicitud" class="boton" />
+            @if (ViewBag.Perfil != null && (ViewBag.Perfil == Perfiles.Asesor || ViewBag.Perfil == Perfiles.Administrador))
+            {
+                @Html.ActionLink(Constante.BotonCancelar, "ConsultarSolicitudes", "Solicitudes", new object(), new { @class = "boton" })
+            }
+            else
+            {
+                @Html.ActionLink(Constante.BotonCancelar, "SolicitudesAgentes", "Solicitudes", new object(), new { @class = "boton" })
+            }
+        </div>
+}

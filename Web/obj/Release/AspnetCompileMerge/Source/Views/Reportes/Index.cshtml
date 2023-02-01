@@ -1,0 +1,197 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+
+@model IndicadorModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+@{
+    Html.RenderPartial("_Indicadores", Model);
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#divencuestas').hide();
+        $('#divrespuestas').hide();
+        $('#divboton').hide();
+
+        $('#divmatrizencuestasporusuario').hide();
+        $('#divmatrizrespuestasporusuario').hide();
+        $('#divmatrizbotonporusuario').hide();
+
+        $('#UsuarioId').change(function () {
+            $('#divencuestas').hide();
+            $('#divrespuestas').hide();
+            $('#divboton').hide();
+            var selectedItem = $('#UsuarioId').val();
+            if (selectedItem != null && selectedItem != '') {
+                cargarEncuestas(selectedItem, '#EncuestaId', '#divencuestas');
+            }
+        });
+
+        $('#EncuestaId').change(function () {
+            $('#divrespuestas').hide();
+            $('#divboton').hide();
+            var uId = $('#UsuarioId').val();
+            var eId = $('#EncuestaId').val();
+            if (uId != null && uId != '' && eId != null && eId != '') {
+                cargarRespuestas(uId, eId, '#RespuestaId', '#divrespuestas');
+            }
+        });
+
+        $('#RespuestaId').change(function () {
+            $('#divboton').hide();
+            var rId = $('#RespuestaId').val();
+            if (rId != null && rId != '') {
+                var url = $("#linkencuestas").attr("targeturl") + "?reporte=" + $("#linkencuestas").attr("targetreporte") + "&respuesta=" + rId;
+                $("#linkencuestas").attr("href", url);
+                $('#divboton').show();
+            }
+        });
+
+        $('#UsuarioMatrizPorUsuarioId').change(function () {
+            $('#divmatrizencuestasporusuario').hide();
+            $('#divmatrizrespuestasporusuario').hide();
+            $('#divmatrizbotonporusuario').hide();
+            var selectedItem = $('#UsuarioMatrizPorUsuarioId').val();
+            if (selectedItem != null && selectedItem != '') {
+                cargarEncuestas(selectedItem, '#EncuestaMatrizPorusuarioId', '#divmatrizencuestasporusuario');
+            }
+        });
+
+        $('#EncuestaMatrizPorusuarioId').change(function () {
+            $('#divmatrizrespuestasporusuario').hide();
+            $('#divmatrizbotonporusuario').hide();
+            var uId = $('#UsuarioMatrizPorUsuarioId').val();
+            var eId = $('#EncuestaMatrizPorusuarioId').val();
+            if (uId != null && uId != '' && eId != null && eId != '') {
+                cargarRespuestas(uId, eId, '#RespuestaMatrizPorUsuarioId', '#divmatrizrespuestasporusuario');
+            }
+        });
+
+        $('#EncuestaMatrizId').change(function () {
+            $('#divmatrizboton').hide();
+            var eId = $('#EncuestaMatrizId').val();
+            if (eId != null && eId != '') {
+                var url = '@Url.Action("EncuestaResultadosMatriz", "Reportes")' + "?reporte=" + $("#linkmatrizencuestas").attr("targetreporte") + "&encuestaid=" + eId;
+                $("#linkmatrizencuestas").attr("href", url);
+                $('#divmatrizboton').show();
+            }
+        });
+
+        $('#UsuarioFichaId').change(function () {
+            $('#divfichaboton').hide();
+            var uId = $('#UsuarioFichaId').val();
+            if (uId != null && uId != '') {
+                var url = '@Url.Action("FichaCompleta", "Reportes")' + "?reporte=" + $("#linkficha").attr("targetreporte") + "&usuarioid=" + uId;
+                $("#linkficha").attr("href", url);
+                $('#divfichaboton').show();
+            }
+        });
+
+        $('#RespuestaMatrizPorUsuarioId').change(function () {
+            $('#divmatrizbotonporusuario').hide();
+            var rId = $('#RespuestaMatrizPorUsuarioId').val();
+            if (rId != null && rId != '') {
+                var url = '@Url.Action("EncuestaResultadosMatrizPorUsuario", "Reportes")' + "?reporte=" + $("#linkmatrizencuestasporusuario").attr("targetreporte") + "&respuestaid=" + rId;
+                $("#linkmatrizencuestasporusuario").attr("href", url);
+                $('#divmatrizbotonporusuario').show();
+            }
+        });
+
+        $('#EncuestaResultadosGeneralesId').change(function () {
+            $('#divbotonencuestaresultadosgenerales').hide();
+            var eId = $('#EncuestaResultadosGeneralesId').val();
+            if (eId != null && eId != '') {
+                var url = $("#linkbotonencuestaresultadosgenerales").attr("targeturl") + "?reporte=" + $("#linkbotonencuestaresultadosgenerales").attr("targetreporte") + "&encuesta=" + eId;
+                $("#linkbotonencuestaresultadosgenerales").attr("href", url);
+                $('#divbotonencuestaresultadosgenerales').show();
+            }
+        });
+
+        $('#EncuestaResultadosPorUsuariosId').change(function () {
+            $('#divbotonencuestaresultadosporusuarios').hide();
+            var eId = $('#EncuestaResultadosPorUsuariosId').val();
+            if (eId != null && eId != '') {
+                var url = $("#linkbotonencuestaresultadosporusuarios").attr("targeturl") + "?reporte=" + $("#linkbotonencuestaresultadosporusuarios").attr("targetreporte") + "&encuesta=" + eId;
+                $("#linkbotonencuestaresultadosporusuarios").attr("href", url);
+                $('#divbotonencuestaresultadosporusuarios').show();
+            }
+        });
+
+        $('#EncuestaResultadosPorPreguntasId').change(function () {
+            $('#divbotonencuestaresultadosporpreguntas').hide();
+            var eId = $('#EncuestaResultadosPorPreguntasId').val();
+            if (eId != null && eId != '') {
+                var url = $("#linkbotonencuestaresultadosporpreguntas").attr("targeturl") + "?reporte=" + $("#linkbotonencuestaresultadosporpreguntas").attr("targetreporte") + "&encuesta=" + eId;
+                $("#linkbotonencuestaresultadosporpreguntas").attr("href", url);
+                $('#divbotonencuestaresultadosporpreguntas').show();
+            }
+        });
+
+        function cargarEncuestas(id, combo, divdestino) {
+            var destination = $(combo);
+
+            if (id != null && id != '') {
+
+                $.getJSON('@Url.Action("ListaEncuestasRespondidas")', { usuarioId: id }, function (encuestas) {
+
+                    destination.empty();
+                    destination.append('<option value="">Seleccione una encuesta...</option>');
+
+                    $.each(encuestas, function (index, item) {
+                        destination.append('<option value="' + item.Valor + '">' + item.Etiqueta + '</option>');
+                    });
+
+                    destination.trigger("chosen:updated");
+
+                });
+
+                $(divdestino).show();
+            }
+            else {
+                destination.empty();
+                destination.trigger("chosen:updated");
+            }
+        }
+
+
+        function cargarRespuestas(uId, eId, combo, divdestino) {
+            var destination = $(combo);
+
+            if (uId != null && uId != '') {
+
+                $.getJSON('@Url.Action("ListaRespuestas")', { usuarioId: uId, encuestaId: eId }, function (encuestas) {
+
+                    destination.empty();
+                    destination.append('<option value="">Seleccione una fecha...</option>');
+
+                    $.each(encuestas, function (index, item) {
+                        destination.append('<option value="' + item.Valor + '">' + item.Etiqueta + '</option>');
+                    });
+
+                    destination.trigger("chosen:updated");
+
+                });
+
+                $(divdestino).show();
+            }
+            else {
+                destination.empty();
+                destination.trigger("chosen:updated");
+            }
+        }
+       
+        $("#btnCuatrienio").click(function () {
+            var fechainicial = $('#FechaInicial').val();
+            var fechafinal = $('#FechaFinal').val();
+
+            if (fechafinal != "" && fechainicial != "")
+                window.open("../Reports/visorreporte.aspx?reporte=CuatrienioMensual" + "&fechainicial=" + fechainicial + "&fechafinal=" + fechafinal, '_blank');
+        });
+
+    });
+
+</script>

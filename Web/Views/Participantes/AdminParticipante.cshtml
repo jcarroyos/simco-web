@@ -1,0 +1,166 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model ParticipanteModel
+@{
+    ViewBag.Title = "Participante";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Participante</h2>
+
+@using (Html.BeginForm("AdminParticipante", "Participantes", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.RegistrosModificados)
+
+    <fieldset>
+        <legend><b>Información del Participante</b></legend>
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.Nombre)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.Nombre)
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Nombre)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.Correo)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.Correo)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.Cargo)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.Cargo)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.Activo)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @if (Model.Nombre == "Administrador")
+                    {
+                        @Html.CheckBoxFor(model => model.Activo, new { @disabled = "disabled" })
+                    }
+                    else
+                    {
+                        @Html.CheckBoxFor(model => model.Activo)
+                    }
+                </div>
+            </div>
+        </div>
+        <br />
+
+    </fieldset>
+
+    <div>
+        <h2>Comites</h2>
+        <div>
+            <div>
+                @(Html.Kendo().Grid((IEnumerable<ComiteModel>)ViewBag.Comites)
+                .Name("GridComites")
+                .Columns(columns =>
+                {
+                    columns.Bound(per => per.NumeroActa);
+                    columns.Bound(per => per.Fecha);
+                    columns.Bound(per => per.Hora);
+                    columns.Bound(per => per.Lugar);
+                })
+                .Sortable()
+                .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} Comites")
+                    .Empty("No se encontraron Comites")
+                    .First("Ir a la primera página")
+                    .Last("Ir a la última página")
+                    .Next("Ir a la página siguiente")
+                    .Previous("Ir a la página anterior")))
+                )
+            </div>
+        </div>
+    </div>
+
+    <div class="formulario-botones">
+        @Html.ActionLink("Nuevo Comite", "AdminComite", "Comites", new { comiteId = 0 }, new { @class = "boton" })
+
+        @Html.ActionLink(Constante.BotonCancelar, "Index", "Participantes", new object(), new { @class = "boton" })
+        <input type="submit" value="@Html.Raw(Constante.BotonGuardarCambios)" name="GuardarCambios" class="boton" />
+        @if ((bool)ViewBag.MostrarEliminarComites)
+        {
+            @Html.ActionLink(Constante.BotonEliminar, "EliminarParticipante", "Participantes", new { participanteId = Model.Id }, new { @class = "boton" })
+        }
+
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $("#btnMostrarParticipante").bind("click", function () {
+                $("#windowParticipante").data("kendoWindow").open();
+            });
+
+            $("#btnMostrarPostulante").bind("click", function () {
+                $("#windowPostulantes").data("kendoWindow").open();
+            });
+        });
+
+        function actualizarData() {
+            var updatedRecords = [];
+
+            $('#GridComites tr').each(function () {
+                var nodeList = $(this)[0].childNodes;
+                $.each(nodeList, function (index, node) {
+                    if (node.firstChild != null && index == 0) {
+                        if (node.firstChild.id != '') {
+                            var funcionalidad = {
+                                comiteId: node.firstChild.id,
+                                seleccionado: node.firstChild.checked
+                            };
+
+                            updatedRecords.push(funcionalidad);
+                        } // Fin If
+                    } // Fin If
+                }); // Fin Each
+            });
+
+            $('#RegistrosModificados').val(JSON.stringify(updatedRecords).replace(/\/Date/g, "\\\/Date").replace(/\)\//g, "\)\\\/"));
+        }
+    </script>
+}

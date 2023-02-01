@@ -1,0 +1,531 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model ConfiguracionModel
+
+@{
+    ViewBag.Title = "Configuracion";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Configuracion</h2>
+
+<div class="box-row">
+    <div class="box">
+        <div class="formulario-label">
+            @Html.LabelFor(model => model.VariableSeleccionada)
+        </div>
+    </div>
+</div>
+<div class="box-row">
+    <div class="box">
+        <div class="formulario-control">
+            @Html.DropDownListFor(model => model.VariableSeleccionada, new SelectList(Model.Variables, "Valor", "Etiqueta", Model.VariableSeleccionada), "Seleccione una variable...", new { @class = "chosen", style = "width:300px;" })
+        </div>
+        <div class="formulario-validator">
+            @Html.ValidationMessageFor(model => model.VariableSeleccionada)
+        </div>
+    </div>
+</div>
+<br />
+
+<div id="divcategoriasservicios" style="margin-top: 15px;">
+    <div>
+        <a href="#" id="nuevacategoriaservicio" class="boton">
+            Nueva categoría de servicio
+        </a>
+    </div>
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.CategoriaServiciosSeleccionada)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DropDownListFor(model => model.CategoriaServiciosSeleccionada, new SelectList(Model.CategoriasServicios, "Valor", "Etiqueta"), "Seleccione una categoría...", new { @class = "chosen", style = "width:560px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.CategoriaServiciosSeleccionada)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div id="divcategoriasserviciosformulario">
+    </div>
+</div>
+<div id="divcategoriassolicitudes" style="margin-top: 15px;">
+    <div>
+        <a href="#" id="nuevacategoriasolicitud" class="boton">
+            Nueva categoría de solicitud
+        </a>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.CategoriaSolicitudSeleccionada)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DropDownListFor(model => model.CategoriaSolicitudSeleccionada, new SelectList(Model.CategoriasSolicitudes, "Valor", "Etiqueta"), "Seleccione una categoría...", new { @class = "chosen", style = "width:560px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.CategoriaSolicitudSeleccionada)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div id="divcategoriassolicitudesformulario">
+    </div>
+</div>
+<div id="divcorreoselectronicos">
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.CorreoElectronicoSeleccionado)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DropDownListFor(model => model.CorreoElectronicoSeleccionado, new SelectList(Model.CorreosElectronicos, "Valor", "Etiqueta"), "Seleccione un formato de correo electrónico...", new { @class = "chosen", style = "width:560px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.CorreoElectronicoSeleccionado)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div id="divcorreoselectronicosformulario">
+    </div>
+</div>
+<div id="divredessociales" style="margin-top: 15px;">
+    <div>
+        <a href="#" id="nuevaredsocial" class="boton">Nueva red social</a>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.RedSocialSeleccionada)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DropDownListFor(model => model.RedSocialSeleccionada, new SelectList(Model.RedesSociales, "Valor", "Etiqueta"), "Seleccione una red social...", new { @class = "chosen", style = "width:560px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.RedSocialSeleccionada)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div id="divredessocialesformulario">
+    </div>
+</div>
+<div id="divtiposdedocumentos" style="margin-top: 15px;">
+    <div>
+        <a href="#" id="nuevotipodocumento" class="boton">Nuevo tipo de documento</a>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.TipoDeDocumentoSeleccionado)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DropDownListFor(model => model.TipoDeDocumentoSeleccionado, new SelectList(Model.TiposDeDocumentos, "Valor", "Etiqueta"), "Seleccione un tipo...", new { @class = "chosen", style = "width:560px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.TipoDeDocumentoSeleccionado)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div id="divtiposdedocumentosformulario">
+    </div>
+</div>
+<div id="divtiposderestauraciones" style="margin-top: 15px;">
+    <div>
+        <a href="#" id="nuevotiporestauracion" class="boton">Nuevo tipo de restauración</a>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.TipoDeRestauracionSeleccionado)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DropDownListFor(model => model.TipoDeRestauracionSeleccionado, new SelectList(Model.TiposDeRestauraciones, "Valor", "Etiqueta"), "Seleccione un tipo...", new { @class = "chosen", style = "width:560px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.TipoDeRestauracionSeleccionado)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div id="divtiposderestauracionesformulario">
+    </div>
+</div>
+<div id="divzonasgeograficas" style="margin-top: 15px;">
+    <div>
+        <a href="#" id="nuevazonageografica" class="boton">Nueva zona geográfica</a>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.ZonaGeograficaSeleccionada)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DropDownListFor(model => model.ZonaGeograficaSeleccionada, new SelectList(Model.ZonasGeograficas, "Valor", "Etiqueta"), "Seleccione una zona...", new { @class = "chosen", style = "width:560px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.ZonaGeograficaSeleccionada)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div id="divzonasgeograficasformulario">
+    </div>
+</div>
+<div id="divglosario" style="margin-top: 15px;">
+    @using (Html.BeginForm("Glosario", "Administrador", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Glosario)
+                </div>
+            </div>
+        </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        <input type="file" id="Configuracion_Glosario" name="Configuracion_Glosario" style="width: 414px;" />
+                    </div>
+                    <div class="formulario-control-nota">
+                        @Html.Raw(Constante.MensajeSoloDocumentos)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.Glosario)
+                    </div>
+                    @if (Model.Glosario != "-1")
+                    {
+                        <div>
+                            @Html.ActionLink(string.Format("Descargar {0}...", Constante.GlosarioDeTerminos), "Index", "Documentos", new { id = Criptografia.EncriptarUrl(Model.Glosario.ToString()) }, null)
+                        </div>
+                    }
+                </div>
+            </div>
+            <br />
+
+            <div class="formulario-botones">
+                <input type="submit" id="guardarCambiosGlosario" value="@Html.Raw(Constante.BotonGuardarCambios)" name="GuardarCambios" class="boton" />
+            </div>
+    }
+</div>
+
+<div id="divactivarpublicacionindicadores" style="margin-top: 15px;">
+    @using (Html.BeginForm("Configuracion", "Administrador", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.HiddenFor(model => model.PublicacionIndicadores)
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.PublicacionIndicadores)
+                </div>
+            </div>
+        </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.CheckBoxFor(model => model.PublicacionIndicadores)
+                    </div>
+                </div>
+            </div>
+            <br />
+            @Html.ActionLink(Constante.BotonAceptar, "Configuracion", "Administrador", new { campoActualizar = "indicadores" }, new { @class = "boton" })
+    }
+</div>
+
+<div id="divtextopublicacionindicadores" style="margin-top: 15px;">
+    @using (Html.BeginForm("Configuracion", "Administrador", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.TextoPublicacionIndicadores)
+                </div>
+            </div>
+        </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextAreaFor(model => model.TextoPublicacionIndicadores, new { style = "width:600px; height: 220px;" })
+                        <br />
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <input type="submit" id="textoPublicacion" value="@Html.Raw(Constante.BotonAceptar)" name="textoPublicacion" class="boton" />
+
+    }
+</div>
+
+<div id="divtextodirectorioenlinea" style="margin-top: 15px;">
+    @using (Html.BeginForm("Configuracion", "Administrador", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.TextoDirectorioEnLinea)
+                </div>
+            </div>
+        </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextAreaFor(model => model.TextoDirectorioEnLinea, new { style = "width:600px; height: 220px;" })
+                        <br />
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <input type="submit" id="textoDirectorio" value="@Html.Raw(Constante.BotonAceptar)" name="textoDirectorio" class="boton" />
+
+    }
+</div>
+
+<div id="divactivarcoleccionescolombianas" style="margin-top: 15px;">
+    @using (Html.BeginForm("Configuracion", "Administrador", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.HiddenFor(model => model.PublicacionColecciones)
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.PublicacionColecciones)
+                </div>
+            </div>
+        </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.CheckBoxFor(model => model.PublicacionColecciones)
+                        <br />
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            @Html.ActionLink(Constante.BotonAceptar, "Configuracion", "Administrador", new { campoActualizar = "colecciones" }, new { @class = "boton" })
+
+    }
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $(function () {
+                $("#TextoPublicacionIndicadores").htmlarea({
+                    toolbar: [
+                        ["bold", "italic", "underline", "strikethrough", "|", "subscript", "superscript"],
+                        ["increasefontsize", "decreasefontsize"], ["orderedlist", "unorderedlist"], ["indent", "outdent"],
+                        ["justifyleft", "justifycenter", "justifyright"], ["link", "unlink", "image", "horizontalrule"],
+                        ["p", "h1", "h2", "h3", "h4", "h5", "h6"], ["cut", "copy", "paste"],
+                    ],
+
+                    toolbarText: $.extend({}, jHtmlArea.defaultOptions.toolbarText, {
+                        "bold": "Negrita",
+                        "italic": "Cursiva",
+                        "underline": "Subrayado"
+                    }),
+
+                });
+            });
+
+            $(function () {
+                $("#TextoDirectorioEnLinea").htmlarea({
+                    toolbar: [
+                        ["bold", "italic", "underline", "strikethrough", "|", "subscript", "superscript"],
+                        ["increasefontsize", "decreasefontsize"], ["orderedlist", "unorderedlist"], ["indent", "outdent"],
+                        ["justifyleft", "justifycenter", "justifyright"], ["link", "unlink", "image", "horizontalrule"],
+                        ["p", "h1", "h2", "h3", "h4", "h5", "h6"], ["cut", "copy", "paste"],
+                    ],
+
+                    toolbarText: $.extend({}, jHtmlArea.defaultOptions.toolbarText, {
+                        "bold": "Negrita",
+                        "italic": "Cursiva",
+                        "underline": "Subrayado"
+                    }),
+
+                });
+            });
+
+            cargarVariables();
+
+            $('#VariableSeleccionada').change(function () {
+                cargarVariables();
+            });
+
+            $('#nuevacategoriaservicio').click(function () {
+                $('#CategoriaServiciosSeleccionada').val("");
+                $('#CategoriaServiciosSeleccionada').trigger("chosen:updated");
+                cargarCampos('@Url.Action("CategoriaServicio", "Administrador")', "", '#divcategoriasserviciosformulario');
+                return false;
+            });
+
+            $('#nuevacategoriasolicitud').click(function () {
+                $('#CategoriaSolicitudSeleccionada').val("");
+                $('#CategoriaSolicitudSeleccionada').trigger("chosen:updated");
+                cargarCampos('@Url.Action("CategoriaSolicitud", "Administrador")', "-1", '#divcategoriassolicitudesformulario');
+                return false;
+            });
+
+            $('#nuevotipodocumento').click(function () {
+                $('#TipoDeDocumentoSeleccionado').val("");
+                $('#TipoDeDocumentoSeleccionado').trigger("chosen:updated");
+                cargarCampos('@Url.Action("TipoDeDocumento", "Administrador")', "", '#divtiposdedocumentosformulario');
+                return false;
+            });
+
+            $('#nuevotiporestauracion').click(function () {
+                $('#TipoDeRestauracionSeleccionado').val("");
+                $('#TipoDeRestauracionSeleccionado').trigger("chosen:updated");
+                cargarCampos('@Url.Action("TipoDeRestauracion", "Administrador")', "", '#divtiposderestauracionesformulario');
+                return false;
+            });
+
+            $('#nuevaredsocial').click(function () {
+                $('#RedSocialSeleccionada').val("");
+                $('#RedSocialSeleccionada').trigger("chosen:updated");
+                cargarCampos('@Url.Action("RedSocial", "Administrador")', "", '#divredessocialesformulario');
+                return false;
+            });
+
+            $('#nuevazonageografica').click(function () {
+                $('#ZonaGeograficaSeleccionada').val("");
+                $('#ZonaGeograficaSeleccionada').trigger("chosen:updated");
+                cargarCampos('@Url.Action("ZonaGeografica", "Administrador")', "", '#divzonasgeograficasformulario');
+                return false;
+            });
+
+            $('#CategoriaServiciosSeleccionada').change(function () {
+                $('#divcategoriasserviciosformulario').empty();
+                if ($('#CategoriaServiciosSeleccionada').val() != null && $('#CategoriaServiciosSeleccionada').val() != "")
+                    cargarCampos('@Url.Action("CategoriaServicio", "Administrador")', $('#CategoriaServiciosSeleccionada').val(), '#divcategoriasserviciosformulario');
+            });
+
+            $('#CategoriaSolicitudSeleccionada').change(function () {
+                $('#divcategoriasserviciosformulario').empty();
+                if ($('#CategoriaSolicitudSeleccionada').val() != null && $('#CategoriaSolicitudSeleccionada').val() != "")
+                    cargarCampos('@Url.Action("CategoriaSolicitud", "Administrador")', $('#CategoriaSolicitudSeleccionada').val(), '#divcategoriassolicitudesformulario');
+            });
+
+            $('#CorreoElectronicoSeleccionado').change(function () {
+                $('#divcorreoselectronicosformulario').empty();
+                if ($('#CorreoElectronicoSeleccionado').val() != null && $('#CorreoElectronicoSeleccionado').val() != "")
+                    cargarCampos('@Url.Action("CorreoElectronico", "Administrador")', $('#CorreoElectronicoSeleccionado').val(), '#divcorreoselectronicosformulario');
+            });
+
+            $('#TipoDeRestauracionSeleccionado').change(function () {
+                $('#divtiposderestauracionesformulario').empty();
+                if ($('#TipoDeRestauracionSeleccionado').val() != null && $('#TipoDeRestauracionSeleccionado').val() != "")
+                    cargarCampos('@Url.Action("TipoDeRestauracion", "Administrador")', $('#TipoDeRestauracionSeleccionado').val(), '#divtiposderestauracionesformulario');
+            });
+
+            $('#TipoDeDocumentoSeleccionado').change(function () {
+                $('#divtiposdedocumentosformulario').empty();
+                if ($('#TipoDeDocumentoSeleccionado').val() != null && $('#TipoDeDocumentoSeleccionado').val() != "")
+                    cargarCampos('@Url.Action("TipoDeDocumento", "Administrador")', $('#TipoDeDocumentoSeleccionado').val(), '#divtiposdedocumentosformulario');
+            });
+
+            $('#RedSocialSeleccionada').change(function () {
+                $('#divredessocialesformulario').empty();
+                if ($('#RedSocialSeleccionada').val() != null && $('#RedSocialSeleccionada').val() != "")
+                    cargarCampos('@Url.Action("RedSocial", "Administrador")', $('#RedSocialSeleccionada').val(), '#divredessocialesformulario');
+            });
+
+            $('#ZonaGeograficaSeleccionada').change(function () {
+                $('#divzonasgeograficasformulario').empty();
+                if ($('#ZonaGeograficaSeleccionada').val() != null && $('#ZonaGeograficaSeleccionada').val() != "")
+                    cargarCampos('@Url.Action("ZonaGeografica", "Administrador")', $('#ZonaGeograficaSeleccionada').val(), '#divzonasgeograficasformulario');
+            });
+
+            function cargarVariables() {
+                $('#divcategoriasservicios').hide();
+                $('#divcategoriasserviciosformulario').empty();
+                $('#divcategoriassolicitudes').hide();
+                $('#divcategoriassolicitudesformulario').empty();
+                $('#divcorreoselectronicos').hide();
+                $('#divcorreoselectronicosformulario').empty();
+                $('#divredessociales').hide();
+                $('#divredessocialesformulario').empty();
+                $('#divtiposdedocumentos').hide();
+                $('#divtiposdedocumentosformulario').empty();
+                $('#divtiposderestauraciones').hide();
+                $('#divtiposderestauracionesformulario').empty();
+                $('#divzonasgeograficas').hide();
+                $('#divzonasgeograficasformulario').empty();
+                $('#divglosario').hide();
+                $('#divactivarpublicacionindicadores').hide();
+                $('#divtextopublicacionindicadores').hide();
+                $('#divtextodirectorioenlinea').hide();
+                $('#divactivarcoleccionescolombianas').hide();
+
+                var selectedItem = $('#VariableSeleccionada').val();
+                if (selectedItem != null && selectedItem != "")
+                    $('#div' + selectedItem.toLowerCase()).show();
+            }
+
+            function cargarCampos(urlAction, selectedId, divTarget) {
+                $(divTarget).empty();
+
+                $.ajax({
+                    url: urlAction,
+                    type: 'POST',
+                    dataType: 'html',
+                    data: { id: selectedId },
+                    success: function (data) {
+                        if (data) {
+                            $(divTarget).html(data);
+                            $.validator.unobtrusive.parse(divTarget);
+                        }
+                    }
+                });
+            }
+
+        });
+
+    </script>
+}

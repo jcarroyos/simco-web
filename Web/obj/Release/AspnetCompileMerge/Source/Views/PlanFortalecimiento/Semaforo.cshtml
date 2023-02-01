@@ -1,0 +1,134 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model SemaforoConsultaModel
+@{
+    ViewBag.Title = "Semaforo";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Semáforo</h2>
+
+@using (Html.BeginForm("Semaforo", "PlanFortalecimiento", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <fieldset>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.NombreMuseo)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.NombreMuseo, new { style = "width:690px;" })
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.FechaActivacionInicial)
+                </div>
+            </div>
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.FechaActivacionFinal)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                @Html.EditorFor(model => model.FechaActivacionInicial)
+            </div>
+            <div class="box">
+                @Html.EditorFor(model => model.FechaActivacionFinal)
+            </div>
+        </div>
+        <br />
+
+        <div class="formulario-field-2">
+            <div class="formulario-control">
+                <button class="boton" onclick="Buscar()">@Html.Raw(Constante.BotonBuscar)</button>
+                @Html.ActionLink("Exportar", "ExportarExcel", "PlanFortalecimiento", new { nombreMuseo = Model.NombreMuseo, fechaActivacionInicial = Model.FechaActivacionFinal, fechaActivacionFinal = Model.FechaActivacionFinal }, new { @class = "boton" })
+                @Html.ActionLink(Constante.BotonCancelar, "Semaforo", "PlanFortalecimiento", new object(), new { @class = "boton" })
+                <input class="boton" type="button" value="@Html.Raw(Constante.BotonDesactivar)" onclick="DesactivarDesactualizados()" style="float:right;"/>
+            </div>
+        </div>
+    </fieldset>
+}
+
+<div class="grilladatos-tabla-semaforo">
+    @(Html.Kendo().Grid(Model.Semaforos)
+           .Name("GridSemaforo")
+           .Columns(columns =>
+           {
+           columns.Bound(o => o.Color).Title("Estado").Template(@<text><div class='circle' style="background-color: @item.Color;" /></text>);
+               columns.Bound(o => o.NombreMuseo).Title("Museo").Width(180);
+               columns.Bound(o => o.FechaActivacion).Title("Activado").Format("{0:dd/MM/yyyy}");
+               columns.Bound(o => o.FechaVencimiento).Title("Vencimiento").Format("{0:dd/MM/yyyy}");
+               columns.Bound(o => o.PorcentajeAvance).Title("% avance");
+               columns.Bound(o => o.Departamento).Title("Depto");
+               columns.Bound(o => o.Municipio).Title("Mpio");
+               columns.Template(@<text><input name="Desactivar" type="button" value="Desactivar" onclick="ClickEvent(@item.UsuId)" /></text>).Title("Acción").Width(50).HtmlAttributes(new { style = "text-align:center" });
+           })
+           .Sortable()
+           .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} planes")
+                .Empty("No se encontraron planes")
+                .First("Ir a la primera página")
+                .Last("Ir a la última página")
+                .Next("Ir a la página siguiente")
+                .Previous("Ir a la página anterior")))
+    )
+</div>
+
+<script type="text/javascript">
+
+    function Buscar() {
+        var nombreMuseo = $('#NombreMuseo').val();
+        var fechaActivacionInicial = $('#FechaActivacionInicial').val();
+        var fechaActivacionFinal = $('#FechaActivacionFinal').val();
+
+        $.ajax({
+            url: '@Url.Action("Semaforo", "PlanFortalecimiento")',
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            data: '{ nombreMuseo: ' + nombreMuseo + ', fechaActivacionInicial: ' + fechaActivacionInicial + ', fechaActivacionFinal: ' + fechaActivacionFinal + ' }'
+        }).done(function () {
+            // Ok
+        });
+    }
+
+    function ClickEvent(id) {
+        if (confirm('Desea desactivar este usuario?')) {
+            $.ajax({
+                url: '@Url.Action("DesactivarUsuario", "PlanFortalecimiento")',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                data: '{ idUsuario: ' + id + '}'
+            }).done(function () {
+                alert('Usuario desactivado');
+                location.reload(true);
+            });
+        }
+    }
+
+    function DesactivarDesactualizados() {
+        if (confirm('Desea desactivar todos los usuarios desactualizados?')) {
+            $.ajax({
+                url: '@Url.Action("DesactivarUsuariosDesactualizados", "PlanFortalecimiento")',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                data: '{ nombreMuseo: null, fechaActivacionInicial: null, fechaActivacionFinal: null }'
+            }).done(function () {
+                location.reload(true);
+            });
+        }
+    }
+</script>

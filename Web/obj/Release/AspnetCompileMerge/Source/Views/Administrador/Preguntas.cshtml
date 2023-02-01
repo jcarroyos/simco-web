@@ -1,0 +1,84 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model PreguntaRegistroModel
+@{
+    ViewBag.Title = "Preguntas";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Preguntas</h2>
+
+@Html.HiddenFor(model => model.TokenEncuesta)
+
+@if (Model.Modificable)
+{
+    <div>
+        <a href="#" id="nuevapregunta" class="boton">Nueva pregunta</a>
+    </div>
+}
+
+<div class="box-row">
+    <div class="box">
+        <div class="formulario-label">
+            @Html.LabelFor(model => model.Preguntas)
+        </div>
+    </div>
+</div>
+<div class="box-row">
+    <div class="box">
+        <div class="formulario-control">
+
+            @Html.DropDownListFor(model => model.PreguntaSeleccionadaId, new SelectList(Model.Preguntas, "Id", "Enunciado", Model.PreguntaSeleccionadaId), "Seleccione una pregunta...", new { @class = "chosen", style = "width:580px;" })
+        </div>
+        <div class="formulario-validator">
+            @Html.ValidationMessageFor(model => model.Preguntas)
+        </div>
+    </div>
+</div>
+<br />
+
+<div id="t"></div>
+
+<div class="formulario-botones">
+    @Html.ActionLink(Constante.BotonRegresar, "Encuesta", "Administrador", new { id = Model.TokenEncuesta }, new { @class = "boton" })
+    @Html.ActionLink(Constante.BotonSiguiente, "Opciones", "Administrador", new { id = Model.TokenEncuesta }, new { @class = "boton" })
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#nuevapregunta').click(function () {
+            cargarPregunta(-1);
+            $('#PreguntaSeleccionadaId').val("");
+            $('#PreguntaSeleccionadaId').trigger("chosen:updated");
+        });
+
+        $('#PreguntaSeleccionadaId').change(function () {
+            var selectedItem = $('#PreguntaSeleccionadaId').val();
+
+            if (selectedItem != null && selectedItem != '') {
+                cargarPregunta(selectedItem);
+            } else {
+                $('#t').empty();
+            }
+        });
+
+        function cargarPregunta(id) {
+            $.ajax({
+                url: '@Url.Action("Pregunta", "Administrador")',
+                type: 'POST',
+                dataType: 'html',
+                data: { preguntaId: id, tokenEncuesta: $('#TokenEncuesta').val() },
+                success: function (data) {
+                    if (data) {
+                        $('#t').html(data);
+                        $.validator.unobtrusive.parse("#t");
+                    }
+                }
+            });
+        }
+    });
+
+</script>

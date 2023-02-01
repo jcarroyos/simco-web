@@ -1,0 +1,53 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+<h2>Participantes</h2>
+
+<div class="formulario-busqueda-entidad">
+    @using (Html.BeginForm("Index", "Participantes", FormMethod.Get, new { id = "FormBuscarParticipantes" }))
+    {
+        <fieldset>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        Participante a buscar:
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBox("Consulta", ViewBag.Consulta as string, new { style = "width:536px" })
+                    </div>
+                </div>
+            </div>
+            <br />
+        </fieldset>
+
+        <div class="formulario-botones">
+            <input type="submit" value="@Html.Raw(Constante.BotonBuscar)" name="Buscar" class="boton" />
+            @Html.ActionLink("Mostrar todos", "Index", "Participantes", new object(), new { @class = "boton" })
+            @Html.ActionLink("Nuevo Participante", "AdminParticipante", "Participantes", new { ParticipanteId = 0 }, new { @class = "boton" })
+        </div>
+    }
+</div>
+
+<div>
+    @(Html.Kendo().Grid((IEnumerable<ParticipanteModel>)ViewBag.Participantes)
+        .Name("GridParticipantes")
+        .Columns(columns =>
+        {
+            columns.Bound(o => o.Nombre).Template(@<text><strong>@Html.ActionLink(@item.Nombre, "AdminParticipante", "Participantes", new { ParticipanteId = @item.Id }, null)</strong></text>);
+            columns.Bound(per => per.Correo);
+            columns.Bound(per => per.Cargo);
+            columns.Bound(per => per.Activo);
+        })
+        .Sortable()
+        .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} Participantes")
+                        .Empty("No se encontraron Participantes")
+                        .First("Ir a la primera página")
+                        .Last("Ir a la última página")
+                        .Next("Ir a la página siguiente")
+                        .Previous("Ir a la página anterior")))
+    )
+</div>

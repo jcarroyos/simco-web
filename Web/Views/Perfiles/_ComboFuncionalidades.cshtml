@@ -1,0 +1,7 @@
+﻿@model Simco.DomainModelLayer.ViewModels.TiposModel
+
+@(Html.Kendo().DropDownList()
+        .DataTextField("Id")
+        .DataValueField("Nombre")
+        .DataSource(source => source.Read(read => read.Action("CargarFuncionalidadesPadre", "Perfiles")))
+)

@@ -1,0 +1,309 @@
+﻿@using System.Configuration
+@using Microsoft.Web.Helpers
+@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+
+@model InicioSesionModel
+@{
+    ReCaptcha.PublicKey = ConfigurationManager.AppSettings["ReCaptchaPublicKey"];
+    ViewBag.Title = "Ingresar solicitud";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Ingresar solicitud</h1>
+<p> En este módulo podrá plantear sus inquietudes en diferentes temáticas museológicas, las cuales serán atendidas de manera oportuna por los asesores del Programa Fortalecimiento de Museos y del Museo Nacional de Colombia.</p>
+<p> Nota:</p>
+<p> En caso de ser una entidad museal registrada en SIMCO, ingrese a su perfil de usuario y registre desde allí su solicitud.</p>
+<div class="formulario">
+
+    @using (Html.BeginForm("Index", "Solicitudes", FormMethod.Post, new { id = "FormNuevaSolicitud", enctype = "multipart/form-data" }))
+    {
+
+        @Html.ValidationSummary(true)
+
+        @Html.HiddenFor(model => model.SolicitudRegistro.Solicitud.Departamento)
+        @Html.HiddenFor(model => model.SolicitudRegistro.Solicitud.Municipio)
+
+        <fieldset>
+
+            <legend class="texto-negrita">Información de usuario</legend>
+
+            <em>*</em> @Html.LabelFor(model => model.SolicitudRegistro.Solicitud.Nombre)
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.SolicitudRegistro.Solicitud.Nombre, new { style = "width:536px; " })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.SolicitudRegistro.Solicitud.Nombre)
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.SolicitudRegistro.Solicitud.TipoDocumento)
+                </div>
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.SolicitudRegistro.Solicitud.NumeroDocumento)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    @Html.DropDownListFor(model => model.SolicitudRegistro.Solicitud.TipoDocumento, new SelectList(Model.SolicitudRegistro.TiposDocumento, "Valor", "Etiqueta", Model.SolicitudRegistro.Solicitud.TipoDocumento), new { @class = "chosen" })
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.SolicitudRegistro.Solicitud.TipoDocumento)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.SolicitudRegistro.Solicitud.NumeroDocumento)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.SolicitudRegistro.Solicitud.NumeroDocumento)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.SolicitudRegistro.Solicitud.Departamento)
+                </div>
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.SolicitudRegistro.Solicitud.Municipio)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    @Html.DropDownListFor(model => model.SolicitudRegistro.Solicitud.CodigoDepartamento, new SelectList(Model.SolicitudRegistro.Departamentos, "Id", "Nombre", Model.SolicitudRegistro.Solicitud.CodigoDepartamento), "Seleccione un departamento...", new { data_placeholder = "Seleccione un departamento...", @class = "chosen" })
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.SolicitudRegistro.Solicitud.CodigoDepartamento)
+                    </div>
+                </div>
+                <div class="box">
+                    @Html.DropDownListFor(model => model.SolicitudRegistro.Solicitud.CodigoMunicipio, new SelectList(Enumerable.Empty<SelectListItem>(), "Id", "Nombre", Model.SolicitudRegistro.Solicitud.CodigoMunicipio), "Seleccione una ciudad o municipio...", new { data_placeholder = "Seleccione una ciudad o municipio...", @class = "chosen" })
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.SolicitudRegistro.Solicitud.CodigoMunicipio)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            @Html.LabelFor(model => model.SolicitudRegistro.Solicitud.DireccionCorrespondencia)
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.SolicitudRegistro.Solicitud.DireccionCorrespondencia, new { style = "width:536px; " })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.SolicitudRegistro.Solicitud.DireccionCorrespondencia)
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    @Html.LabelFor(model => model.SolicitudRegistro.Solicitud.TelefonoFijo)
+                </div>
+                <div class="box">
+                    @Html.LabelFor(model => model.SolicitudRegistro.Solicitud.TelefonoCelular)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.SolicitudRegistro.Solicitud.TelefonoFijo)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.SolicitudRegistro.Solicitud.TelefonoFijo)
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.SolicitudRegistro.Solicitud.TelefonoCelular)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.SolicitudRegistro.Solicitud.TelefonoCelular)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.SolicitudRegistro.Solicitud.CorreoElectronico)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.SolicitudRegistro.Solicitud.CorreoElectronico)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.SolicitudRegistro.Solicitud.CorreoElectronico)
+                    </div>
+                </div>
+            </div>
+            <br />
+        </fieldset>
+
+        <fieldset>
+            <legend class="texto-negrita">Información de la solicitud</legend>
+
+            <em>*</em> @Html.LabelFor(model => model.SolicitudRegistro.Solicitud.Descripcion)
+            <div class="formulario-control">
+                @Html.TextAreaFor(model => model.SolicitudRegistro.Solicitud.Descripcion, new { style = "width:570px; height: 200px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.SolicitudRegistro.Solicitud.Descripcion)
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.SolicitudRegistro.NuevoDocumento.Archivo)
+                    </div>
+                </div>
+            </div>
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.SolicitudRegistro.NuevoDocumento.ImageUpload, new { type = "file" })
+            </div>
+            <div class="formulario-control-nota">
+                @Html.Raw(Constante.NotaArchivosSolicitudes)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.SolicitudRegistro.NuevoDocumento.ImageUpload)
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.SolicitudRegistro.NuevoDocumento2.Archivo)
+                    </div>
+                </div>
+            </div>
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.SolicitudRegistro.NuevoDocumento2.ImageUpload, new { type = "file" })
+            </div>
+            <div class="formulario-control-nota">
+                @Html.Raw(Constante.NotaArchivosSolicitudes)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.SolicitudRegistro.NuevoDocumento2.ImageUpload)
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.SolicitudRegistro.NuevoDocumento3.Archivo)
+                    </div>
+                </div>
+            </div>
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.SolicitudRegistro.NuevoDocumento3.ImageUpload, new { type = "file" })
+            </div>
+            <div class="formulario-control-nota">
+                @Html.Raw(Constante.NotaArchivosSolicitudes)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.SolicitudRegistro.NuevoDocumento3.ImageUpload)
+            </div>
+            <br />
+          
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.Label(@Constante.Captcha)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        <div class="g-recaptcha" data-sitekey="@ConfigurationManager.AppSettings["ReCaptchaPublicKey"]"></div> 
+                    </div>
+                </div>
+            </div>
+            <br />
+        </fieldset>
+
+        <div class="centrarBotones">
+            @Html.ActionLink(Constante.BotonCancelar, "Index", "Home", new object(), new { @class = "boton" })
+            <input type="submit" value="@Html.Raw(Constante.BotonCrearSolicitud)" name="CrearSolicitud" class="boton" onclick="submitForm();" id="submitButton" />
+        </div>
+
+    }
+
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#SolicitudRegistro_Solicitud_Descripcion").htmlarea({
+            toolbar: [
+                ["bold", "italic", "underline", "strikethrough", "|", "subscript", "superscript"],
+                ["increasefontsize", "decreasefontsize"], ["orderedlist", "unorderedlist"], ["indent", "outdent"],
+                ["justifyleft", "justifycenter", "justifyright"], ["link", "unlink", "image", "horizontalrule"],
+                ["p", "h1", "h2", "h3", "h4", "h5", "h6"], ["cut", "copy", "paste"],
+            ],
+
+            toolbarText: $.extend({}, jHtmlArea.defaultOptions.toolbarText, {
+                "bold": "Negrita",
+                "italic": "Cursiva",
+                "underline": "Subrayado"
+            }),
+
+        });
+
+        CargarListaMunicipios();
+
+        $('#SolicitudRegistro_Solicitud_CodigoDepartamento').change(function () {
+            CargarListaMunicipios();
+        });
+
+        $('#SolicitudRegistro_Solicitud_CodigoMunicipio').change(function () {
+            AsignarDeptoMpio();
+        });
+    });
+
+    function submitForm() {
+        $('#FormNuevaSolicitud').submit();
+        $('#submitButton').attr('disabled', 'disabled');
+    }
+
+    function CargarListaMunicipios() {
+
+        var selectedItem = $('#SolicitudRegistro_Solicitud_CodigoDepartamento').val();
+        var destination = $('#SolicitudRegistro_Solicitud_CodigoMunicipio');
+
+        if (selectedItem != null && selectedItem != '') {
+            $.getJSON('@Url.Action("Municipios")', { zonaPadreId: selectedItem }, function (municipio) {
+
+                destination.empty();
+                destination.append('<option value="">Seleccione una ciudad o municipio...</option>');
+
+                $.each(municipio, function (index, item) {
+                    if (item.Id == '@Model.SolicitudRegistro.Solicitud.CodigoMunicipio') {
+                        destination.append('<option value="' + item.Id + '" selected="selected">' + item.Nombre + '</option>');
+                        AsignarDeptoMpio();
+                    } else {
+                        destination.append('<option value="' + item.Id + '">' + item.Nombre + '</option>');
+                    }
+                    destination.trigger("chosen:updated");
+                });
+            });
+        }
+        else {
+            destination.empty();
+            destination.trigger("chosen:updated");
+        }
+    }
+
+    function AsignarDeptoMpio() {
+
+        var selectedTextDepto = $("#SolicitudRegistro_Solicitud_CodigoDepartamento option:selected").text();
+        var selectedTextMpio = $("#SolicitudRegistro_Solicitud_CodigoMunicipio option:selected").text();
+
+        $('#SolicitudRegistro_Solicitud_Departamento').val(selectedTextDepto);
+        $('#SolicitudRegistro_Solicitud_Municipio').val(selectedTextMpio);
+    }
+
+</script>
+

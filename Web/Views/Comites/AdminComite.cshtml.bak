@@ -1,0 +1,616 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model ComiteModel
+@{
+    ViewBag.Title = "Comite";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Comite</h2>
+
+@using (Html.BeginForm("AdminComite", "Comites", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.RegistrosModificados)
+    @Html.HiddenFor(model => model.EstadoId)
+    @Html.HiddenFor(model => model.PostulantesModificados)
+
+    <fieldset>
+        <legend><b>Información del Comité</b></legend>
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    <em>*</em> @Html.LabelFor(model => model.NumeroActa)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.NumeroActa, new { @readonly = "true" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.NumeroActa)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Fecha)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                @Html.EditorFor(model => model.Fecha)
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Fecha)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Hora)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.EditorFor(model => model.Hora)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Lugar)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.Lugar)
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Lugar)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.CantidadPostulados)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.CantidadPostulados, new { @readonly = "true" })
+                </div>
+            </div>
+        </div>
+        <br />
+
+    </fieldset>
+
+    <div class="box-row">
+        <div class="box">
+            <h2>Participantes en este comité:</h2>
+            <div>
+                @(Html.Kendo().Grid<ParticipanteModel>()
+                .Name("GridParticipantesSeleccionados")
+                .Columns(columns =>
+                {
+                    columns.Bound(per => per.Id);
+                    columns.Bound(per => per.Nombre);
+                    columns.Bound(per => per.Correo);
+                    columns.Bound(per => per.Cargo);
+                    columns.Command(command => command.Destroy().Text("Eliminar"));
+                })
+                .Sortable()
+                .Events(e =>
+                {
+                    e.DataBound("dataBoundParticipantes");
+                })
+                .Editable(edit =>
+                {
+                    edit.ConfirmDelete("Desea eliminar este participante del comite?");
+                })
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Batch(false)
+                    .PageSize(20)
+                    .ServerOperation(false)
+                    .Events(events => events.Error("error_handler"))
+                    .Model(m =>
+                    {
+                        m.Id(model => model.Id);
+                    })
+                    .Destroy(destroy => destroy.Action("EliminarParticipantesSeleccionados", "Comites"))
+                    .Read(read => read.Action("ConsultarParticipantesSeleccionados", "Comites")))
+                .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} Participantes")
+                    .Empty("No se encontraron Participantes")
+                    .First("Ir a la primera página")
+                    .Last("Ir a la última página")
+                    .Next("Ir a la página siguiente")
+                    .Previous("Ir a la página anterior")))
+                )
+            </div>
+            <div class="formulario-botones">
+                @if (Model.EstadoId == 0 || Model.EstadoId == 1)
+                {
+                <span id="btnMostrarParticipante" class="boton">Agregar Participante</span>
+                }
+            </div>
+        </div>
+        <div class="box">
+            <h2>Entidades Museales Postuladas:</h2>
+            <div>
+                @(Html.Kendo().Grid<PostulacionEntidadMusealModel>()
+                .Name("GridPostulantesSeleccionados")
+                .Columns(columns =>
+                {
+                    columns.Bound(per => per.Id);
+                    columns.Bound(per => per.Nombre).ClientTemplate("<strong><a href=/Postulantes/AdminPostulantes?Postulantes=${Id}>${Nombre}</a></strong>");
+                    columns.Bound(per => per.Departamento);
+                    columns.Bound(per => per.Municipio).Title("Ciudad");
+                    columns.Bound(per => per.NombreContacto).Title("Contacto");
+                    columns.Bound(per => per.IdEstadoEntidadMuseal).ClientTemplate("#=EstadoEntidadMuseal#").EditorTemplateName("EstadosEditor").Title("Estado").Width(120);
+                    columns.Bound(per => per.Comentarios);
+                    columns.Command(command => { command.Destroy().Text("Eliminar"); command.Edit().Text("Modificar").UpdateText("Actualizar").CancelText("Cancelar"); }).Width(250);
+                })
+                .Sortable()
+                .Events(e =>
+                {
+                    e.DataBound("dataBoundPostulantes");
+                    e.Edit("onEdit");
+                })
+                .Editable(edit =>
+                {
+                    edit.Mode(GridEditMode.InLine);
+                    edit.ConfirmDelete("Desea eliminar este postulante del comite?");
+                })
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Batch(false)
+                    .PageSize(20)
+                    .ServerOperation(false)
+                    .Events(events => events.Error("error_handler").Sync("sync_handler"))
+                    .Model(m =>
+                    {
+                        m.Id(model => model.Id);
+                        m.Field(model => model.Id).Editable(false);
+                        m.Field(model => model.Nombre).Editable(false);
+                        m.Field(model => model.Departamento).Editable(false);
+                        m.Field(model => model.Municipio).Editable(false);
+                        m.Field(model => model.NombreContacto).Editable(false);
+                    })
+                    .Destroy(destroy => destroy.Action("EliminarPostulantesSeleccionados", "Comites"))
+                    .Read(read => read.Action("ConsultarPostulantesSeleccionados", "Comites"))
+                    .Update(update => update.Action("ActualizarPostulantesSeleccionados", "Comites")))
+                .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} Postulantes")
+                    .Empty("No se encontraron Postulantes")
+                    .First("Ir a la primera página")
+                    .Last("Ir a la última página")
+                    .Next("Ir a la página siguiente")
+                    .Previous("Ir a la página anterior")))
+                )
+            </div>
+            <div class="formulario-botones">
+                @if (Model.EstadoId == 0 || Model.EstadoId == 1)
+                {
+                <span id="btnMostrarPostulante" class="boton">Agregar Postulante</span>
+                }
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div>
+        @(Html.Kendo().Window()
+            .Name("windowParticipante")
+            .Title("Seleccione los Participantes")
+            .Content(
+                    (Html.Kendo().Grid((IEnumerable<ParticipanteModel>)ViewBag.TodosParticipantes)
+                    .Name("GridParticipantes")
+                    .Columns(columns =>
+                    {
+                    columns.Template(@<text><input id="@(@item.Id)" name="@(@item.Id)" type="checkbox" /></text>).Title("Seleccionar").Width(50);
+                        columns.Bound(per => per.Nombre);
+                        columns.Bound(per => per.Correo);
+                        columns.Bound(per => per.Cargo);
+                    })
+                    .Sortable()
+                    .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} Participantes")
+                        .Empty("No se encontraron Participantes")
+                        .First("Ir a la primera página")
+                        .Last("Ir a la última página")
+                        .Next("Ir a la página siguiente")
+                        .Previous("Ir a la página anterior")))
+                    ).ToHtmlString()
+            )
+            .Draggable()
+            .Resizable()
+            .Width(600)
+            .Visible(false)
+            .Actions(actions => actions.Pin().Minimize().Maximize().Close())
+            .Events(ev => ev.Close("onCloseParticipantes"))
+        )
+    </div>
+
+    <div>
+        @(Html.Kendo().Window()
+            .Name("windowPostulantes")
+            .Title("Seleccione los Postulantes")
+            .Content(
+                    (Html.Kendo().Grid((IEnumerable<PostulacionEntidadMusealModel>)ViewBag.TodosPostulantes)
+                    .Name("GridPostulantes")
+                    .Columns(columns =>
+                    {
+                    columns.Template(@<text><input id="@(@item.Id)" name="@(@item.Id)" type="checkbox" /></text>).Title("Seleccionar").Width(50);
+                        columns.Bound(per => per.Nombre);
+                        columns.Bound(per => per.Departamento);
+                        columns.Bound(per => per.Municipio).Title("Ciudad");
+                        columns.Bound(per => per.NombreContacto).Title("Contacto");
+                    })
+                    .Sortable()
+                    .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} Postulantes")
+                        .Empty("No se encontraron Postulantes")
+                        .First("Ir a la primera página")
+                        .Last("Ir a la última página")
+                        .Next("Ir a la página siguiente")
+                        .Previous("Ir a la página anterior")))
+                    ).ToHtmlString()
+            )
+            .Draggable()
+            .Resizable()
+            .Width(600)
+            .Visible(false)
+            .Actions(actions => actions.Pin().Minimize().Maximize().Close())
+            .Events(ev => ev.Close("onClosePostulantes"))
+        )
+    </div>
+
+    <div class="formulario-botones">
+        @Html.ActionLink(Constante.BotonCancelar, "Index", "Comites", new { consulta = string.Empty, comiteId = 0 }, new { @class = "boton" })
+        <input type="submit" value="@Html.Raw(Constante.BotonGuardarCambios)" name="GuardarCambios" class="boton" onclick="actualizarData()" />
+        @if (Model.EstadoId == 3)
+        {
+        @Html.ActionLink("Finalizar Comite", "Index", "Comites", new { consulta = string.Empty, comiteId = Model.Id }, new { @class = "boton" })
+        }
+    </div>
+
+    <script>
+        var syncDataSource;
+        $(document).ready(function () {
+            $("#btnMostrarParticipante").bind("click", function () {
+                $("#windowParticipante").data("kendoWindow").open();
+            });
+
+            $("#btnMostrarPostulante").bind("click", function () {
+                $("#windowPostulantes").data("kendoWindow").open();
+            });
+        });
+
+        function onClosePostulantes() {
+            var postulantesGrid = $('#GridPostulantesSeleccionados').data('kendoGrid');
+            var dataSource = postulantesGrid.dataSource;
+            var agregar;
+            var id;
+            var nombre;
+            var departamento;
+            var municipio;
+            var nombreContacto;
+
+            $('#GridPostulantes tr').each(function () {
+                var nodeList = $(this)[0].childNodes;
+                $.each(nodeList, function (index, node) {
+
+                    if (node.firstChild != null && index == 0) {
+                        agregar = node.firstChild.checked;
+                        if (node.firstChild.id != '') {
+                            id = node.firstChild.id;
+                        }
+                    }
+
+                    if (node.firstChild != null && index == 1) {
+                        if (node.firstChild.data != '') {
+                            nombre = node.firstChild.data;
+                        }
+                    }
+
+                    if (node.firstChild != null && index == 2) {
+                        if (node.firstChild.data != '') {
+                            departamento = node.firstChild.data;
+                        }
+                    }
+
+                    if (node.firstChild != null && index == 3) {
+                        if (node.firstChild.data != '') {
+                            municipio = node.firstChild.data;
+                        }
+                    }
+
+                    if (node.firstChild != null && index == 4 && agregar) {
+                        if (node.firstChild.data != '') {
+                            nombreContacto = node.firstChild.data;
+                        }
+
+                        let yaExite = dataSource.data().filter((exite) => exite.Id == id);
+                        if (yaExite.length == 0) {
+                            var total = dataSource.data().length;
+                            $('#CantidadPostulados').val(total);
+                            dataSource.insert(total,
+                                {
+                                    Id: id,
+                                    Nombre: nombre,
+                                    Departamento: departamento,
+                                    Municipio: municipio,
+                                    NombreContacto: nombreContacto,
+                                    IdEstadoEntidadMuseal: 1,
+                                    EstadoEntidadMuseal: "Registrada"
+                                }
+                            );
+                        }
+                    }
+
+                }); // Fin Each
+            });
+
+            dataSource.sync();
+        }
+
+        function onCloseParticipantes() {
+            var participantesGrid = $('#GridParticipantesSeleccionados').data('kendoGrid');
+            var dataSource = participantesGrid.dataSource;
+            var agregar;
+            var id;
+            var nombre;
+            var correo;
+            var cargo;
+
+            $('#GridParticipantes tr').each(function () {
+                var nodeList = $(this)[0].childNodes;
+                $.each(nodeList, function (index, node) {
+
+                    if (node.firstChild != null && index == 0) {
+                        agregar = node.firstChild.checked;
+                        if (node.firstChild.id != '') {
+                            id = node.firstChild.id;
+                        }
+                    }
+
+                    if (node.firstChild != null && index == 1) {
+                        if (node.firstChild.data != '') {
+                            nombre = node.firstChild.data;
+                        }
+                    }
+
+                    if (node.firstChild != null && index == 2) {
+                        if (node.firstChild.data != '') {
+                            correo = node.firstChild.data;
+                        }
+                    }
+
+                    if (node.firstChild != null && index == 3 && agregar) {
+                        if (node.firstChild.data != '') {
+                            cargo = node.firstChild.data;
+                        }
+
+                        let yaExite = dataSource.data().filter((exite) => exite.Id == id);
+                        if (yaExite.length == 0) {
+                            var total = dataSource.data().length;
+                            dataSource.insert(total,
+                                {
+                                    Id: id,
+                                    Nombre: nombre,
+                                    Correo: correo,
+                                    Cargo: cargo
+                                }
+                            );
+                        }
+                    }
+
+                }); // Fin Each
+            });
+
+            syncDataSource = false;
+            dataSource.sync();
+        }
+
+        function actualizarData() {
+            participantesData();
+            postulantesData();
+        }
+
+        function participantesData() {
+            var updatedRecords = [];
+
+            $('#GridParticipantesSeleccionados tr').each(function () {
+                var nodeList = $(this)[0].childNodes;
+                $.each(nodeList, function (index, node) {
+                    if (node.firstChild != null && index == 0) {
+                        if (node.firstChild.data != undefined) {
+                            var participante = {
+                                ParticipanteId: node.firstChild.data,
+                                Seleccionado: true
+                            };
+
+                            updatedRecords.push(participante);
+                        } // Fin If
+                    } // Fin If
+                }); // Fin Each
+            });
+
+            $('#RegistrosModificados').val(JSON.stringify(updatedRecords).replace(/\/Date/g, "\\\/Date").replace(/\)\//g, "\)\\\/"));
+        }
+
+        function postulantesData() {
+            var updatedRecords = [];
+
+            $('#GridPostulantesSeleccionados tr').each(function () {
+                var nodeList = $(this)[0].childNodes;
+                $.each(nodeList, function (index, node) {
+                    if (node.firstChild != null && index == 0) {
+                        if (node.firstChild.data != undefined) {
+                            var postulante = {
+                                PostulanteId: node.firstChild.data,
+                                Seleccionado: true
+                            };
+
+                            updatedRecords.push(postulante);
+                        } // Fin If
+                    } // Fin If
+                }); // Fin Each
+            });
+
+            var postulantesGrid = $('#GridPostulantesSeleccionados').data('kendoGrid');
+            var dataSource = postulantesGrid.dataSource;
+            var total = dataSource.data().length;
+            $('#CantidadPostulados').val(total);
+
+            $('#PostulantesModificados').val(JSON.stringify(updatedRecords).replace(/\/Date/g, "\\\/Date").replace(/\)\//g, "\)\\\/"));
+        }
+
+        function validarFechaComite() {
+            var fechaComite = $('#Fecha').val();
+            const today = new Date();
+            if (fechaComite.getDate() < today.getDate()
+                && fechaComite.getMonth() < today.getMonth()
+                && fechaComite.getFullYear() < today.getFullYear()) {
+                noty({
+                    text: "Fecha del comite debe ser mayor a la fecha actual",
+                    layout: 'top',
+                    type: 'error',
+                    animateOpen: { 'height': 'toggle' },
+                    animateClose: { 'height': 'toggle' },
+                    speed: 400,
+                    timeout: 5000,
+                    closeButton: false,
+                    closeOnSelfClick: true,
+                    closeOnSelfOver: false
+                });
+            }
+        }
+
+        function borrarPostulante(element) {
+            grid = $("#Grid").data("kendoGrid");
+            grid.removeRow($(element).closest("tr"));
+            grid.dataSource.sync();
+        }
+
+        function dataBoundParticipantes(e) {
+            var grid = this;
+            $("#GridParticipantesSeleccionados tbody tr .k-grid-delete").each(function () {
+                var currentDataItem = $("#GridParticipantesSeleccionados").data("kendoGrid").dataItem($(this).closest("tr"));
+                if ($('#EstadoId').val() !== "1") {
+                    $(this).remove();
+                }
+            })
+        }
+
+        function dataBoundPostulantes(e) {
+            var grid = this;
+            $("#GridPostulantesSeleccionados tbody tr .k-grid-delete").each(function () {
+                var currentDataItem = $("#GridPostulantesSeleccionados").data("kendoGrid").dataItem($(this).closest("tr"));
+                if ($('#EstadoId').val() !== "1") {
+                    $(this).remove();
+                }
+            })
+
+            $("#GridPostulantesSeleccionados tbody tr .k-grid-edit").each(function () {
+                var currentDataItem = $("#GridPostulantesSeleccionados").data("kendoGrid").dataItem($(this).closest("tr"));
+                if ($('#EstadoId').val() == "1" || $('#EstadoId').val() == "0") {
+                    $(this).remove();
+                }
+            })
+
+            if ($('#EstadoId').val() == "1" || $('#EstadoId').val() == "0") {
+                grid.hideColumn(grid.columns[5]);
+                grid.hideColumn(grid.columns[6]);
+            }
+
+        }
+
+        var dataItem;
+        function getParentID() {
+            var row = $(event.srcElement).closest("tr");
+            var grid = $(event.srcElement).closest("[data-role=grid]").data("kendoGrid");
+            dataItem = grid.dataItem(row);
+            var arr = [];
+            $(dataItem.AvailableValues).each(function () {
+                arr.push(this);
+            });
+            return { values: arr };
+        }
+
+        function onSelect(e) {
+            var selectedValue = this.dataItem(e.item.index()).Value;
+            if (dataItem != null) {
+                dataItem.SelectedValue = selectedValue;
+            }
+        }
+
+        function onEdit(e) {
+            e.container.find(".k-grid-cancel").bind("click", function () {
+                $('#GridPostulantesSeleccionados').data('kendoGrid').dataSource.read();
+            })
+        }
+
+        function sync_handler(e) {
+            //e.sender.read();
+            if (syncDataSource) {
+                this.read();
+            }
+        }
+
+        function error_handler(e) {
+            if (e.errors) {
+                var message = "Errors:\n";
+                $.each(e.errors, function (key, value) {
+                    if ('errors' in value) {
+                        $.each(value.errors, function () {
+                            message += this + "\n";
+                        });
+                    }
+                });
+                alert(message);
+            }
+        }
+    </script>
+
+    <style>
+        #btnMostrarParticipante {
+            cursor: pointer;
+        }
+
+        .k-window-content p {
+            margin-bottom: 1em;
+        }
+
+        .k-window-content a {
+            color: #BBB;
+        }
+
+        @@media screen and (max-width: 1023px) {
+            div.k-window {
+                display: none !important;
+            }
+        }
+    </style>
+}

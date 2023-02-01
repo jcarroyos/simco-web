@@ -1,0 +1,451 @@
+﻿@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+
+@model IndicadorModel
+
+<h2>Indicadores de gestión</h2>
+
+<div class="reporte">
+    <div class="reporte-nombre">
+        Curadurías
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el listado de todas las curadurías.
+    </div>
+    <div class="reporte-filtro">
+        @{
+            string url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.Curadurias);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Documentos
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el listado de todos los documentos que han sido cargados al Sistema.
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}&urldocumentos={2}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.Documentos, @Url.Action("Index", "Documentos"));
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Encuestas por usuario
+    </div>
+    <div class="reporte-descripcion">
+        Retorna las respuestas seleccionadas por un usuario para una determinada encuesta.
+    </div>
+    <div class="reporte-filtro">
+        <div class="formulario-label">
+            Lista de usuarios
+        </div>
+        @Html.DropDownListFor(model => model.UsuarioId, new SelectList(Model.Usuarios, "UsuarioId", "Nombre", Model.UsuarioId), "Seleccione un usuario...", new { @class = "chosen", style = "width:559px;" })
+        <div id="divencuestas" style="margin-top: 5px;">
+            <div class="formulario-label">
+                Lista de encuestas respondidas
+            </div>
+            @Html.DropDownListFor(model => model.EncuestaId, Enumerable.Empty<SelectListItem>(), "Seleccione una encuesta...", new { @class = "chosen", style = "width:556px;" })
+        </div>
+        <div id="divrespuestas" style="margin-top: 5px;">
+            <div class="formulario-label">
+                Lista de respuestas
+            </div>
+            @Html.DropDownListFor(model => model.RespuestaId, Enumerable.Empty<SelectListItem>(), "Seleccione una fecha...", new { @class = "chosen", style = "width:556px;" })
+        </div>
+        <div id="divboton" style="margin-top: 15px;">
+            <a href="#" id="linkencuestas" class="boton" target="_blank" targeturl="@Url.Content("~/Reports/visorreporte.aspx")" targetreporte="@Html.Raw(ListaReportes.EncuestaResultadosPorUsuario.ToString())">Cargar reporte</a>
+        </div>
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Encuestas resultados generales
+    </div>
+    <div class="reporte-descripcion">
+        Retorna los resultados consolidados de una encuesta.
+    </div>
+    <div class="reporte-filtro">
+        <div class="formulario-label">
+            Lista de encuestas
+        </div>
+        @Html.DropDownListFor(model => model.EncuestaResultadosGeneralesId, new SelectList(Model.Encuestas, "Valor", "Etiqueta", Model.EncuestaResultadosGeneralesId), "Seleccione una encuesta...", new { @class = "chosen", style = "width:559px;" })
+        <div id="divbotonencuestaresultadosgenerales" class="formulario-oculto" style="margin-top: 15px;">
+            <a href="#" id="linkbotonencuestaresultadosgenerales" class="boton" target="_blank" targeturl="@Url.Content("~/Reports/visorreporte.aspx")" targetreporte="@Html.Raw(ListaReportes.EncuestaResultadosGenerales.ToString())">Cargar reporte</a>
+        </div>
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Encuestas resultados por preguntas
+    </div>
+    <div class="reporte-descripcion">
+        Retorna los usuarios que respondieron cada pregunta de la encuesta.
+    </div>
+    <div class="reporte-filtro">
+        <div class="formulario-label">
+            Lista de encuestas
+        </div>
+        @Html.DropDownListFor(model => model.EncuestaResultadosPorPreguntasId, new SelectList(Model.Encuestas, "Valor", "Etiqueta", Model.EncuestaResultadosPorPreguntasId), "Seleccione una encuesta...", new { @class = "chosen", style = "width:559px;" })
+        <div id="divbotonencuestaresultadosporpreguntas" class="formulario-oculto" style="margin-top: 15px;">
+            <a href="#" id="linkbotonencuestaresultadosporpreguntas" class="boton" target="_blank" targeturl="@Url.Content("~/Reports/visorreporte.aspx")" targetreporte="@Html.Raw(ListaReportes.EncuestaResultadosPorPreguntas.ToString())">Cargar reporte</a>
+        </div>
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Encuestas resultados por usuarios
+    </div>
+    <div class="reporte-descripcion">
+        Retorna las opciones seleccionadas por cada uno de los usuarios que respondieron
+        la encuesta.
+    </div>
+    <div class="reporte-filtro">
+        <div class="formulario-label">
+            Lista de encuestas
+        </div>
+        @Html.DropDownListFor(model => model.EncuestaResultadosPorUsuariosId, new SelectList(Model.Encuestas, "Valor", "Etiqueta", Model.EncuestaResultadosPorUsuariosId), "Seleccione una encuesta...", new { @class = "chosen", style = "width:559px;" })
+        <div id="divbotonencuestaresultadosporusuarios" class="formulario-oculto" style="margin-top: 15px;">
+            <a href="#" id="linkbotonencuestaresultadosporusuarios" class="boton" target="_blank" targeturl="@Url.Content("~/Reports/visorreporte.aspx")" targetreporte="@Html.Raw(ListaReportes.EncuestaResultadosPorUsuarios.ToString())">Cargar reporte</a>
+        </div>
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Entidades museales
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el listado de todas las entidades museales con su información mas reciente.
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.EntidadesMuseales);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Ficha completa para un usuario
+    </div>
+    <div class="reporte-descripcion">
+        Retorna toda la información asociada a un usuario.
+    </div>
+    <div class="reporte-filtro">
+        <div class="formulario-label">
+            Lista de usuarios
+        </div>
+        @Html.DropDownListFor(model => model.UsuarioFichaId, new SelectList(Model.Usuarios, "UsuarioId", "Nombre", Model.UsuarioFichaId), "Seleccione un usuario...", new { @class = "chosen", style = "width:559px;" })
+        <div id="divfichaboton" class="formulario-oculto" style="margin-top: 15px;">
+            <a href="#" id="linkficha" class="boton" target="_blank" targeturl="@Url.Content("~/Reports/visorreporte.aspx")" targetreporte="@Html.Raw(ListaReportes.FichaCompleta.ToString())">Cargar reporte</a>
+        </div>
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Guías y monitorias
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el listado de todas las guías y monitorias.
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.GuiasMonitorias);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Matriz de niveles para encuestas por usuario
+    </div>
+    <div class="reporte-descripcion">
+        Retorna la matriz de niveles para las respuestas seleccionadas por un usuario para
+        una determinada encuesta.
+    </div>
+    <div class="reporte-filtro">
+        <div class="formulario-label">
+            Lista de usuarios
+        </div>
+        @Html.DropDownListFor(model => model.UsuarioMatrizPorUsuarioId, new SelectList(Model.Usuarios, "UsuarioId", "Nombre", Model.UsuarioMatrizPorUsuarioId), "Seleccione un usuario...", new { @class = "chosen", style = "width:559px;" })
+        <div id="divmatrizencuestasporusuario" style="margin-top: 5px;">
+            <div class="formulario-label">
+                Lista de encuestas respondidas
+            </div>
+            @Html.DropDownListFor(model => model.EncuestaMatrizPorusuarioId, Enumerable.Empty<SelectListItem>(), "Seleccione una encuesta...", new { @class = "chosen", style = "width:556px;" })
+        </div>
+        <div id="divmatrizrespuestasporusuario" style="margin-top: 5px;">
+            <div class="formulario-label">
+                Lista de respuestas
+            </div>
+            @Html.DropDownListFor(model => model.RespuestaMatrizPorUsuarioId, Enumerable.Empty<SelectListItem>(), "Seleccione una fecha...", new { @class = "chosen", style = "width:556px;" })
+        </div>
+        <div id="divmatrizbotonporusuario" class="formulario-oculto" style="margin-top: 15px;">
+            <a href="#" id="linkmatrizencuestasporusuario" class="boton" target="_blank" targeturl="@Url.Content("~/Reports/visorreporte.aspx")" targetreporte="@Html.Raw(ListaReportes.EncuestaResultadosMatrizPorUsuario.ToString())">Cargar reporte</a>
+        </div>
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Museografías
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el listado de todas las museografías.
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.Museografias);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Planes museológicos
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el listado de todos los planes museológicos.
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.PlanesMuseologicos);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Programas académicos ofrecidos
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el listado de todos los programas académicos ofrecidos por entidades de
+        formación.
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.ProgramasAcademicos);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Proyectos de apoyo
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el listado de todos los proyectos de apoyado realizados por entidades de
+        apoyo.
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.ProyectosDeApoyo);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Publicaciones
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el listado de todas las publicaciones o investigaciones.
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.Publicaciones);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Representantes legales
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el listado con todos los representantes legales de las personas jurídicas.
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.RepresentantesLegales);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Restauraciones y conservaciones
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el listado de todas las restauraciones y conservaciones.
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.RestauracionesConservaciones);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Servicios
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el listado de todos los servicios ofrecidos por empresas.
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.ServiciosEmpresas);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Servicios educativos y culturales
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el listado de todos los proyectos educativos y culturales.
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.ServiciosEducativosCulturales);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Solicitudes
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el listado de todas los solicitudes de asesorías que han sido registradas.
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.Solicitudes);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Usuarios - Personas naturales
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el listado de todos los usuarios que son personas naturales.
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.UsuariosPersonasNaturales);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Usuarios - Entidades Museales
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el listado de todas las entidades museales.
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.UsuariosPersonasJuridicas);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Usuarios - Personas Jurídicas
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el listado de todos los usuarios que son personas jurídicas.
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.TodasEntidadesMuseales);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Correos electrónicos
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el listado de todos los correos electrónicos registrados en SIMCO
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.Correos);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+
+<div class="reporte">
+    <div class="reporte-nombre">
+        Indicador cuatrienio
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el indicador de los museos que tienen asignado un plan de fortalecimiento
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.Cuatrienio);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+
+<div class="reporte">
+    <div class="reporte-nombre">
+        Indicador mensual
+    </div>
+    <div class="reporte-descripcion">
+        Retorna el indicador mensual de los museos que tienen asignado un plan de fortalecimiento
+    </div>
+
+    <div class="formulario-field-2">
+        <div class="formulario-label">
+            @Html.LabelFor(model => model.FechaInicial)
+        </div>
+        <div class="formulario-control">
+            @Html.EditorFor(model => model.FechaInicial, new { style = "width:70px;" })
+        </div>
+    </div>
+    <div class="formulario-field-2">
+        <div class="formulario-label">
+            @Html.LabelFor(model => model.FechaFinal)
+        </div>
+        <div class="formulario-control">
+            @Html.EditorFor(model => model.FechaFinal, new { style = "width:70px;" })
+        </div>
+    </div>
+    <div class="formulario-clear"></div>
+    <div class="reporte-filtro">
+        @{
+            <button class="boton" id="btnCuatrienio">Cargar reporte</button>
+        }
+    </div>
+</div>
+
+<div class="reporte">
+    <div class="reporte-nombre">
+        Planes de fortalecimiento
+    </div>
+    <div class="reporte-descripcion">
+    </div>
+    <div class="reporte-filtro">
+        @{
+            url = string.Format("{0}?reporte={1}", @Url.Content("~/Reports/visorreporte.aspx"), ListaReportes.PlanesdeFortalecimiento);
+            <a href="@url" class="boton" target="_blank">Cargar reporte</a>
+        }
+    </div>
+</div>
+

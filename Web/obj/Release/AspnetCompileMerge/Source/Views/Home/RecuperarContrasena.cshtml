@@ -1,0 +1,60 @@
+﻿@using System.Configuration
+@using Microsoft.Web.Helpers
+@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+
+@model InicioSesionModel
+@{
+    ReCaptcha.PublicKey = ConfigurationManager.AppSettings["ReCaptchaPublicKey"];
+    ViewBag.Title = "RecuperarContrasena";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Recuperar contraseña</h3>
+
+<div class="formulario">
+
+    @using (Html.BeginForm("RecuperarContrasena", "Home", FormMethod.Post, new { id = "FormRecuperarContrasena" }))
+    {
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.LabelFor(model => model.CorreoElectronico)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.CorreoElectronico)
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.CorreoElectronico)
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-row">
+                <div class="box">
+                    <em>*</em> @Html.Label(@Constante.Captcha)
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        <div class="g-recaptcha" data-sitekey="@ConfigurationManager.AppSettings["ReCaptchaPublicKey"]"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="formulario-botones">
+                <input type="submit" value="@Html.Raw(Constante.BotonEnviar)" class="boton" />
+                @Html.ActionLink(Constante.BotonCancelar, "Index", "Home", new object(), new { @class = "boton" })
+            </div>
+
+        </fieldset>
+    }
+
+</div>

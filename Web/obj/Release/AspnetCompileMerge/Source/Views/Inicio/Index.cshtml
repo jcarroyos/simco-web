@@ -1,0 +1,115 @@
+﻿@using System.Configuration
+@using Microsoft.Web.Helpers
+@using Simco.DomainModelLayer.Entidades
+@using Simco.CrossInfraestructureLayer
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+    ReCaptcha.PublicKey = ConfigurationManager.AppSettings["ReCaptchaPublicKey"];
+}
+
+@if (ViewBag.EstadoUsuario == UsuarioEstados.PreRegistro.ToString())
+{
+    <h2 style="margin-top: 20px;">Activación de la cuenta.</h2>
+        <p>Sus datos han sido registrados en el módulo de registro de SIMCO</p>
+        <p>A través del correo suministrado nos estaremos contactando con usted.</p>
+
+    //if (!string.IsNullOrEmpty(ViewBag.TipoAgente) && ViewBag.TipoAgente == TiposAgente.EntidadMuseal.ToString())
+}
+
+@if (ViewBag.EstadoUsuario == UsuarioEstados.Registro.ToString())
+{
+    <p>Diligecie y/o actualice la encuesta de registro y clasificación en los capítulos de:</p>
+        <p>1) Información técnica </p>
+        <p>2) Gestión del patrimonio </p>
+        <p>3) Aspectos de gestión, financieros y de sostenibilidad </p>
+        <p>4) apropiación social correspondiente al periodo entre enero a diciembre de 2015.</p>
+
+        <h3>
+            @Html.Raw(Constante.RegistroCompleto)
+            <img src="@Url.Content("~/Images/check.gif")" style=" style="border: 0px; width: 16px; height: 16px;" />
+        </h3>
+
+        <div class="formulario-interno">
+            @using (Html.BeginForm("Index", "Home", FormMethod.Post))
+            {
+                @Html.ValidationSummary(true)
+
+                <fieldset>
+                    <div class="formulario-label">
+                    </div>
+                    <div class="formulario-control">
+                        @ReCaptcha.GetHtml(theme: "white", language: "es")
+                    </div>
+                    <div class="formulario-validator">
+                    </div>
+                </fieldset>
+
+                <div class="formulario-clear">
+                </div>
+
+                <div class="formulario-control">
+                    <input type="submit" value="@Html.Raw(Constante.BotonCrearSolicitudActivacionUsuario)" name="BotonCrearSolicitudActivacionUsuario" class="boton" />
+                </div>
+            }
+        </div>
+}
+
+@if (ViewBag.EstadoUsuario == UsuarioEstados.PreActivo.ToString())
+{
+    <h2 style="margin-top: 20px;">Activación de la cuenta.</h2>
+        <p>Diligecie y/o actualice la encuesta de registro y clasificación en los capítulos de:</p>
+        <p>1) Información técnica </p>
+        <p>2) Gestión del patrimonio </p>
+        <p>3) Aspectos de gestión, financieros y de sostenibilidad y 4) apropiación social correspondiente al periodo entre enero a diciembre de 2015.</p>
+
+        <h3>
+            @Html.Raw(Constante.RegistroCompleto)
+            <img src="@Url.Content("~/Images/check.gif")" style="border: 0px; width: 16px; height: 16px;" />
+        </h3>
+        <h3>
+            @Html.ActionLink(Constante.SolicitudEnviada, "Index", "Solicitudes")
+            <img src="@Url.Content("~/Images/check.gif")" style="border: 0px; width: 16px; height: 16px;" />
+        </h3>
+}
+
+@if (ViewBag.EstadoUsuario == UsuarioEstados.Activo.ToString())
+{
+    <h3>
+        @Html.Raw(Constante.RegistroCompleto)
+        <img src="@Url.Content("~/Images/check.gif")" style="border: 0px; width: 16px; height: 16px;" />
+    </h3>
+        <h3>
+            @Html.ActionLink(Constante.SolicitudEnviada, "Index", "Solicitudes")
+            <img src="@Url.Content("~/Images/check.gif")" style="border: 0px; width: 16px; height: 16px;" />
+        </h3>
+        <h3>
+            @Html.ActionLink(Constante.RegistroAprobado, "Index", "Solicitudes")
+            <img src="@Url.Content("~/Images/check.gif")" style="border: 0px; width: 16px; height: 16px;" />
+        </h3>
+}
+
+@if (ViewBag.ListaEncuestas != null)
+{
+    <h2 style="margin-top: 20px;">Actualización de la encuesta de registro y clasificación.</h2>
+        <!-- <p>@Html.Raw(Constante.MensajeEncuenta)</p> -->
+        <p>@Html.Raw("Le invitamos a actualizar la encuesta de registro y clasificación de su entidad museal, con información de la gestión administrativa, financiera y museológica entre otras temáticas, correspondiente al periodo entre enero a diciembre de 2016. A continuación podrá descargar un glosario de términos museológicos que le facilitará el diligenciamiento de la encuesta")</p>
+
+    if (ViewBag.MostraMensajeEncuestas == true)
+    {
+        <fieldset>
+            <div class="formulario-label">
+                @Html.Raw(Constante.MensajeEncuestasIncompletas)
+            </div>
+        </fieldset>
+    }
+
+    foreach (EncuestasActivas item in ViewBag.ListaEncuestas)
+    {
+        @Html.ActionLink(item.ENC_NOMBRE, "Encuesta", "Encuesta", new { id = Criptografia.EncriptarUrl(item.ENC_ID.ToString()) }, new { @class = "boton" })
+        <br />
+            <br />
+    }
+
+}

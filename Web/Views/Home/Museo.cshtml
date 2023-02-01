@@ -1,0 +1,189 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+@using Simco.Infrastructure.Notification
+
+@model InicioSesionModel
+@{
+    ViewBag.Title = "Museo";
+}
+
+<h3>DESCUBRE LOS MUSEOS DE COLOMBIA</h3>
+<p>En el siguiente directorio encontrar&aacute; las entidades museales de Colombia que han realizado el proceso completo de registro y clasificaci&oacute;n ante el Ministerio de Cultura.</p>
+
+@using (Html.BeginForm("Buscar", "Home", FormMethod.Post, new { id = "FormEncuesta" }))
+{
+    <div class="buscador">
+
+        <div class="formulario-control-busqueda">
+
+            @Html.DropDownListFor(model => model.Directorio.CodigoDepartamento, new SelectList(Model.Directorio.Departamentos, "Id", "Nombre", Model.Directorio.CodigoDepartamento), "Seleccione un departamento...", new { data_placeholder = "Seleccione un departamento...", @class = "chosen" })
+
+            @Html.DropDownListFor(model => model.Directorio.CodigoMunicipio, Enumerable.Empty<SelectListItem>(), "Seleccione una ciudad ...", new { data_placeholder = "Seleccione una ciudad ...", @class = "chosen" })
+
+            @Html.TextBoxFor(model => model.Directorio.PalabrasClaves, new { placeholder = "Palabras claves" })
+
+            <input type="submit" value="@Html.Raw(Constante.BotonBuscar)" name="Buscar" class="boton" style="width: 80px" />
+
+        </div>
+
+    </div>
+
+    if (Model.Directorio.Museo != null)
+    {
+        @Html.HiddenFor(model => model.Directorio.Museo.Latitud)
+        @Html.HiddenFor(model => model.Directorio.Museo.Longitud)
+        @Html.HiddenFor(model => model.Directorio.Museo.Municipio)
+        @Html.HiddenFor(model => model.Directorio.Museo.Departamento)
+        @Html.HiddenFor(model => model.Directorio.Museo.Nombre)
+
+        <div class="blended_grid">
+
+            <div class="leftColumn">
+                <h3>@Model.Directorio.Museo.Nombre</h3>
+
+                @if (@Model.Directorio.Museo.NombreDirector != string.Empty)
+                {
+                    <p>Director: @Model.Directorio.Museo.NombreDirector</p>
+                }
+
+                <p>@Model.Directorio.Museo.ResenaHistorica</p>
+            </div>
+            <div class="topBanner">
+                <img src="@Url.Content(Model.Directorio.Museo.RutaFachada)" alt="Fachada" />
+            </div>
+            <div class="leftContent">
+                <img src="@Url.Content(Model.Directorio.Museo.RutaInteracion)" alt="Interación" />
+                <img src="@Url.Content(Model.Directorio.Museo.RutaColeccion1)" alt="Coleccion" />
+            </div>
+            <div class="rightContent">
+                <img src="@Url.Content(Model.Directorio.Museo.RutaColeccion2)" alt="Coleccion" />
+                <img src="@Url.Content(Model.Directorio.Museo.RutaColeccion3)" alt="Coleccion" />
+            </div>
+            <div class="horario">
+                <p>Horario:</p>
+                @if (Model.Directorio.Horario != null)
+                    {
+                        foreach (string horario in Model.Directorio.Horario)
+                        {
+                            if (horario != string.Empty)
+                            {
+                            <p>@horario</p>
+                        }
+                    }
+                }
+            </div>
+            <div class="precio">
+                <p>Precio de entrada:</p>
+                <p>@Model.Directorio.Museo.Precio</p>
+            </div>
+
+            <div class="ubicacion">
+                <p>Teléfono de la entidad: @Model.Directorio.Museo.Telefono</p>
+                <p>Dirección: @Model.Directorio.Museo.Direccion</p>
+
+                <p>Correo electrónico: @Model.Directorio.Museo.CorreoElectronico</p>
+                <p>Pagina Web: @HtmlHelperExtensions.Truncate(@Model.Directorio.Museo.PaginaWeb, 70)</p>
+                
+            </div>
+
+            <p class="texto-negrita">Ubicación</p>
+            <div id="map" style="width:95%;height:400px"></div>
+
+        </div>
+    }
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        CargarListaMunicipios();
+
+        $('#Directorio_CodigoDepartamento').change(function () {
+            CargarListaMunicipios();
+        });
+
+        $('#Directorio_CodigoMunicipio').change(function () {
+            AsignarDeptoMpio();
+        });
+
+
+        $(".ver-mas").shorten({
+            "showChars": 70,
+            "moreText": "Leer más",
+            "lessText": "Leer menos",
+        });
+
+        initMap();
+
+    });
+
+
+    function initMap() {
+
+        var latitud = 4.631179;
+        var longitud = -74.014893;
+
+        if ($('#Directorio_Museo_Latitud').val() != '') {
+            latitud = parseFloat($('#Directorio_Museo_Latitud').val());
+        }
+
+        if ($('#Directorio_Museo_Longitud').val() != '') {
+            longitud = parseFloat($('#Directorio_Museo_Longitud').val());
+        }
+
+        var myLatLng = { lat: latitud, lng: longitud };
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: myLatLng,
+            scrollwheel: false,
+            zoom: 7
+        });
+
+        var marker = new google.maps.Marker({
+            map: map,
+            position: myLatLng,
+            title: $('#Directorio_Museo_Nombre').val()
+        });
+
+    }
+
+
+    function CargarListaMunicipios() {
+        var selectedItem = $('#Directorio_CodigoDepartamento').val();
+        var destination = $('#Directorio_CodigoMunicipio');
+
+        if (selectedItem != null && selectedItem != '') {
+            $.getJSON('@Url.Action("Municipios")', { zonaPadreId: selectedItem }, function (municipio) {
+
+                destination.empty();
+                destination.append('<option value="">Seleccione una ciudad ...</option>');
+
+                $.each(municipio, function (index, item) {
+                    if (item.Id == '@Model.Directorio.CodigoMunicipio') {
+                        destination.append('<option value="' + item.Id + '" selected="selected">' + item.Nombre + '</option>');
+                        AsignarDeptoMpio();
+                    } else {
+                        destination.append('<option value="' + item.Id + '">' + item.Nombre + '</option>');
+                    }
+                    destination.trigger("chosen:updated");
+                });
+            });
+        }
+        else {
+            destination.empty();
+            destination.trigger("chosen:updated");
+        }
+    }
+
+    function AsignarDeptoMpio() {
+
+        var selectedTextDepto = $("#Directorio_CodigoDepartamento option:selected").text();
+        var selectedTextMpio = $("#Directorio_CodigoMunicipio option:selected").text();
+
+        $('#Directorio_Departamento').val(selectedTextDepto);
+        $('#Directorio_Municipio').val(selectedTextMpio);
+    }
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBb2XULUdeuseL0pN49ufA3UlTAH20hMsE&callback=initMap" async defer></script>

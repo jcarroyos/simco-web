@@ -1,0 +1,30 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model IndicadorModel
+<h2>
+    Historial de Encuestas</h2>
+<div class="reporte">
+    <div class="reporte-nombre">
+        Encuestas resultados generales
+    </div>
+    <div class="reporte-descripcion">
+        Retorna los resultados consolidados de una encuesta.
+    </div>
+    <div class="reporte-filtro">
+        <div class="formulario-label">
+            Lista de encuestas respondidas
+        </div>
+        @Html.DropDownListFor(model => model.EncuestaId, new SelectList(Model.Encuestas, "Valor", "Etiqueta", Model.EncuestaId), "Seleccione una encuesta...", new { @class = "chosen", style = "width:559px;" })
+        <div id="divrespuestas"  style="margin-top: 5px;">
+            <div class="formulario-label">
+                Lista de fechas respondidas
+            </div>
+            @Html.DropDownListFor(model => model.RespuestaId, Enumerable.Empty<SelectListItem>(), "Seleccione una fecha...", new { @class = "chosen", style = "width:556px;" })
+        </div>
+        <div id="divboton" class="formulario-oculto" style="margin-top: 15px;">
+            <a href="#" id="linkencuestas" class="boton" target="_blank" targeturl="@Url.Content("~/Reports/visorreporte.aspx")" targetreporte="@Html.Raw(ListaReportes.EncuestaResultadosPorUsuario.ToString())">
+                Cargar reporte</a>
+        </div>
+    </div>
+</div>

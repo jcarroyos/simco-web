@@ -1,0 +1,55 @@
+﻿@using Simco.CrossInfraestructureLayer
+@using Simco.Infrastructure.Notification
+@using Simco.DomainModelLayer.ViewModels
+
+@model IEnumerable<SolicitudConsultaModel>
+@{
+    ViewBag.Title = "SolicitudesAsignadas";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Solicitudes asignadas</h2>
+
+<div class="formulario-busqueda-entidad">
+    @using (Html.BeginForm("SolicitudesAsignadas", "Administrador", FormMethod.Get, new { id = "FormBuscarSolicitudesAsignadas" }))
+    {
+        <fieldset>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        Solicitante a buscar:
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBox("Consulta", (string)ViewBag.Consulta, new { style = "width:360px;" })
+                    </div>
+                </div>
+            </div>
+            <br />
+        </fieldset>
+    }
+</div>
+
+@(Html.Kendo().Grid(Model)
+        .Name("GridSolicitudes")
+        .Columns(columns =>
+        {
+            columns.Bound(o => o.Solicitud.Nombre).Template(o => @Html.ActionLink(@HtmlHelperExtensions.Truncate(o.Solicitud.Nombre, 20), "SolicitudAsignada", "Administrador", new { id = Criptografia.EncriptarUrl(o.Solicitud.Id.ToString()) }, null)).Title("Solicitante").Width(230);
+            columns.Bound(o => o.Solicitud.FechaRegistro).Width(210);
+            columns.Bound(o => o.Solicitud.Prioridad).Width(45);
+            columns.Bound(o => o.Solicitud.EstadoActual).Width(45);
+            columns.Bound(o => o.Solicitud.NumeroRadicacion).Width(50).Title("No. radicación");
+            columns.Bound(o => o.Solicitud.Color).Title("Alerta").Template(@<text><div class='circle' style="background-color: @item.Solicitud.Color;" /></text>);
+        })
+        .Sortable()
+        .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} solicitudes")
+                                                .Empty("No se encontraron solicitudes")
+                                                .First("Ir a la primera página")
+                                                .Last("Ir a la última página")
+                                                .Next("Ir a la página siguiente")
+                                                .Previous("Ir a la página anterior")))
+
+)

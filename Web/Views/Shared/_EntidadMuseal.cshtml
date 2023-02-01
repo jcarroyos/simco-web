@@ -1,0 +1,438 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model EntidadMusealRegistroModel
+<fieldset>
+
+    @Html.HiddenFor(model => model.Edicion)
+    @Html.HiddenFor(model => model.EntidadMuseal.PersonaJuridicaId)
+    @Html.HiddenFor(model => model.EntidadMuseal.UsuarioId)
+    @Html.HiddenFor(model => model.EntidadMuseal.CodigoIdentificacion)
+    @Html.HiddenFor(model => model.EntidadMuseal.DocumentoLegalExistenciaId)
+    @Html.HiddenFor(model => model.EntidadMuseal.DocumentoPoliticaPlanColeccionesId)
+    @Html.HiddenFor(model => model.EntidadMuseal.DocumentoFotoFachadaId)
+    @Html.HiddenFor(model => model.EntidadMuseal.DocumentoFotoInteraccionId)
+    @Html.HiddenFor(model => model.EntidadMuseal.DocumentoFotoColeccion1Id)
+    @Html.HiddenFor(model => model.EntidadMuseal.DocumentoFotoColeccion2Id)
+    @Html.HiddenFor(model => model.EntidadMuseal.DocumentoFotoColeccion3Id)
+    
+    <legend><b>Información del director o responsable</b></legend>
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                <em>*</em> @Html.LabelFor(model => model.EntidadMuseal.DirectorResponsable)
+            </div>
+        </div>
+        <div class="box">
+            <div class="formulario-label">
+                <em>*</em> @Html.LabelFor(model => model.EntidadMuseal.CedulaDirectorResponsable)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.EntidadMuseal.DirectorResponsable)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.EntidadMuseal.DirectorResponsable)
+            </div>
+        </div>
+        <div class="box">
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.EntidadMuseal.CedulaDirectorResponsable)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.EntidadMuseal.CedulaDirectorResponsable)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                <em>*</em> @Html.LabelFor(model => model.EntidadMuseal.CorreoDirectorResponsable)
+            </div>
+        </div>
+        <div class="box">
+            <div class="formulario-label">
+                <em>*</em> @Html.LabelFor(model => model.EntidadMuseal.TelefonoDirectorResponsable)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.EntidadMuseal.CorreoDirectorResponsable)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.EntidadMuseal.CorreoDirectorResponsable)
+            </div>
+        </div>
+        <div class="box">
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.EntidadMuseal.TelefonoDirectorResponsable)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.EntidadMuseal.TelefonoDirectorResponsable)
+            </div>
+        </div>
+    </div>
+    <br />
+</fieldset>
+
+<fieldset>
+    <legend><b>Información del representante legal</b></legend>
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                <em>*</em> @Html.LabelFor(model => model.EntidadMuseal.RepresentanteLegal)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.EntidadMuseal.RepresentanteLegal)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.EntidadMuseal.RepresentanteLegal)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.EntidadMuseal.CorreoRepresentanteLegal)
+            </div>
+        </div>
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.EntidadMuseal.TelefonoRepresentanteLegal)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.EntidadMuseal.CorreoRepresentanteLegal)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.EntidadMuseal.CorreoRepresentanteLegal)
+            </div>
+        </div>
+        <div class="box">
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.EntidadMuseal.TelefonoRepresentanteLegal)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.EntidadMuseal.TelefonoRepresentanteLegal)
+            </div>
+        </div>
+    </div>
+    <br />
+
+</fieldset>
+<fieldset>
+    <legend><b>Información general</b></legend>
+
+    @if (!string.IsNullOrEmpty(Model.EntidadMuseal.CodigoIdentificacion))
+    {
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.EntidadMuseal.CodigoIdentificacion)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div>
+                    <h2>@Html.DisplayTextFor(model => model.EntidadMuseal.CodigoIdentificacion)</h2>
+                </div>
+            </div>
+        </div>
+        <br />
+    }
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                <em>*</em> @Html.LabelFor(model => model.EntidadMuseal.ResenaHistorica)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.TextAreaFor(model => model.EntidadMuseal.ResenaHistorica, new { style = "width:550px; height: 155px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.EntidadMuseal.ResenaHistorica)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                <em>*</em> @Html.LabelFor(model => model.EntidadMuseal.AnoCreacion)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.EntidadMuseal.AnoCreacion, new { style = "width:35px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.EntidadMuseal.AnoCreacion)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.CheckBoxFor(model => model.EntidadMuseal.PerteneceMincultura)
+                @Html.LabelFor(model => model.EntidadMuseal.PerteneceMincultura)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.EntidadMuseal.PerteneceMincultura)
+            </div>
+        </div>
+    </div>
+    <br />
+
+</fieldset>
+<fieldset>
+    <legend>Información técnica</legend>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.EntidadMuseal.Estado)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+
+            <div class="formulario-control">
+                @Html.DropDownListFor(model => model.EntidadMuseal.Estado, new SelectList(Model.Estados, "Valor", "Etiqueta", Model.EntidadMuseal.Estado), new { @class = "chosen", style = "width:264px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.EntidadMuseal.Estado)
+            </div>
+        </div>
+    </div>
+    <br />
+
+
+    <div id="divestadofecha" style="display: none;">
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.EntidadMuseal.EstadoFecha)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.EditorFor(model => model.EntidadMuseal.EstadoFecha)
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.EntidadMuseal.EstadoFecha)
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="divestadorazon" style="display: none;">
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.EntidadMuseal.EstadoRazon)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextAreaFor(model => model.EntidadMuseal.EstadoRazon, new { style = "width:550px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.EntidadMuseal.EstadoRazon)
+                </div>
+            </div>
+        </div>
+        <br />
+    </div>
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.EntidadMuseal.Horario)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DropDownListFor(model => model.EntidadMuseal.Horario, new SelectList(Model.Horarios, "Valor", "Etiqueta", Model.EntidadMuseal.Horario), new { @class = "chosen", style = "width:264px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.EntidadMuseal.Horario)
+            </div>
+        </div>
+    </div>
+    <br />
+
+
+    <div id="divhorariodias" style="display: none;">
+        <div class="formulario-label">
+            @Html.LabelFor(model => model.EntidadMuseal.HorarioDias)
+        </div>
+        <div class="formulario-control">
+            @Html.TextAreaFor(model => model.EntidadMuseal.HorarioDias)
+        </div>
+        <br />
+
+    </div>
+
+
+    <div id="divhorariorazon" style="display: none;">
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.EntidadMuseal.HorarioRazon)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextAreaFor(model => model.EntidadMuseal.HorarioRazon, new { style = "width:550px; height: 155px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.EntidadMuseal.HorarioRazon)
+                </div>
+            </div>
+        </div>
+        <br />
+
+    </div>
+    <div class="formulario-clear">
+    </div>
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.EntidadMuseal.TipoConstitucion)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DropDownListFor(model => model.EntidadMuseal.TipoConstitucion, new SelectList(Model.TiposConstitucion, "Valor", "Etiqueta", Model.EntidadMuseal.TipoConstitucion), new { @class = "chosen", style = "width:264px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.EntidadMuseal.TipoConstitucion)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div id="divtipoconstitucioncaracter">
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.EntidadMuseal.TipoConstitucionCaracter)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.DropDownListFor(model => model.EntidadMuseal.TipoConstitucionCaracter, new SelectList(Model.TiposConstitucionCaracter, "Valor", "Etiqueta", Model.EntidadMuseal.TipoConstitucionCaracter), new { @class = "chosen", style = "width:264px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.EntidadMuseal.TipoConstitucionCaracter)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.EntidadMuseal.Dependencia)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DropDownListFor(model => model.EntidadMuseal.Dependencia, new SelectList(Model.Dependencias, "Valor", "Etiqueta", Model.EntidadMuseal.Dependencia), new { @class = "chosen", style = "width:564px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.EntidadMuseal.Dependencia)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div id="divdependenciadependencias">
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.EntidadMuseal.DependenciaDependencias)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextAreaFor(model => model.EntidadMuseal.DependenciaDependencias, new { style = "width:550px; height: 155px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.EntidadMuseal.DependenciaDependencias)
+                </div>
+            </div>
+        </div>
+        <br />
+    </div>
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                <em>*</em> @Html.LabelFor(model => model.EntidadMuseal.TipoColecciones)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DropDownListFor(model => model.EntidadMuseal.TipoColecciones, new SelectList(Model.TiposColecciones, "Valor", "Etiqueta", Model.EntidadMuseal.TipoColecciones), new { @class = "chosen", style = "width:264px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.EntidadMuseal.TipoColecciones)
+            </div>
+        </div>
+    </div>
+    <br />
+
+</fieldset>

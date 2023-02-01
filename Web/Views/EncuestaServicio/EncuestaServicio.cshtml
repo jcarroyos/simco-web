@@ -1,0 +1,87 @@
+﻿@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+@using System.Text;
+
+@model InicioSesionModel
+
+@{
+    ViewBag.Title = "Encuesta Servicio Solicitud";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using (Html.BeginForm("EncuestaServicio", "EncuestaServicio", FormMethod.Post, new { id = "FormEncuestaServicio", enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(x => x.EncuestaServicioSolicitud.EncuestaServicioModel.Id)
+    @Html.Hidden("encuestaCalificar", Request.QueryString.Keys.Count > 0 ? Request.QueryString.GetValues("encuestaCalificar")[0] : string.Empty)
+
+    <h2>@Model.EncuestaServicioSolicitud.EncuestaServicioModel.Nombre</h2>
+    <p>@Model.EncuestaServicioSolicitud.EncuestaServicioModel.Descripcion</p>
+    <p>Las preguntas marcadas con asterisco (*) son obligatorias</p>
+
+    foreach (PreguntaEncuestaServicioModel pregunta in Model.EncuestaServicioSolicitud.PreguntaEncuestaServicioModel
+        .Where(x => x.Estado.Equals("Activo")).OrderBy(y => y.Orden))
+    {
+        List<RespuestaEncuestaServicioModel> opciones = Model.EncuestaServicioSolicitud.RespuestaEncuestaServicioModel
+                        .Where(x => x.PreguntaEncuestaId == pregunta.Id && x.Estado.Equals("Activo")).OrderBy(y => y.Orden).ToList();
+
+        StringBuilder opcionesRespuesta = new StringBuilder();
+
+        foreach (var item in opciones)
+        {
+            opcionesRespuesta.Append(string.Format("{0}|", item.Id));
+        }
+
+        if (opcionesRespuesta.Length > 0)
+        {
+            opcionesRespuesta.Remove(opcionesRespuesta.Length - 1, 1);
+        }
+
+        <div id="@Html.Raw(string.Format("divpreg_{0}", pregunta.Id))" tpreg="" idsopc="@Html.Raw(opcionesRespuesta.ToString())" @(pregunta.TipoPregunta == 1 ? Html.Raw(string.Format(@"obligatoriotext = ""{0}""", pregunta.Obligatoria)) : Html.Raw(string.Format(@"obligatoriochecked = ""{0}""", pregunta.Obligatoria)))>
+
+            <div class="formulario-field-tab">
+                @if (!string.IsNullOrEmpty(pregunta.Nombre))
+                {
+                    <div class="formulario-label">
+                        <h3 style="font-weight: bold">
+                            @if ((bool)pregunta.Obligatoria)
+                            {
+                                @Html.Raw("<em>*</em> ")
+                            }
+                            @Html.Raw(pregunta.Nombre)
+                        </h3>
+                    </div>
+                }
+                <div class="formulario-control-tab">
+                    @foreach (RespuestaEncuestaServicioModel respuesta in Model.EncuestaServicioSolicitud.RespuestaEncuestaServicioModel
+                        .Where(x => x.PreguntaEncuestaId == pregunta.Id && x.Estado.Equals("Activo")).OrderBy(y => y.Orden))
+                    {
+                        if (pregunta.TipoPregunta == 1)
+                        {
+                            @Html.RadioButton(string.Format("{0}", pregunta.Id), respuesta.Id, false, new { @class = "rbencuesta", targetclass = string.Format("class_{0}", pregunta.Id), parentdiv = string.Format("#divpreg_{0}", pregunta.Id), idopc = respuesta.Id, pregocultar = "" })
+                            <label>@(respuesta.Nombre)</label>
+                            <br />
+                        }
+                    }
+
+                    @if (pregunta.TipoPregunta == 2)
+                    {
+                        @Html.TextArea(string.Format("{0}_{1}", pregunta.Id, 1), string.Empty, new { style = "width:450px; height: 90px;" })
+                    }
+                </div>
+                <div id="@Html.Raw(string.Format("divpreg_{0}_mensaje", pregunta.Id))" class="formulario-validator">
+
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="centrarBotones">
+        <input type="submit" value="@Html.Raw(Constante.BotonGuardar)" name="BtnEnviar" class="boton" />
+        @Html.ActionLink(Constante.BotonCancelar, "Index", "Home", null, new { @class = "boton" })
+    </div>
+
+    @Html.Raw(string.Format(@"<script type=""text/javascript"">$(document).ready(function() {{ $(""div[id^='divpreg_']"").each(function () {{ var tpreg = $(this).attr('tpreg'); if (tpreg) {{ var temppreg = tpreg.split(""|""); for (var j = 0; j < temppreg.length; j++) {{ var t = $(""#divpreg_"" + temppreg[j]).attr('band'); if (!t) {{ $(""#divpreg_"" + temppreg[j]).attr('band', ""|xx""); }} }} }} }});  $(""div[id^='divpreg_']"").each(function () {{ if ($(this).attr('band')) {{ $(this).hide(); }}  }});  }});</script>"))
+
+}

@@ -1,0 +1,77 @@
+﻿@using Simco.Infrastructure.Notification
+@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model IEnumerable<PlanModel>
+@{
+    ViewBag.Title = "CargarPlanes";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Planes</h2>
+
+<div class="grilladatos-opciones-izquierda">
+    @Html.ActionLink("Nuevo Plan", "NuevoPlan", "PlanFortalecimiento", new object(), new { @class = "boton" })
+</div>
+
+<div class="formulario-busqueda">
+    @using (Html.BeginForm("CargarPlanes", "PlanFortalecimiento", FormMethod.Get, new { id = "FormBuscarCategorias" }))
+    {
+        <fieldset>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        Plan a buscar:
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBox("Consulta", (string)ViewBag.Consulta, new { style = "width:360px;" })
+                    </div>
+                </div>
+            </div>
+            <br />
+        </fieldset>
+    }
+</div>
+
+<div class="grilladatos-tabla">
+    @(Html.Kendo().Grid(Model)
+            .Name("GridCategorias")
+            .Columns(columns =>
+            {
+                columns.Bound(o => o.Plan).Template(o => @Html.ActionLink(@HtmlHelperExtensions.Truncate(o.Plan, 60), "NuevoPlan", "PlanFortalecimiento", new { id = Criptografia.EncriptarUrl(o.Id.ToString()) }, null));
+                columns.Bound(o => o.NombreMuseo).Title("Museo").Width(220);
+                columns.Bound(o => o.Fecha).Width(120);
+            })
+           .Sortable()
+           .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} planes")
+                                                .Empty("No se encontraron planes")
+                                                .First("Ir a la primera página")
+                                                .Last("Ir a la última página")
+                                                .Next("Ir a la página siguiente")
+                                                .Previous("Ir a la página anterior")))
+    )
+</div>
+
+<script>
+    function grid_error(e) {
+        if (e.errors) {
+            var message = "Sucedio un error:\n";
+
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+
+            alert(message);
+            var grid = $("#grid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+</script>

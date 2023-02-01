@@ -1,0 +1,328 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model SolicitudRegistroModel
+
+<fieldset>
+    @Html.HiddenFor(model => model.Solicitud.Departamento)
+    @Html.HiddenFor(model => model.Solicitud.Municipio)
+
+    <legend>Información del solicitante</legend>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                <em>*</em> @Html.LabelFor(model => model.Solicitud.Nombre)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.Solicitud.Nombre, new { style = "width:550px; " })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.Solicitud.Nombre)
+            </div>
+        </div>
+    </div>
+    <br />
+
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                <em>*</em> @Html.LabelFor(model => model.Solicitud.TipoDocumento)
+            </div>
+        </div>
+        <div class="box">
+            <div class="formulario-label">
+                <em>*</em> @Html.LabelFor(model => model.Solicitud.NumeroDocumento)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DropDownListFor(model => model.Solicitud.TipoDocumento, new SelectList(Model.TiposDocumento, "Valor", "Etiqueta", Model.Solicitud.TipoDocumento), new { @class = "chosen", style = "width:264px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.Solicitud.TipoDocumento)
+            </div>
+        </div>
+        <div class="box">
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.Solicitud.NumeroDocumento)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.Solicitud.NumeroDocumento)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                <em>*</em> @Html.LabelFor(model => model.Solicitud.Departamento)
+            </div>
+        </div>
+        <div class="box">
+            <div class="formulario-label">
+                <em>*</em> @Html.LabelFor(model => model.Solicitud.Municipio)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DropDownListFor(model => model.Solicitud.CodigoDepartamento, new SelectList(Model.Departamentos, "Id", "Nombre", Model.Solicitud.CodigoDepartamento), "Seleccione un departamento...", new { @class = "chosen", data_placeholder = "Seleccione un departamento...", style = "width:264px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.Solicitud.CodigoDepartamento)
+            </div>
+        </div>
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DropDownListFor(model => model.Solicitud.CodigoMunicipio, Enumerable.Empty<SelectListItem>(), "Seleccione un municipio...", new { @class = "chosen", data_placeholder = "Seleccione un municipio...", style = "width:264px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.Solicitud.CodigoMunicipio)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.Solicitud.DireccionCorrespondencia)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.Solicitud.DireccionCorrespondencia, new { style = "width:550px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.Solicitud.DireccionCorrespondencia)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.Solicitud.TelefonoFijo)
+            </div>
+        </div>
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.Solicitud.TelefonoCelular)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.Solicitud.TelefonoFijo)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.Solicitud.TelefonoFijo)
+            </div>
+        </div>
+        <div class="box">
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.Solicitud.TelefonoCelular)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.Solicitud.TelefonoCelular)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="box-row">
+        <div class="box">
+            <em>*</em> @Html.LabelFor(model => model.Solicitud.CorreoElectronico)
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.TextBoxFor(model => model.Solicitud.CorreoElectronico)
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.Solicitud.CorreoElectronico)
+            </div>
+        </div>
+    </div>
+    <br />
+
+</fieldset>
+
+<fieldset>
+    <legend>Información de la solicitud</legend>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                <em>*</em> @Html.LabelFor(model => model.Solicitud.Fuente)
+            </div>
+        </div>
+        <div class="box">
+            <div class="formulario-label">
+                <em>*</em> @Html.LabelFor(model => model.Solicitud.Prioridad)
+            </div>
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control-texto">
+                @Html.DropDownListFor(model => model.Solicitud.Fuente, new SelectList(Model.TiposDeFuente, Model.Solicitud.Fuente), new { @class = "chosen", style = "width:264px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.Solicitud.Fuente)
+            </div>
+        </div>
+        <div class="box">
+            <div class="formulario-control">
+                @Html.DropDownListFor(model => model.Solicitud.Prioridad, new SelectList(Model.Prioridades, Model.Solicitud.Prioridad), new { @class = "chosen", style = "width:264px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.Solicitud.Prioridad)
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="box-row">
+        <div class="box">
+            <em>*</em> @Html.LabelFor(model => model.Solicitud.Descripcion)
+        </div>
+    </div>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-control">
+                @Html.TextAreaFor(model => model.Solicitud.Descripcion, new { style = "width:570px; height: 200px;" })
+            </div>
+            <div class="formulario-validator">
+                @Html.ValidationMessageFor(model => model.Solicitud.Descripcion)
+            </div>
+        </div>
+    </div>
+    <br />
+
+</fieldset>
+<fieldset>
+    <legend>Documentos adjuntos</legend>
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.NuevoDocumento.Archivo)
+            </div>
+        </div>
+    </div>
+    <div class="formulario-control">
+        @Html.TextBoxFor(model => model.NuevoDocumento.ImageUpload, new { type = "file" })
+    </div>
+    <div class="formulario-control-nota">
+        @Html.Raw(Constante.NotaArchivosSolicitudes)
+    </div>
+    <div class="formulario-validator">
+        @Html.ValidationMessageFor(model => model.NuevoDocumento.ImageUpload)
+    </div>
+    <br />
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.NuevoDocumento2.Archivo)
+            </div>
+        </div>
+    </div>
+    <div class="formulario-control">
+        @Html.TextBoxFor(model => model.NuevoDocumento2.ImageUpload, new { type = "file" })
+    </div>
+    <div class="formulario-control-nota">
+        @Html.Raw(Constante.NotaArchivosSolicitudes)
+    </div>
+    <div class="formulario-validator">
+        @Html.ValidationMessageFor(model => model.NuevoDocumento2.ImageUpload)
+    </div>
+    <br />
+
+    <div class="box-row">
+        <div class="box">
+            <div class="formulario-label">
+                @Html.LabelFor(model => model.NuevoDocumento3.Archivo)
+            </div>
+        </div>
+    </div>
+    <div class="formulario-control">
+        @Html.TextBoxFor(model => model.NuevoDocumento3.ImageUpload, new { type = "file" })
+    </div>
+    <div class="formulario-control-nota">
+        @Html.Raw(Constante.NotaArchivosSolicitudes)
+    </div>
+    <div class="formulario-validator">
+        @Html.ValidationMessageFor(model => model.NuevoDocumento3.ImageUpload)
+    </div>
+    <br />
+
+</fieldset>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        CargarListaMunicipios();
+
+        $('#Solicitud_CodigoDepartamento').change(function () {
+            CargarListaMunicipios();
+        });
+
+        $('#Solicitud_CodigoMunicipio').change(function () {
+            AsignarDeptoMpio();
+        });
+
+        function AsignarDeptoMpio() {
+
+            var selectedTextDepto = $("#Solicitud_CodigoDepartamento option:selected").text();
+            var selectedTextMpio = $("#Solicitud_CodigoMunicipio option:selected").text();
+
+            $('#Solicitud_Departamento').val(selectedTextDepto);
+            $('#Solicitud_Municipio').val(selectedTextMpio);
+        }
+
+        function CargarListaMunicipios() {
+
+            var selectedItem = $('#Solicitud_CodigoDepartamento').val();
+            var destination = $('#Solicitud_CodigoMunicipio');
+
+            if (selectedItem != null && selectedItem != '') {
+                $.getJSON('@Url.Action("Municipios")', { zonaPadreId: selectedItem }, function (municipio) {
+
+                    destination.empty();
+                    destination.append('<option value="">Seleccione una ciudad o municipio...</option>');
+
+                    $.each(municipio, function (index, item) {
+                        if (item.Id == '@Model.Solicitud.CodigoMunicipio') {
+                            destination.append('<option value="' + item.Id + '" selected="selected">' + item.Nombre + '</option>');
+                            AsignarDeptoMpio();
+                        } else {
+                            destination.append('<option value="' + item.Id + '">' + item.Nombre + '</option>');
+                        }
+                        destination.trigger("chosen:updated");
+                    });
+
+                });
+            }
+            else {
+                destination.empty();
+                destination.trigger("chosen:updated");
+            }
+        }
+
+    });
+
+
+</script>

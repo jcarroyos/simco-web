@@ -1,0 +1,22 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model SolicitudRegistroModel
+@{
+    ViewBag.Title = "NuevaSolicitud";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Registro de una nueva solicitud</h2>
+
+@using (Html.BeginForm("NuevaSolicitud", "Solicitudes", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+
+    Html.RenderPartial("_NuevaSolicitud", Model);
+
+    <div class="formulario-botones">
+        <input type="submit" value="@Html.Raw(Constante.BotonCrearSolicitud)" name="CrearSolicitud" class="boton" />
+        @Html.ActionLink(Constante.BotonCancelar, "SolicitudesAsignadas", "Administrador", new object(), new { @class = "boton" })
+    </div>
+}

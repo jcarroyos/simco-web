@@ -1,0 +1,57 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+
+@model IndicadorModel
+@{
+    ViewBag.Title = "HistorialEncuestas";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+@{
+    Html.RenderPartial("_HistorialEncuestas", Model);
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#EncuestaId').change(function () {
+            $('#divrespuestas').hide();
+            $('#divboton').hide();
+            var eId = $('#EncuestaId').val();
+            if (eId != null && eId != '') {
+                cargarRespuestas(eId, '#RespuestaId', '#divrespuestas');
+            }
+        });
+
+        $('#RespuestaId').change(function () {
+            $('#divboton').hide();
+            var rId = $('#RespuestaId').val();
+            if (rId != null && rId != '') {
+                var url = $("#linkencuestas").attr("targeturl") + "?reporte=" + $("#linkencuestas").attr("targetreporte") + "&respuesta=" + rId;
+                $("#linkencuestas").attr("href", url);
+                $('#divboton').show();
+            }
+        });
+
+        function cargarRespuestas(eId, combo, divdestino) {
+            $.ajax({
+                url: '@Url.Action("ListaRespuestas", "Encuesta")',
+                type: 'POST',
+                dataType: 'json',
+                data: { encuestaId: eId },
+                success: function (data) {
+                    $(combo).empty();
+                    if (data) {
+                        $(combo).append('<option value="">Seleccione una fecha...</option>');
+                        $(data.items).each(function () {
+                            $(combo).append('<option value="' + this.Valor + '">' + this.Etiqueta + '</option>');
+                        });
+                        $(combo).trigger("chosen:updated");
+                        $(divdestino).show();
+                    }
+                }
+            });
+        }
+    });
+
+</script>

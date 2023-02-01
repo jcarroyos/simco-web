@@ -1,0 +1,51 @@
+﻿@using Simco.Infrastructure.Notification
+@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model IEnumerable<PlanModel>
+@{
+    ViewBag.Title = "CargarPlanes";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Planes</h2>
+<div class="grilladatos">
+
+    <div class="grilladatos-opciones-izquierda">
+        <div class="formulario-busqueda">
+            @using (Html.BeginForm("MostrarPlanes", "PlanFortalecimiento", FormMethod.Get, new { id = "FormBuscarCategorias" }))
+            {
+                @Html.ValidationSummary(true)
+                <fieldset>
+                    <div class="formulario-busqueda-field">
+                        <div class="formulario-busqueda-control">
+                            @Html.TextBox("Consulta", (string)ViewBag.Consulta)
+                        </div>
+                    </div>
+                </fieldset>
+            }
+        </div>
+    </div>
+    <br />
+    <br />
+
+    <div class="grilladatos-tabla">
+        @(Html.Kendo().Grid(Model)
+           .Name("GridCategorias")
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .Model(model => model.Field(o => o.Id))
+                .ServerOperation(false)
+                )
+           .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Plan).Template(o => @Html.ActionLink(@HtmlHelperExtensions.Truncate(o.Plan, 60), "NuevoPlan", "PlanFortalecimiento", new { id = Criptografia.EncriptarUrl(o.Id.ToString()) }, null)
+                                ).Title("Plan").Width(180);
+                            columns.Bound(o => o.NombreMuseo).Title("Museo").Width(180);
+                            columns.Bound(o => o.Fecha).Width(180);
+                        })
+           .Sortable()
+           .Pageable()
+        )
+    </div>
+</div>

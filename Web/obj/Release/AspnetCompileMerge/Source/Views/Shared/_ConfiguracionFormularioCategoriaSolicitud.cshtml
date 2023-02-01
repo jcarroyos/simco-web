@@ -1,0 +1,80 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model ConfiguracionCategoriaSolicitudModel
+
+@if (Model != null)
+{
+    using (Html.BeginForm("CategoriasSolicitudes", "Administrador", FormMethod.Post, new { id = "FormCategoriaSolicitud" }))
+    {
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+
+            <p>Los campos marcados con asterisco (*) son obligatorios</p>
+
+            @Html.HiddenFor(model => model.Id)
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        <em>*</em> @Html.LabelFor(model => model.Categoria)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.TextBoxFor(model => model.Categoria, new { style = "width:550px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.Categoria)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-label">
+                        @Html.LabelFor(model => model.CategoriaPadreId)
+                    </div>
+                </div>
+            </div>
+            <div class="box-row">
+                <div class="box">
+                    <div class="formulario-control">
+                        @Html.DropDownListFor(model => model.CategoriaPadreId, new SelectList(Model.Categorias, "Valor", "Etiqueta"), "Seleccione una categoría padre...", new { @class = "chosen", style = "width:564px;" })
+                    </div>
+                    <div class="formulario-validator">
+                        @Html.ValidationMessageFor(model => model.CategoriaPadreId)
+                    </div>
+                </div>
+            </div>
+            <br />
+
+
+        </fieldset>
+
+        <div class="formulario-botones">
+            <input type="submit" value="@Html.Raw(Constante.BotonGuardarCambios)" name="GuardarCambios" class="boton" />
+            @if (Model.Id != -1)
+            {
+                @Html.ActionLink(Constante.BotonEliminarCategoria, "EliminarCategoriaSolicitud", "Administrador", new { Model.Id }, new { @class = "boton", id = "btnEliminarCategoria" })
+            }
+            
+        </div>
+    }
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $(".chosen").chosen();
+
+        $("#btnEliminarCategoria").click(function () {
+            return confirm('¿Está seguro de que desea eliminar la categoría?');
+        });
+    });
+
+</script>

@@ -1,0 +1,31 @@
+﻿@using Simco.CrossInfraestructureLayer
+@using Simco.DomainModelLayer.ViewModels
+
+@model EncuestaPreguntasRegistroModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+@using (Html.BeginForm("Encuesta", "Encuesta", FormMethod.Post, new { id = "FormEncuesta", enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(x => x.Encuesta.Id)
+
+    if (Model.Encuesta.Nombre.ToLowerInvariant().Contains("documentos"))
+    {
+        @Html.Partial("_DocumentosRegistro", Model.EntidadMuseal)
+    }
+    else
+    {
+        @Html.Partial("_Preguntas", Model.Preguntas)
+    }
+
+    <div class="derechaBotones">
+        <input type="submit" value="@Html.Raw(Constante.BotonGuardar)" name="BtnGuardarCambios" class="boton" />
+        <input type="submit" value="@Html.Raw(Constante.BotonGuardarEnviar)" name="BtnEnviar" class="boton" />
+        @Html.ActionLink(Constante.BotonCancelar, "Index", "Inicio", null, new { @class = "boton" })
+    </div>
+
+    <br />
+}

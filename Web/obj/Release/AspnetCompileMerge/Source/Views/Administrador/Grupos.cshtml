@@ -1,0 +1,38 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+@using Simco.Infrastructure.Notification
+
+@model IEnumerable<GrupoDeUsuariosModel>
+
+@{
+    ViewBag.Title = "Grupos";
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>Grupos de usuarios</h2>
+<p>Un grupo de usuarios es un espacio virtual donde los miembros activos de SIMCO pueden compartir documentos, noticias, enlaces e información de interés. Los Grupos están relacionados con la organización sectorial. Ejemplo: redes departamentales, redes temáticas. </p>
+<p>Los grupos se crean previa solicitud y autorización del Programa Fortalecimiento de Museos. Cada grupo tendrá un coordinador que se encargará de administrar los usuarios y la información. </p>
+
+<div class="grilladatos-opciones-izquierda">
+    @Html.ActionLink("Nuevo grupo", "Grupo", "Administrador", new object(), new { @class = "boton" })
+</div>
+
+<div class="grilladatos-tabla-encuetas">
+    @(Html.Kendo().Grid(Model)
+           .Name("GridGrupos")
+           .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Nombre).Template(o =>
+                                                                  @Html.ActionLink(@HtmlHelperExtensions.Truncate(o.Nombre, 42), "Grupo", "Administrador", new { id = Criptografia.EncriptarUrl(o.Id.ToString()) }, null)
+
+                                ).Width(301);
+                            columns.Bound(o => o.Descripcion).Width(370);
+                        })
+           .Pageable(p => p.Messages(m => m.Display("{0}-{1} de {2} grupos")
+                                                .Empty("No se encontraron grupos")
+                                                .First("Ir a la primera página")
+                                                .Last("Ir a la última página")
+                                                .Next("Ir a la página siguiente")
+                                                .Previous("Ir a la página anterior")))
+    )
+</div>

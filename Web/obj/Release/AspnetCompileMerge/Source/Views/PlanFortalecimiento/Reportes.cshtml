@@ -1,0 +1,180 @@
+﻿@using Simco.DomainModelLayer.ViewModels
+@using Simco.CrossInfraestructureLayer
+
+@model PlanConsultaModel
+@{
+    Layout = "~/Views/Shared/_LayoutInicio.cshtml";
+}
+
+<h2>
+    Avances del Plan de fortalecimiento
+</h2>
+
+<p>
+    Los campos marcados con asterisco (*) son obligatorios
+</p>
+@using (Html.BeginForm("Reportes", "PlanFortalecimiento", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Plan.Departamentos)
+    @Html.HiddenFor(model => model.Plan.Museos)
+
+    <fieldset>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Plan.NombreMuseo)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.DropDownListFor(model => model.Plan.NombreMuseo, new SelectList(Model.Plan.Museos, "PersonaId", "Nombre"), "Seleccione una entidad museal...", new { @class = "chosen", style = "width:544px;" })
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Plan.Departamento)
+                </div>
+            </div>
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Plan.Municipio)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.DropDownListFor(model => model.Plan.CodigoDepartamento, new SelectList(Model.Plan.Departamentos, "Id", "Nombre", Model.Plan.CodigoDepartamento), "Seleccione un departamento...", new { @class = "chosen", data_placeholder = "Seleccione un departamento...", style = "width:270px;" })
+                </div>
+            </div>
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.DropDownListFor(model => model.Plan.CodigoMunicipio, Enumerable.Empty<SelectListItem>(), "Seleccione un municipio...", new { @class = "chosen", data_placeholder = "Seleccione un municipio...", style = "width:270px;" })
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Plan.Anio)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.TextBoxFor(model => model.Plan.Anio, new { style = "width:30px;" })
+                </div>
+                <div class="formulario-validator">
+                    @Html.ValidationMessageFor(model => model.Plan.Anio)
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Plan.FechaInicial)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.EditorFor(model => model.Plan.FechaInicial, new { style = "width:70px;" })
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-label">
+                    @Html.LabelFor(model => model.Plan.FechaFinal)
+                </div>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <div class="formulario-control">
+                    @Html.EditorFor(model => model.Plan.FechaFinal, new { style = "width:70px;" })
+                </div>
+            </div>
+        </div>
+        <br />
+    </fieldset>
+}
+<div class="formulario-field-1">
+    <div class="formulario-botones">
+        <button class="boton" onclick="GenerarReporte();">@Html.Raw(Constante.BotonBuscar)</button>
+    </div>
+</div>
+<fieldset>
+    <div class="grilladatos-tabla-scroll">
+        <div id="divReporte" style="width: 1730px;" class="formulario-oculto">
+            <iframe id="ReporteFrame" width="100%" height="400px"></iframe>
+        </div>
+    </div>
+</fieldset>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        CargarListaMunicipios();
+
+        $('#Plan_CodigoDepartamento').change(function () {
+            CargarListaMunicipios();
+        });
+
+        $("#Plan_FechaInicial").datepicker({ dateFormat: 'yy/mm/dd' });
+        $("#Plan_FechaFinal").datepicker({ dateFormat: 'yy/mm/dd' });
+    });
+
+    function GenerarReporte() {
+        $('#divReporte').show();
+
+        var pejid = $('#Plan_NombreMuseo').val();
+        var pejdepto = $('#Plan_CodigoDepartamento').val();
+        var pejmpio = $('#Plan_CodigoMunicipio').val();
+        var anio = $('#Plan_Anio').val();
+        var fechainicial = $('#Plan_FechaInicial').val();
+        var fechafinal = $('#Plan_FechaFinal').val();
+
+        var querystring = "&pejid=" + pejid + "&pejdepto=" + pejdepto + "&pejmpio=" + pejmpio + "&anio=" + anio + "&fechainicial=" + fechainicial + "&fechafinal=" + fechafinal;
+        document.getElementById("ReporteFrame").src = "../Reports/visorreporte.aspx?reporte=PlandeFortalecimiento" + querystring;
+    }
+
+    function CargarListaMunicipios() {
+        var selectedItem = $('#Plan_CodigoDepartamento').val();
+        var destination = $('#Plan_CodigoMunicipio');
+
+        if (selectedItem != null && selectedItem != '') {
+            $.getJSON('@Url.Action("Municipios")', { zonaPadreId: selectedItem }, function (municipio) {
+                destination.empty();
+                $.each(municipio, function (index, item) {
+                    if (item.Id == '@Model.Plan.CodigoMunicipio') {
+                        destination.append('<option value="' + item.Id + '" selected="selected">' + item.Nombre + '</option>');
+                    } else {
+                        destination.append('<option value="' + item.Id + '">' + item.Nombre + '</option>');
+                    }
+                    destination.trigger("chosen:updated");
+                });
+
+            });
+        }
+        else {
+            destination.empty();
+            destination.trigger("chosen:updated");
+        }
+    }
+
+</script>
